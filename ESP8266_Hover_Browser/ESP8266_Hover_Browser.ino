@@ -372,4 +372,5 @@ void loop()
       digitalWrite(PIN_LEDCONNECTIE, (millis() % 1000) > 500 ? LOW : HIGH);
     }
   }
+  delay(2);
 }
