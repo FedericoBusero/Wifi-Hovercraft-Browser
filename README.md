@@ -23,3 +23,9 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 
 ## Arduino ESP8266 board issue
 Het is aangeraden om de meest recente Arduino ESP8266 board versie 3.0.2 niet te gebruiken, die werkt extreem slecht in combinatie met deze software. Beter is voorlopig ESP8266 versie 2.7.4 te blijven gebruiken.
+
+## Arduino bibliotheken
+Volgende bibliotheken zijn nodig:
+- ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
+- https://github.com/me-no-dev/ESPAsyncTCP
+- https://github.com/me-no-dev/ESPAsyncWebServer
