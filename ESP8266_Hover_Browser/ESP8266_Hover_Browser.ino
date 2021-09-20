@@ -2,7 +2,7 @@
 #include <ESP8266WiFi.h>
 
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
-#include <ArduinoWebsockets.h> // uit arduino library manager : https://github.com/gilmaimon/ArduinoWebsockets
+#include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 
 #define DEBUG_SERIAL Serial
