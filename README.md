@@ -31,5 +31,5 @@ Volgende bibliotheken zijn nodig:
 - https://github.com/me-no-dev/ESPAsyncWebServer
 
 ## Hoe maak je een Hovercraft?
-De bouwinstructies van de hovercraft - zonder wifi verbinding- zijn te vinden op https://maakbib.be/Lasergesneden-hovercraft/
+De bouwinstructies van de hovercraft - zonder wifi verbinding- zijn te vinden op https://maakbib.be/Lasergesneden-hovercraft/.
 Voor workshops hovercraft bouwen kan je terecht bij MasynMachien: https://www.instructables.com/masynmachiens-workshops/
