@@ -29,3 +29,7 @@ Volgende bibliotheken zijn nodig:
 - ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
 - https://github.com/me-no-dev/ESPAsyncTCP
 - https://github.com/me-no-dev/ESPAsyncWebServer
+
+## Hoe maak je een Hovercraft?
+De bouwinstructies van de hovercraft - zonder wifi verbinding- zijn te vinden op https://maakbib.be/Lasergesneden-hovercraft/
+Voor workshops hovercraft bouwen kan je terecht bij MasynMachien: https://www.instructables.com/masynmachiens-workshops/
