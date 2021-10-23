@@ -145,7 +145,7 @@ void setup()
 {
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.begin(115200);
-  DEBUG_SERIAL.println(F("ESP32-CAMRobotController_ESP32Servo setup started"));
+  DEBUG_SERIAL.println(F("Hover Browser setup started"));
 #endif
 
   setup_pin_mode_output(PIN_LEDCONNECTIE);
