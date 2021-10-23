@@ -10,10 +10,17 @@
  * 
  */
 
-#include <Servo.h>
-#include <ESP8266WiFi.h>
+#ifdef ARDUINO_ARCH_ESP32
+#include <WiFi.h>
+#include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
+#include <ESP32Servo.h>
 
+#else
+#include <ESP8266WiFi.h>
+#include <Servo.h>
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
+#endif
+
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 
