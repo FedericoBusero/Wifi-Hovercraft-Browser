@@ -367,7 +367,11 @@ void onDisconnect()
 void loop()
 {
   static int is_connected = 0;
-
+  
+#if defined(USE_SOFTAP)
+  dnsServer.processNextRequest();
+#endif
+  
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
     digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
