@@ -150,7 +150,7 @@ function drag(e) {
         }
         xOffset = currentX;
         yOffset = currentY;
-        if (Math.abs(currentY) < (container.offsetHeight / 2) && Math.abs(currentX) < (container.offsetWidth / 2)) {
+        if (Math.abs(currentY) < (container.offsetHeight / 2.8) && Math.abs(currentX) < (container.offsetWidth / 2.8)) {
             setTranslate(currentX, currentY, dragItem);
         }
     }
@@ -190,8 +190,8 @@ function send(txt) {
 
 function setTranslate(xPos, yPos, el) {
     el.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
-    var panDegrees = xPos * 90 / (container.offsetWidth / 2);
-    var tiltDegrees = yPos * 90 / (container.offsetHeight / 2);
+    var panDegrees = xPos * 90 / (container.offsetWidth / 2.8);
+    var tiltDegrees = yPos * 90 / (container.offsetHeight / 2.8);
   send('1:'+Math.round(panDegrees) + ',' + Math.round(tiltDegrees));
 }
 
