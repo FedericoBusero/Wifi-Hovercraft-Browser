@@ -11,7 +11,7 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 - URL : http://192.168.4.1
 
 ## App User interface 
-- Bovenste slider: stel maximum snelheid in
+- Bovenste slider: stel maximum snelheid in (links = halve kracht, rechts=volle kracht)
 - Joystick: besturing servo (links-rechts) en motor (midden-boven)
 
 ## pinallocatie
