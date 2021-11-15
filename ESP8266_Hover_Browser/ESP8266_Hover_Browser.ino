@@ -240,7 +240,7 @@ void handleSlider(int value)
   DEBUG_SERIAL.print(F("handleSlider value="));
   DEBUG_SERIAL.println(value);
 #endif
-  max_motorsnelheid=(PWM_RANGE*value)/360;
+  max_motorsnelheid=map(value,0,360,PWM_RANGE/2,PWM_RANGE);
 
   updateMotors();
 }
