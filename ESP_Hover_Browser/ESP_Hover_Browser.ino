@@ -10,6 +10,9 @@
  * 
  */
 
+#include <DNSServer.h>
+DNSServer dnsServer;
+
 #ifdef ARDUINO_ARCH_ESP32
 #include <WiFi.h>
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
@@ -211,10 +214,15 @@ void setup()
 #endif
   // WiFi.softAP(ssid, password);
   WiFi.softAP(ssidmac, password);
+  IPAddress apIP = WiFi.softAPIP();
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.print(F("IP: "));
-  DEBUG_SERIAL.println(WiFi.softAPIP());
+  DEBUG_SERIAL.println(apIP);
 #endif
+  /* Setup the DNS server redirecting all the domains to the apIP */
+  dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
+  dnsServer.start(53, "*", apIP);
+  
 #else
   // Connect to wifi
   WiFi.mode(WIFI_STA);
