@@ -81,7 +81,7 @@ const char index_html[] PROGMEM = R"=====(
 </head>
 <body>
 <div id='outerContainer'>
-<input type="range" min="0" max="360" value="300" step="1" class="slider-color" oninput="showValue(this.value)" />
+<input type="range" min="0" max="360" value="240" step="1" class="slider-color" oninput="showValue(this.value)" />
 <br>
   <div id='container'>
     <div id='item'> </div>
