@@ -15,10 +15,37 @@
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
 #include <ESP32Servo.h>
 
+#define PWM_RANGE 255 // PWM range voor analogWrite (in ESP32Servo)
+
+#define PIN_SERVO          2 
+
+#define PIN_MOTOR          8 
+
+#define PIN_LEDCONNECTIE   16 
+
+#define LED_BRIGHTNESS_NO_CONNECTION LOW
+#define LED_BRIGHTNESS_HANDLEMESSAGE LOW
+#define LED_BRIGHTNESS_BOOT          LOW
+#define LED_BRIGHTNESS_OFF           HIGH
+
 #else
 #include <ESP8266WiFi.h>
 #include <Servo.h>
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
+
+#define PWM_RANGE 1023 // PWM range voor analogWrite
+
+#define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
+
+#define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
+
+#define PIN_LEDCONNECTIE   16 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 2 als de LED niet werkt
+
+#define LED_BRIGHTNESS_NO_CONNECTION LOW
+#define LED_BRIGHTNESS_HANDLEMESSAGE LOW
+#define LED_BRIGHTNESS_BOOT          LOW
+#define LED_BRIGHTNESS_OFF           HIGH
+
 #endif
 
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
@@ -41,17 +68,6 @@ WebsocketsClient sclient;
 #define TIMEOUT_MS_MOTORS 30000L // Safety shutdown: motors will go to power off position after x milliseconds no message received
 #define TIMEOUT_MS_LED 1L        // LED will light up for x milliseconds after message received
 long last_activity_message;
-
-#define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
-
-#define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
-
-#define PIN_LEDCONNECTIE   16 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 2 als de LED niet werkt
-
-#define LED_BRIGHTNESS_NO_CONNECTION LOW
-#define LED_BRIGHTNESS_HANDLEMESSAGE LOW
-#define LED_BRIGHTNESS_BOOT          LOW
-#define LED_BRIGHTNESS_OFF           HIGH
 
 // We maken een servo "object" aan om de servo aan te sturen.
 Servo servo1;
@@ -168,9 +184,12 @@ void setup()
   servo1.attach(PIN_SERVO, 544, 2400);
 
   setup_pin_mode_output(PIN_MOTOR);
+  
+#ifdef ESP8266
   // Aangezien de PWM range van analogWrite afhankelijk van de Arduino ESP8266 versie 255 ofwel 1023 is, stellen we de range vast in op 1023
   analogWriteRange(PWM_RANGE);
-
+#endif
+  
   init_values();
   updateMotors();
 
