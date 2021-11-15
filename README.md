@@ -8,7 +8,7 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 - SSID = hover- + 4 laatste hexadecimale karakters van het Wifi-MAC adres van de ESP8266 chip
 - Wifi-paswoord: 12345678
 - App: browser (Chrome, Firefox, safari, ...)
-- URL : http://192.168.4.1
+- URL : http://192.168.4.1 maar elke andere http-URL werkt ook bv. http://a.be
 
 ## App User interface 
 - Bovenste slider: stel maximum snelheid in (links = halve kracht, rechts=volle kracht)
