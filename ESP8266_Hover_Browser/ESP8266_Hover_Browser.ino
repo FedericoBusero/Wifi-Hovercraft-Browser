@@ -2,7 +2,7 @@
  * Code voor het besturen van een hover mbv Wifi via de browser
  * 
  * Hoe gebruiken?
- * Voeg wifi netwerk hover-xxxxxx toe met paswoord 12345678
+ * Voeg wifi netwerk hover-xxxx toe met paswoord 12345678
  * Er is op dat netwerk uiteraard geen internet, dus "wifi behouden" aanvinken indien dat gevraagd wordt
  * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website 192.168.4.1
  * 
@@ -181,11 +181,11 @@ void setup()
   /* set up access point */
   WiFi.mode(WIFI_AP);
 
-  // ssidmac = ssid + 6 hexadecimal values of MAC address
+  // ssidmac = ssid + 4 hexadecimal values of MAC address
   char ssidmac[33];
   uint8_t macAddr[6];
   WiFi.softAPmacAddress(macAddr);
-  sprintf(ssidmac, "%s%02X%02X%02X", ssid, macAddr[3], macAddr[4], macAddr[5]);
+  sprintf(ssidmac, "%s%02X%02X", ssid, macAddr[4], macAddr[5]);
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.print(F("SoftAP SSID="));
   DEBUG_SERIAL.println(ssidmac);
