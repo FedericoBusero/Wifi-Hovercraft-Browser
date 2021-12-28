@@ -81,7 +81,8 @@ const char index_html[] PROGMEM = R"=====(
 </head>
 <body>
 <div id='outerContainer'>
-<input type="range" min="0" max="360" value="240" step="1" class="slider-color" oninput="showValue(this.value)" />
+<input type="range" min="0" max="360" value="180" step="1" class="slider-color" oninput="showValue(3,this.value)" />
+<input type="range" min="0" max="360" value="240" step="1" class="slider-color" oninput="showValue(2,this.value)" />
 <br>
   <div id='container'>
     <div id='item'> </div>
@@ -206,8 +207,8 @@ function setTranslate(xPos, yPos, el) {
   send('1:'+Math.round(panDegrees) + ',' + Math.round(tiltDegrees));
 }
 
-function showValue(v) {
-  send('2:'+v+',0');
+function showValue(id,v) {
+  send(id+':'+v+',0');
 }
 
 </script>
