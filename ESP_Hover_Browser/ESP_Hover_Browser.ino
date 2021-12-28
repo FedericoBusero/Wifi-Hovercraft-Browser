@@ -384,7 +384,6 @@ void loop()
     DEBUG_SERIAL.println(F("Safety shutdown ..."));
 #endif
     motors_halt();
-    is_connected = 0;
 
     last_activity_message = millis();
   }
