@@ -92,6 +92,7 @@ const char index_html[] PROGMEM = R"=====(
 const view = document.getElementById('stream');
 const WS_URL = "ws://" + window.location.host + ":82";
 const ws = new WebSocket(WS_URL);
+const joystickfactor = 2.8;
     
 var dragItem = document.querySelector('#item');
 var container = document.querySelector('#container');
@@ -148,11 +149,21 @@ function drag(e) {
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
         }
+        if (currentY >= (container.offsetHeight / joystickfactor))  {
+            currentY = container.offsetHeight / joystickfactor;
+        }
+        if (currentY <= (-container.offsetHeight / joystickfactor))  {
+            currentY = -container.offsetHeight / joystickfactor;
+        }
+        if (currentX >= (container.offsetWidth / joystickfactor))  {
+            currentX = container.offsetWidth / joystickfactor;
+        }
+        if (currentX <= (-container.offsetWidth / joystickfactor))  {
+            currentX = -container.offsetWidth / joystickfactor;
+        }
         xOffset = currentX;
         yOffset = currentY;
-        if (Math.abs(currentY) < (container.offsetHeight / 2.8) && Math.abs(currentX) < (container.offsetWidth / 2.8)) {
-            setTranslate(currentX, currentY, dragItem);
-        }
+        setTranslate(currentX, currentY, dragItem);
     }
 }
 
@@ -190,8 +201,8 @@ function send(txt) {
 
 function setTranslate(xPos, yPos, el) {
     el.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
-    var panDegrees = xPos * 90 / (container.offsetWidth / 2.8);
-    var tiltDegrees = yPos * 90 / (container.offsetHeight / 2.8);
+    var panDegrees = xPos * 90 / (container.offsetWidth / joystickfactor);
+    var tiltDegrees = yPos * 90 / (container.offsetHeight / joystickfactor);
   send('1:'+Math.round(panDegrees) + ',' + Math.round(tiltDegrees));
 }
 
