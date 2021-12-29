@@ -39,8 +39,8 @@ ESP8266:
 - https://github.com/me-no-dev/ESPAsyncWebServer
 
 ESP32:
-- AsyncTCP.h: te installeren van https://github.com/me-no-dev/AsyncTCP
-- ESP32Servo.h vanuit de Arduino library manager te downloaden: 
+- AsyncTCP: te installeren van https://github.com/me-no-dev/AsyncTCP
+- ESP32Servo vanuit de Arduino library manager te downloaden, dat is deze versie:  https://github.com/madhephaestus/ESP32Servo
 - ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
 - https://github.com/me-no-dev/ESPAsyncWebServer
 
