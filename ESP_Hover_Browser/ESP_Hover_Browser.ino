@@ -92,9 +92,6 @@ Servo servo1;
 int servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 int doel_servohoek;
 
-// PWM range voor analogWrite
-#define PWM_RANGE 1023
-
 // Bij het verhogen van de snelheid van de motor, doen we dat in stappen om niet te bruusk op te trekken
 // want dit kan de hovercraft onbestuurbaar maken of teveel stroom trekken waardoor de chip gaat resetten
 // Pas gerust aan, 1=traag optrekken, 5=snel optrekken
