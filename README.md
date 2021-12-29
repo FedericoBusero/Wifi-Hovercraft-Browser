@@ -41,11 +41,9 @@ ESP8266:
 ESP32:
 - AsyncTCP.h: te installeren van https://github.com/me-no-dev/AsyncTCP
 - ESP32Servo.h vanuit de Arduino library manager te downloaden: 
-- ???? ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
+- ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
+- https://github.com/me-no-dev/ESPAsyncWebServer
 - ???? https://github.com/me-no-dev/ESPAsyncTCP
-- ??? https://github.com/me-no-dev/ESPAsyncWebServer
-
-
 
 ## Hoe maak je een Hovercraft?
 De bouwinstructies van de hovercraft - zonder wifi verbinding- zijn te vinden op https://maakbib.be/Lasergesneden-hovercraft/.
