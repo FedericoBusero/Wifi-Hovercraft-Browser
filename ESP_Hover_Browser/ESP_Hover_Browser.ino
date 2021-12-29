@@ -20,11 +20,11 @@ DNSServer dnsServer;
 
 #define PWM_RANGE 255 // PWM range voor analogWrite (in ESP32Servo)
 
-#define PIN_SERVO          2 
+#define PIN_SERVO          12 
 
-#define PIN_MOTOR          8 
+#define PIN_MOTOR          2 
 
-#define PIN_LEDCONNECTIE   16 
+#define PIN_LEDCONNECTIE   4 
 
 #define LED_BRIGHTNESS_NO_CONNECTION LOW
 #define LED_BRIGHTNESS_HANDLEMESSAGE LOW
