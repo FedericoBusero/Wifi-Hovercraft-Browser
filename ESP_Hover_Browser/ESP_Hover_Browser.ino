@@ -68,7 +68,7 @@ AsyncWebServer webserver(80);
 WebsocketsClient sclient;
 
 // timeoutes
-#define TIMEOUT_MS_MOTORS 5000L // Safety shutdown: motors will go to power off position after x milliseconds no message received
+#define TIMEOUT_MS_MOTORS 2500L // Safety shutdown: motors will go to power off position after x milliseconds no message received
 #define TIMEOUT_MS_LED 1L        // LED will light up for x milliseconds after message received
 #define TIMEOUT_PING 1000L      // Ping, x ms after last message received
 
