@@ -4,7 +4,7 @@
  * Hoe gebruiken?
  * Voeg wifi netwerk hover-xxxx toe met paswoord 12345678
  * Er is op dat netwerk uiteraard geen internet, dus "wifi behouden" aanvinken indien dat gevraagd wordt
- * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website 192.168.4.1
+ * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website 192.168.4.1 maar elke andere http-URL werkt ook bv. http://a.be
  * 
  * De bovenste slider dient om de maximum snelheid in te stellen, met de joystick worden servo (links-rechts) en motor (midden-boven) bestuurd
  * 
