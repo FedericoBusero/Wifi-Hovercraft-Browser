@@ -33,6 +33,7 @@ Het is aangeraden om de meest recente Arduino ESP8266 board versie 3.0.2 niet te
 
 ## Arduino bibliotheken
 Volgende bibliotheken zijn nodig:
+
 ESP8266:
 - ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
 - https://github.com/me-no-dev/ESPAsyncTCP
