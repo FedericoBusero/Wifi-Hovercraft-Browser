@@ -452,6 +452,8 @@ void loop()
       DEBUG_SERIAL.println(F("Connection accept"));
 #endif
       sclient.onMessage(handle_message);
+      sclient.onEvent(onEventsCallback); // run callback when events are occuring
+
       onConnect();
       is_connected = 1;
     }
