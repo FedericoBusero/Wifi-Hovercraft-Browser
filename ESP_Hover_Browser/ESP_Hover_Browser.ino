@@ -70,7 +70,10 @@ WebsocketsClient sclient;
 // timeoutes
 #define TIMEOUT_MS_MOTORS 5000L // Safety shutdown: motors will go to power off position after x milliseconds no message received
 #define TIMEOUT_MS_LED 1L        // LED will light up for x milliseconds after message received
+#define TIMEOUT_PING 1000L      // Ping, x ms after last message received
+
 long last_activity_message;
+long next_ping;
 
 int is_connected = 0;
 
@@ -262,6 +265,7 @@ void setup()
   DEBUG_SERIAL.println(server.available());
 #endif
   last_activity_message = millis();
+  next_ping = millis() + TIMEOUT_PING;
 }
 
 void handleSlider(int value)
@@ -296,6 +300,23 @@ void handleJoystick(int x, int y)
   }
 
   updateMotors();
+}
+
+void onEventsCallback(WebsocketsEvent event, String data) {
+  if (event == WebsocketsEvent::ConnectionOpened) {
+    // Serial.println("Connnection Opened");
+  } else if (event == WebsocketsEvent::ConnectionClosed) {
+    // Serial.println("Connnection Closed");
+  } else if (event == WebsocketsEvent::GotPing) {
+    // Serial.println("Got a Ping!");
+  } else if (event == WebsocketsEvent::GotPong) {
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.println("Got a Pong!");
+    digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_HANDLEMESSAGE);
+    last_activity_message = millis();
+    next_ping = millis() + TIMEOUT_PING;
+#endif
+  }
 }
 
 void handle_message(WebsocketsMessage msg) {
@@ -335,6 +356,7 @@ void handle_message(WebsocketsMessage msg) {
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_HANDLEMESSAGE);
 
   last_activity_message = millis();
+  next_ping = millis() + TIMEOUT_PING;
 
   switch (id)
   {
@@ -357,6 +379,7 @@ void onConnect()
 #endif
   init_values();
   updateMotors();
+  next_ping = millis() + TIMEOUT_PING;
 }
 
 void onDisconnect()
@@ -376,6 +399,19 @@ void loop()
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
     digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
+  }
+  
+  
+  if (millis() > next_ping)
+  {
+    if (is_connected)
+    {
+#ifdef DEBUG_SERIAL
+      DEBUG_SERIAL.println(F("ping"));
+#endif
+      sclient.ping();
+    }
+    next_ping += TIMEOUT_PING ;
   }
 
   if (millis() > last_activity_message + TIMEOUT_MS_MOTORS)
