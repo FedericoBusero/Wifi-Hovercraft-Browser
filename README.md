@@ -24,9 +24,9 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 ## pinallocatie ESP32
 | Functie       | GPIO   |
 | ------------- | ------ |
-| LEDCONNECTIE  | GPIO16 |
-| SERVO         | GPIO2  |
-| MOTOR         | GPIO8 |
+| LEDCONNECTIE  | GPIO4  |
+| SERVO         | GPIO12 |
+| MOTOR         | GPIO2  |
 
 ## Arduino ESP8266 board issue
 Het is aangeraden om de meest recente Arduino ESP8266 board versie 3.0.2 niet te gebruiken, die werkt extreem slecht in combinatie met deze software. Beter is voorlopig ESP8266 versie 2.7.4 te blijven gebruiken.
