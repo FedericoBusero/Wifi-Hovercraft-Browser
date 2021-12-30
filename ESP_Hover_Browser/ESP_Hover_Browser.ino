@@ -75,8 +75,6 @@ WebsocketsClient sclient;
 long last_activity_message;
 long next_ping;
 
-int is_connected = 0;
-
 // We maken een servo "object" aan om de servo aan te sturen.
 Servo servo1;
 
@@ -251,7 +249,6 @@ void setup()
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println(F("on HTTP_GET: return"));
 #endif
-    is_connected = 0;
     request->send(200, "text/html", index_html);
   });
 
@@ -395,6 +392,8 @@ void onDisconnect()
 
 void loop()
 {
+  static int is_connected = 0;
+
 #if defined(USE_SOFTAP)
   dnsServer.processNextRequest();
 #endif
