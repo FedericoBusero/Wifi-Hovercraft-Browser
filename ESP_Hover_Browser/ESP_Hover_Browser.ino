@@ -101,7 +101,7 @@ int max_motorsnelheid;
 
 void setup_pin_mode_output(int pin)
 {
-#if defined(ESP8266) || defined(ESP32)
+#if defined(ESP8266) || defined(CONFIG_IDF_TARGET_ESP32)
   if ((pin == 1) || (pin == 3)) // RX & TX
   {
     pinMode (pin, FUNCTION_3);
