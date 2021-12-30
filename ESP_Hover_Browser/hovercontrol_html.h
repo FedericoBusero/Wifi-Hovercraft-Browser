@@ -90,7 +90,6 @@ const char index_html[] PROGMEM = R"=====(
 </div>
 
 <script>
-const view = document.getElementById('stream');
 const WS_URL = "ws://" + window.location.host + ":82";
 const ws = new WebSocket(WS_URL);
 const joystickfactor = 2.8;
