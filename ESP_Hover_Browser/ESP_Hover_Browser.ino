@@ -301,18 +301,24 @@ void handleJoystick(int x, int y)
 
 void onEventsCallback(WebsocketsEvent event, String data) {
   if (event == WebsocketsEvent::ConnectionOpened) {
-    // Serial.println("Connnection Opened");
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.println("Connnection Opened");
+#endif
   } else if (event == WebsocketsEvent::ConnectionClosed) {
-    // Serial.println("Connnection Closed");
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.println("Connnection Closed");
+#endif
   } else if (event == WebsocketsEvent::GotPing) {
-    // Serial.println("Got a Ping!");
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.println("Got a Ping!");
+#endif
   } else if (event == WebsocketsEvent::GotPong) {
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println("Got a Pong!");
+#endif
     digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_HANDLEMESSAGE);
     last_activity_message = millis();
     next_ping = millis() + TIMEOUT_PING;
-#endif
   }
 }
 
@@ -425,8 +431,8 @@ void loop()
 
   if (is_connected)
   {
-    if (sclient.available()) {
-      sclient.poll();
+    if (sclient.available()) { // als return non-nul, dan is er een client geconnecteerd
+      sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
       updateMotors();
     }
@@ -437,27 +443,26 @@ void loop()
       is_connected = 0;
     }
   }
-  else // is_connected is 0
+  if (server.poll()) // als er een nieuwe socket aangevraagd is
   {
-    if (server.poll())
-    {
 #ifdef DEBUG_SERIAL
-      DEBUG_SERIAL.println(F("server.poll"));
+    DEBUG_SERIAL.println(F("server.poll"));
 #endif
-      sclient = server.accept();
+    sclient = server.accept();
 #ifdef DEBUG_SERIAL
-      DEBUG_SERIAL.println(F("Connection accept"));
+    DEBUG_SERIAL.println(F("Connection accept"));
 #endif
-      sclient.onMessage(handle_message);
-      sclient.onEvent(onEventsCallback); // run callback when events are occuring
+    sclient.onMessage(handle_message);
+    sclient.onEvent(onEventsCallback); // run callback when events are occuring
 
-      onConnect();
-      is_connected = 1;
-    }
-    else
-    {
-      digitalWrite(PIN_LEDCONNECTIE, (millis() % 1000) > 500 ? LOW : HIGH);
-    }
+    onConnect();
+    is_connected = 1;
   }
+  
+  if (!is_connected)
+  {
+    digitalWrite(PIN_LEDCONNECTIE, (millis() % 1000) > 500 ? LOW : HIGH);
+  }
+  
   delay(2);
 }
