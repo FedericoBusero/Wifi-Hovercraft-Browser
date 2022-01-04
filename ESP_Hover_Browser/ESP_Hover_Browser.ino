@@ -89,8 +89,8 @@ Servo servo1;
 // De waarde is minimaal 1 en maximaal 180, dan is er geen vertraging meer
 #define SERVO_HOEK_STAP 2
 
-int Servopositie_x;   // 0 .. 360
-int TrimServopositie; // 0 .. 360
+int Servopositie_x;   // -180 .. 180
+int TrimServopositie; // -180 .. 180
 int servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 int doel_servohoek;
 
@@ -117,10 +117,10 @@ void setup_pin_mode_output(int pin)
 void updateMotors()
 {
   /* We berekenen naar welke doelpositie we de servo willen krijgen:
-        we herschalen de som van de slider posities in de browser ( Servopositie_x (0 .. 360) en TrimServopositie (0 .. 360) )
+        we herschalen de som van de slider posities in de browser ( Servopositie_x (-180 .. 180) en TrimServopositie (-180 .. 180) )
         naar de minimum en maximum graden die de servo motor aankan (SERVO_HOEK_MIN .. SERVO_HOEK_MAX)
   */
-  doel_servohoek = map(Servopositie_x + TrimServopositie, 0, 2 * 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+  doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
 
   /*
     We gaan de servo nog niet onmiddellijk naar zijn nieuwe positie doel_servohoek brengen, maar elke keer dat we hier passeren
@@ -164,8 +164,8 @@ void motors_halt()
 
 void init_values()
 {
-  TrimServopositie = 180;
-  Servopositie_x = 180;
+  TrimServopositie = 0;
+  Servopositie_x = 0;
   servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
   doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 
@@ -311,7 +311,7 @@ void handleJoystick(int x, int y)
   Servopositie_x = x;
   if (y <= 0)
   {
-    doel_motorsnelheid = map(-y, 0, 90, 0, max_motorsnelheid);
+    doel_motorsnelheid = map(-y, 0, 180, 0, max_motorsnelheid);
   }
   else
   {
