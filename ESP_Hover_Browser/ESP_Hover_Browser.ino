@@ -6,7 +6,8 @@
  * Er is op dat netwerk uiteraard geen internet, dus "wifi behouden" aanvinken indien dat gevraagd wordt
  * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website 192.168.4.1 maar elke andere http-URL werkt ook bv. http://a.be
  * 
- * De bovenste slider dient om de maximum snelheid in te stellen, met de joystick worden servo (links-rechts) en motor (midden-boven) bestuurd
+ * De bovenste slider dient om de servo te trimmen, de slider eronder om de maximum snelheid in te stellen, 
+ * met de joystick worden servo (links-rechts) en motor (midden-boven) bestuurd
  * 
  */
 
@@ -87,6 +88,9 @@ Servo servo1;
 // Pas dit gerust aan, 1=servo traag bewegen, 2=normaal en vanaf 4 gaat het heel snel.
 // De waarde is minimaal 1 en maximaal 180, dan is er geen vertraging meer
 #define SERVO_HOEK_STAP 2
+
+int Servopositie_x;   // 0 .. 360
+int TrimServopositie; // 0 .. 360
 int servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 int doel_servohoek;
 
@@ -112,6 +116,12 @@ void setup_pin_mode_output(int pin)
 
 void updateMotors()
 {
+  /* We berekenen naar welke doelpositie we de servo willen krijgen:
+        we herschalen de som van de slider posities in de browser ( Servopositie_x (0 .. 360) en TrimServopositie (0 .. 360) )
+        naar de minimum en maximum graden die de servo motor aankan (SERVO_HOEK_MIN .. SERVO_HOEK_MAX)
+  */
+  doel_servohoek = map(Servopositie_x + TrimServopositie, 0, 2 * 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+
   /*
     We gaan de servo nog niet onmiddellijk naar zijn nieuwe positie doel_servohoek brengen, maar elke keer dat we hier passeren
     gaan we ietsje dichter naar zijn doel. Daartoe beperken we de verplaatsing t.o.v. de oude servohoek tot maximum SERVO_HOEK_STAP stappen
@@ -154,7 +164,11 @@ void motors_halt()
 
 void init_values()
 {
-  doel_servohoek = 90;
+  TrimServopositie = 180;
+  Servopositie_x = 180;
+  servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
+  doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
+
   doel_motorsnelheid = 0;
   max_motorsnelheid = (300*PWM_RANGE)/360;
 }
@@ -262,10 +276,10 @@ void setup()
   next_ping = millis() + TIMEOUT_PING;
 }
 
-void handleSlider(int value)
+void handleSliderMaxSpeed(int value)
 {
 #ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.print(F("handleSlider value="));
+  DEBUG_SERIAL.print(F("handleSliderMaxSpeed value="));
   DEBUG_SERIAL.println(value);
 #endif
   max_motorsnelheid=map(value,0,360,PWM_RANGE/2,PWM_RANGE);
@@ -273,6 +287,17 @@ void handleSlider(int value)
   updateMotors();
 }
 
+void handleSliderTrimServo(int value)
+{
+#ifdef DEBUG_SERIAL
+  DEBUG_SERIAL.print(F("handleSliderTrimServo value="));
+  DEBUG_SERIAL.println(value);
+#endif
+
+  TrimServopositie = value;
+
+  updateMotors();
+}
 
 void handleJoystick(int x, int y)
 {
@@ -283,7 +308,7 @@ void handleJoystick(int x, int y)
   DEBUG_SERIAL.println(y);
 #endif
 
-  doel_servohoek = map(x, -90, 90, 35, 135);
+  Servopositie_x = x;
   if (y <= 0)
   {
     doel_motorsnelheid = map(-y, 0, 90, 0, max_motorsnelheid);
@@ -366,6 +391,10 @@ void handle_message(WebsocketsMessage msg) {
 
     case 2: handleSlider(param1);
       break;
+      
+    case 3: handleSliderTrimServo(param1);
+      break;
+      
   }
 
 }
