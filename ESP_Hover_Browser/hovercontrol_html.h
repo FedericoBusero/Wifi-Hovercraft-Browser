@@ -112,8 +112,6 @@ container.addEventListener('mousedown', dragStart, false);
 container.addEventListener('mouseup', dragEnd, false);
 container.addEventListener('mousemove', drag, false);
 
-// fout om altijd 0 te nemen zie https://developer.mozilla.org/en-US/docs/Web/API/Touch_events
-// https://developer.mozilla.org/en-US/docs/Web/API/Touch/identifier
 function dragStart(e) {
     if (e.type === 'touchstart') {
         initialX = e.touches[0].clientX - xOffset;
