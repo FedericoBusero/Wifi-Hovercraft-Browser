@@ -128,6 +128,9 @@ function dragStart(e) {
 }
 
 function dragEnd(e) {
+    if (e.type === 'touchend') {
+        if (e.touches.length >0) return; 
+    }
     if (autocenter)
     {
           currentX=0; currentY=0;
