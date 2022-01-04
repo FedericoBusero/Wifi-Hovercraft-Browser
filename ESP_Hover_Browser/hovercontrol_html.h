@@ -81,7 +81,7 @@ const char index_html[] PROGMEM = R"=====(
 </head>
 <body>
 <div id='outerContainer'>
-<input type="range" min="0" max="360" value="180" step="1" class="slider-color" oninput="showValue(3,this.value)" />
+<input type="range" min="-180" max="180" value="0" step="1" class="slider-color" oninput="showValue(3,this.value)" />
 <input type="range" min="0" max="360" value="240" step="1" class="slider-color" oninput="showValue(2,this.value)" />
 <br>
   <div id='container'>
@@ -201,8 +201,8 @@ function send(txt) {
 
 function setTranslate(xPos, yPos, el) {
     el.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
-    var xval = xPos * 90 / (container.offsetWidth / joystickfactor);
-    var yval = yPos * 90 / (container.offsetHeight / joystickfactor);
+    var xval = xPos * 180 / (container.offsetWidth / joystickfactor);
+    var yval = yPos * 180 / (container.offsetHeight / joystickfactor);
   send('1:'+Math.round(xval) + ',' + Math.round(yval));
 }
 
