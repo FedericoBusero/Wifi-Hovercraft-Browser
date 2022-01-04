@@ -389,7 +389,7 @@ void handle_message(WebsocketsMessage msg) {
       handleJoystick(param1, param2);
       break;
 
-    case 2: handleSlider(param1);
+    case 2: handleSliderMaxSpeed(param1);
       break;
       
     case 3: handleSliderTrimServo(param1);
