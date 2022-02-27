@@ -474,7 +474,8 @@ void loop()
   if (server.poll()) // als er een nieuwe socket aangevraagd is
   {
 #ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println(F("server.poll"));
+    DEBUG_SERIAL.print(F("server.poll is_connected="));
+    DEBUG_SERIAL.println(is_connected);
 #endif
     sclient = server.accept();
 #ifdef DEBUG_SERIAL
