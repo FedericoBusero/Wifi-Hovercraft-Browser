@@ -21,6 +21,19 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 | SERVO         | D2  | GPIO4  |
 | MOTOR         | D8  | GPIO15 |
 
+## pinallocatie ESP01
+Hiertoe moet je volgende regel uncommenten:
+```
+// #define MODE_ESP01
+```
+
+| Functie       | Pin | GPIO  |
+| ------------- | --- | ----- |
+| LEDCONNECTIE  | TX  | GPIO1 |
+| SERVO         |     | GPIO0 |
+| MOTOR         | RX  | GPIO3 |
+
+
 ## pinallocatie ESP32
 | Functie       | GPIO   |
 | ------------- | ------ |
