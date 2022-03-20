@@ -71,10 +71,8 @@ WebsocketsClient sclient;
 // timeoutes
 #define TIMEOUT_MS_MOTORS 2500L // Safety shutdown: motors will go to power off position after x milliseconds no message received
 #define TIMEOUT_MS_LED 1L        // LED will light up for x milliseconds after message received
-#define TIMEOUT_PING 1000L      // Ping, x ms after last message received
 
 long last_activity_message;
-long next_ping;
 
 // We maken een servo "object" aan om de servo aan te sturen.
 Servo servo1;
@@ -273,7 +271,6 @@ void setup()
   DEBUG_SERIAL.println(server.available());
 #endif
   last_activity_message = millis();
-  next_ping = millis() + TIMEOUT_PING;
 }
 
 void handleSliderMaxSpeed(int value)
@@ -340,7 +337,6 @@ void onEventsCallback(WebsocketsEvent event, String data) {
 #endif
     digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_HANDLEMESSAGE);
     last_activity_message = millis();
-    next_ping = millis() + TIMEOUT_PING;
   }
 }
 
@@ -381,7 +377,6 @@ void handle_message(WebsocketsMessage msg) {
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_HANDLEMESSAGE);
 
   last_activity_message = millis();
-  next_ping = millis() + TIMEOUT_PING;
 
   switch (id)
   {
@@ -408,7 +403,6 @@ void onConnect()
 #endif
   init_values();
   updateMotors();
-  next_ping = millis() + TIMEOUT_PING;
 }
 
 void onDisconnect()
@@ -430,19 +424,6 @@ void loop()
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
     digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
-  }
-  
-  
-  if (millis() > next_ping)
-  {
-    if (is_connected)
-    {
-#ifdef DEBUG_SERIAL
-      DEBUG_SERIAL.println(F("ping"));
-#endif
-      sclient.ping();
-    }
-    next_ping += TIMEOUT_PING ;
   }
 
   if (millis() > last_activity_message + TIMEOUT_MS_MOTORS)
