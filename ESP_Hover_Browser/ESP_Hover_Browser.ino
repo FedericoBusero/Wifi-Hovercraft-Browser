@@ -380,6 +380,10 @@ void handle_message(WebsocketsMessage msg) {
 
   switch (id)
   {
+    case 0:       // ping
+      updateMotors();
+      break;
+      
     case 1:
       handleJoystick(param1, param2);
       break;
