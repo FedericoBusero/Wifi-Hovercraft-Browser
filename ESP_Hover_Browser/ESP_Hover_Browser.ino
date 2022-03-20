@@ -174,7 +174,15 @@ void init_values()
 
 void setup()
 {
-#ifdef DEBUG_SERIAL
+  setup_pin_mode_output(PIN_MOTOR);
+  
+#ifdef ESP8266
+  // Aangezien de PWM range van analogWrite afhankelijk van de Arduino ESP8266 versie 255 ofwel 1023 is, stellen we de range vast in op 1023
+  analogWriteRange(PWM_RANGE);
+#endif
+  analogWrite(PIN_MOTOR, 0); 
+
+  #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.begin(115200);
   DEBUG_SERIAL.println(F("Hover Browser setup started"));
 #endif
@@ -198,12 +206,6 @@ void setup()
   */
   servo1.attach(PIN_SERVO, 544, 2400);
 
-  setup_pin_mode_output(PIN_MOTOR);
-  
-#ifdef ESP8266
-  // Aangezien de PWM range van analogWrite afhankelijk van de Arduino ESP8266 versie 255 ofwel 1023 is, stellen we de range vast in op 1023
-  analogWriteRange(PWM_RANGE);
-#endif
   
   init_values();
   updateMotors();
