@@ -22,9 +22,7 @@ DNSServer dnsServer;
 #define PWM_RANGE 255 // PWM range voor analogWrite (in ESP32Servo)
 
 #define PIN_SERVO          12 
-
 #define PIN_MOTOR          2 
-
 #define PIN_LEDCONNECTIE   4 
 
 #define LED_BRIGHTNESS_NO_CONNECTION LOW
@@ -32,18 +30,29 @@ DNSServer dnsServer;
 #define LED_BRIGHTNESS_BOOT          LOW
 #define LED_BRIGHTNESS_OFF           HIGH
 
-#else
+#else // ESP8266
+
 #include <ESP8266WiFi.h>
 #include <Servo.h>
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
 
 #define PWM_RANGE 1023 // PWM range voor analogWrite
 
+// #define MODE_ESP01
+
+#ifdef MODE_ESP01
+
+#define PIN_SERVO          0
+#define PIN_MOTOR          3
+#define PIN_LEDCONNECTIE   1
+
+#else // Wemos D1 mini, NodeMCU, ...
+
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
-
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
-
 #define PIN_LEDCONNECTIE   16 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 2 als de LED niet werkt
+
+#endif
 
 #define LED_BRIGHTNESS_NO_CONNECTION LOW
 #define LED_BRIGHTNESS_HANDLEMESSAGE LOW
