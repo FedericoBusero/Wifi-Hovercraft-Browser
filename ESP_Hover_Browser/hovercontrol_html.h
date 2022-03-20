@@ -90,8 +90,23 @@ const char index_html[] PROGMEM = R"=====(
 </div>
 
 <script>
+var retransmitInterval;
 const WS_URL = "ws://" + window.location.host + ":82";
 const ws = new WebSocket(WS_URL);
+ws.onopen = function() {
+    retransmitInterval=setInterval(() => {
+      ws.send("0");
+    }, 1000);
+};
+
+ws.onclose = function() {
+    if (retransmitInterval)    
+    {        
+      clearInterval(retransmitInterval);        
+      retransmitInterval = null;     
+    }
+};
+
 const joystickfactor = 2.8;
     
 var dragItem = document.querySelector('#item');
