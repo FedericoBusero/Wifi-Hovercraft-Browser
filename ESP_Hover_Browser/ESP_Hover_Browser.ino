@@ -19,6 +19,8 @@ DNSServer dnsServer;
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
 #include <ESP32Servo.h>
 
+#define DEBUG_SERIAL Serial
+
 #define PWM_RANGE 255 // PWM range voor analogWrite (in ESP32Servo)
 
 #define PIN_SERVO          12 
@@ -47,6 +49,7 @@ DNSServer dnsServer;
 #define PIN_LEDCONNECTIE   1
 
 #else // Wemos D1 mini, NodeMCU, ...
+#define DEBUG_SERIAL Serial
 
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
@@ -64,7 +67,6 @@ DNSServer dnsServer;
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 
-#define DEBUG_SERIAL Serial
 
 #define USE_SOFTAP
 const char ssid[] = "hover-";
