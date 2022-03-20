@@ -193,7 +193,7 @@ void setup()
 #endif
   analogWrite(PIN_MOTOR, 0); 
 
-  #ifdef DEBUG_SERIAL
+#ifdef DEBUG_SERIAL
   DEBUG_SERIAL.begin(115200);
   DEBUG_SERIAL.println(F("Hover Browser setup started"));
 #endif
