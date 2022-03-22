@@ -224,14 +224,14 @@ void setup()
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_NO_CONNECTION );
 
   // Wifi setup
+  uint8_t macAddr[6];
+  WiFi.softAPmacAddress(macAddr);
 #if defined(USE_SOFTAP)
   /* set up access point */
   WiFi.mode(WIFI_AP);
 
   // ssidmac = ssid + 4 hexadecimal values of MAC address
   char ssidmac[33];
-  uint8_t macAddr[6];
-  WiFi.softAPmacAddress(macAddr);
   sprintf(ssidmac, "%s%02X%02X", ssid, macAddr[4], macAddr[5]);
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.print(F("SoftAP SSID="));
@@ -249,6 +249,19 @@ void setup()
   dnsServer.start(53, "*", apIP);
   
 #else
+  // host_name = "Hover-" + 6 hexadecimal values of MAC address
+  char host_name[33];
+  sprintf(host_name, "Hover-%02X%02X%02X", macAddr[3], macAddr[4], macAddr[5]);
+#ifdef DEBUG_SERIAL
+  DEBUG_SERIAL.print("Hostname: ");
+  DEBUG_SERIAL.println(host_name);
+#endif
+#ifdef ESP8266
+  WiFi.hostname(host_name);
+#else // ESP32
+  WiFi.setHostname(host_name);
+#endif
+
   // Connect to wifi
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
