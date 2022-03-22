@@ -55,14 +55,14 @@ DNSServer dnsServer;
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 #define PIN_LEDCONNECTIE   16 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 2 als de LED niet werkt
 
-#endif
+#endif // MODE_ESP01
 
 #define LED_BRIGHTNESS_NO_CONNECTION LOW
 #define LED_BRIGHTNESS_HANDLEMESSAGE LOW
 #define LED_BRIGHTNESS_BOOT          LOW
 #define LED_BRIGHTNESS_OFF           HIGH
 
-#endif
+#endif // ARDUINO_ARCH_ESP32
 
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
