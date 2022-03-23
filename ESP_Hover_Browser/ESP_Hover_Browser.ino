@@ -39,6 +39,7 @@ DNSServer dnsServer;
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
 
 #define PWM_RANGE 1023 // PWM range voor analogWrite
+#define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
 
 // #define MODE_ESP01
 
@@ -190,6 +191,9 @@ void setup()
 #ifdef ESP8266
   // Aangezien de PWM range van analogWrite afhankelijk van de Arduino ESP8266 versie 255 ofwel 1023 is, stellen we de range vast in op 1023
   analogWriteRange(PWM_RANGE);
+  
+  // Verander de frequentie van analogWrite van 1000 Hz naar 400 Hz voor een aangenamer geluid
+  analogWriteFreq(MOTOR_FREQ);
 #endif
   analogWrite(PIN_MOTOR, 0); 
 
