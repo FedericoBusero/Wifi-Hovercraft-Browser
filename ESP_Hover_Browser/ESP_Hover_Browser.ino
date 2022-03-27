@@ -54,7 +54,7 @@ DNSServer dnsServer;
 
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
-#define PIN_LEDCONNECTIE   16 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 2 als de LED niet werkt
+#define PIN_LEDCONNECTIE   2 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 2 als de LED niet werkt
 
 #endif // MODE_ESP01
 
