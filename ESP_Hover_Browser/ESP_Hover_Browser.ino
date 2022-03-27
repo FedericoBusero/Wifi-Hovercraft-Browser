@@ -427,7 +427,10 @@ void handle_message(WebsocketsMessage msg) {
   switch (id)
   {
     case 0:       // ping
-      motors_resume();
+      if (motors_halt)
+      {
+        motors_resume();
+      }
       break;
       
     case 1:
