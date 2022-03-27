@@ -11,8 +11,6 @@
  * 
  */
 
-#include <DNSServer.h>
-DNSServer dnsServer;
 
 #ifdef ARDUINO_ARCH_ESP32
 #include <WiFi.h>
@@ -72,6 +70,11 @@ DNSServer dnsServer;
 #define USE_SOFTAP
 const char ssid[] = "hover-";
 const char password[] = "12345678";
+
+#ifdef USE_SOFTAP
+#include <DNSServer.h>
+DNSServer dnsServer;
+#endif
 
 #include "hovercontrol_html.h" // Do not put html code in .ino file to avoid preprocessor problems
 
