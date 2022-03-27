@@ -112,6 +112,7 @@ int doel_servohoek;
 int motor_snelheid = 0;
 int doel_motorsnelheid;
 int max_motorsnelheid;
+bool motors_halt;
 
 void setup_pin_mode_output(int pin)
 {
@@ -126,61 +127,77 @@ void setup_pin_mode_output(int pin)
 
 void updateMotors()
 {
-  /* We berekenen naar welke doelpositie we de servo willen krijgen:
+  if (motors_halt)
+  {
+    analogWrite(PIN_MOTORS, 0);
+  }
+  else
+  {
+    /* We berekenen naar welke doelpositie we de servo willen krijgen:
         we herschalen de som van de slider posities in de browser ( Servopositie_x (-180 .. 180) en TrimServopositie (-180 .. 180) )
         naar de minimum en maximum graden die de servo motor aankan (SERVO_HOEK_MIN .. SERVO_HOEK_MAX)
-  */
-  doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    */
+    doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
 
-  /*
-    We gaan de servo nog niet onmiddellijk naar zijn nieuwe positie doel_servohoek brengen, maar elke keer dat we hier passeren
-    gaan we ietsje dichter naar zijn doel. Daartoe beperken we de verplaatsing t.o.v. de oude servohoek tot maximum SERVO_HOEK_STAP stappen
-  */
-  servohoek = constrain(doel_servohoek, servohoek - SERVO_HOEK_STAP, servohoek + SERVO_HOEK_STAP);
+    /*
+      We gaan de servo nog niet onmiddellijk naar zijn nieuwe positie doel_servohoek brengen, maar elke keer dat we hier passeren
+      gaan we ietsje dichter naar zijn doel. Daartoe beperken we de verplaatsing t.o.v. de oude servohoek tot maximum SERVO_HOEK_STAP stappen
+    */
+    servohoek = constrain(doel_servohoek, servohoek - SERVO_HOEK_STAP, servohoek + SERVO_HOEK_STAP);
 
-  servo1.write(servohoek);  // We verplaatsen de servo naar de nieuwe positie servohoek
+    servo1.write(servohoek);  // We verplaatsen de servo naar de nieuwe positie servohoek
 
 
-  /*
+    /*
       We gaan de motor nog niet onmiddellijk naar zijn snelheid doel_motorsnelheid brengen, maar elke keer dat we hier passeren
       gaan we ietsje dichter naar zijn doel. Daartoe mag hij elke keer maximum MAX_MOTOR_SPEED_STAP verhogen in snelheid
-  */
-  /*
+    */
+    /*
 #ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.print(F("doel_motorsnelheid="));
-  DEBUG_SERIAL.println(doel_motorsnelheid);
-  DEBUG_SERIAL.print(F("motor_snelheid="));
-  DEBUG_SERIAL.println(motor_snelheid);
+    DEBUG_SERIAL.print(F("doel_motorsnelheid="));
+    DEBUG_SERIAL.println(doel_motorsnelheid);
+    DEBUG_SERIAL.print(F("motor_snelheid="));
+    DEBUG_SERIAL.println(motor_snelheid);
 #endif
-*/
-  motor_snelheid = min(doel_motorsnelheid, motor_snelheid + MAX_MOTOR_SPEED_STAP);
+  */
+    motor_snelheid = min(doel_motorsnelheid, motor_snelheid + MAX_MOTOR_SPEED_STAP);
   
-  analogWrite(PIN_MOTOR, motor_snelheid); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motor_snelheid
+    analogWrite(PIN_MOTOR, motor_snelheid); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motor_snelheid
+  }
 }
 
-void motors_halt()
+void motors_pause()
 {
 #ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.println(F("motors_halt"));
+  DEBUG_SERIAL.println(F("motors_pause"));
 #endif
-
-  // servo1.write(90);
-
-  // up motor
-  analogWrite(PIN_MOTOR, 0);
+  
+  motors_halt = true;
+  updateMotors();
 }
 
+void motors_resume()
+{
+#ifdef DEBUG_SERIAL
+  DEBUG_SERIAL.println(F("motors_resume"));
+#endif
+  motors_halt = false;
+  updateMotors();
+}
 
-
-void init_values()
+void init_motors()
 {
   TrimServopositie = 0;
   Servopositie_x = 0;
   servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
   doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 
+  motor_snelheid = 0;
   doel_motorsnelheid = 0;
   max_motorsnelheid = (300*PWM_RANGE)/360;
+  motors_halt = false;  
+  
+  updateMotors();
 }
 
 
@@ -222,8 +239,7 @@ void setup()
   servo1.attach(PIN_SERVO, 544, 2400);
 
   
-  init_values();
-  updateMotors();
+  init_motors();
 
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_NO_CONNECTION );
 
@@ -411,7 +427,7 @@ void handle_message(WebsocketsMessage msg) {
   switch (id)
   {
     case 0:       // ping
-      updateMotors();
+      motors_resume();
       break;
       
     case 1:
@@ -435,8 +451,7 @@ void onConnect()
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("onConnect"));
 #endif
-  init_values();
-  updateMotors();
+  init_motors();
 }
 
 void onDisconnect()
@@ -444,7 +459,7 @@ void onDisconnect()
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("onDisconnect"));
 #endif
-  motors_halt();
+  init_motors();
 }
 
 void loop()
@@ -466,7 +481,7 @@ void loop()
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println(F("Safety shutdown ..."));
 #endif
-    motors_halt();
+    motors_pause();
 
     last_activity_message = millis();
   }
