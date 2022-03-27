@@ -81,6 +81,8 @@ const char index_html[] PROGMEM = R"=====(
 </head>
 <body>
 <div id='outerContainer'>
+<span id="numberdisplay"></span>
+<span id="connectiondisplay">Trying to connect</span>
 <input type="range" min="-180" max="180" value="0" step="1" class="slider-color" oninput="showValue(3,this.value)" />
 <input type="range" min="0" max="360" value="240" step="1" class="slider-color" oninput="showValue(2,this.value)" />
 <br>
@@ -91,20 +93,30 @@ const char index_html[] PROGMEM = R"=====(
 
 <script>
 var retransmitInterval;
+const nrdisplay= document.getElementById('numberdisplay');
+const connectiondisplay= document.getElementById('connectiondisplay');
 const WS_URL = "ws://" + window.location.host + ":82";
 const ws = new WebSocket(WS_URL);
 ws.onopen = function() {
+    connectiondisplay.textContent = "Connected";
     retransmitInterval=setInterval(() => {
+      qu=ws.bufferedAmount; 
+      // nrdisplay.textContent = qu.toString();
       ws.send("0");
     }, 1000);
 };
 
 ws.onclose = function() {
+    connectiondisplay.textContent = "Disconnected. Refresh!";
     if (retransmitInterval)    
     {        
       clearInterval(retransmitInterval);        
       retransmitInterval = null;     
     }
+};
+
+ws.onerror = function() {
+    connectiondisplay.textContent = "Error";
 };
 
 const joystickfactor = 2.8;
@@ -187,7 +199,8 @@ function drag(e) {
 // https://github.com/neonious/lowjs_esp32_examples/blob/master/neonious_one/cellphone_controlled_rc_car/www/index.html
 function send(txt) {
     var now = new Date().getTime();
-
+    qu=ws.bufferedAmount; 
+    // nrdisplay.textContent = qu.toString();
     if (sendTimeout)
     {
        clearTimeout(sendTimeout);
