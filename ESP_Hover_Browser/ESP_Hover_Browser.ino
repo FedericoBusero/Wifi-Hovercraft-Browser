@@ -129,7 +129,7 @@ void updateMotors()
 {
   if (motors_halt)
   {
-    analogWrite(PIN_MOTORS, 0);
+    analogWrite(PIN_MOTOR, 0);
   }
   else
   {
