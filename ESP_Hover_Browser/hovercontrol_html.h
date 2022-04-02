@@ -127,6 +127,7 @@ var active = false;
 var autocenter = true;
 var currentX;
 var currentY;
+var touchid;
 var initialX;
 var initialY;
 var xOffset = 0;
@@ -140,39 +141,44 @@ container.addEventListener('mouseup', dragEnd, false);
 container.addEventListener('mousemove', drag, false);
 
 function dragStart(e) {
+  if (e.target === dragItem) {
     if (e.type === 'touchstart') {
-        initialX = e.touches[0].clientX - xOffset;
-        initialY = e.touches[0].clientY - yOffset;
+        touchid = e.changedTouches[0].identifier;
+        initialX = e.changedTouches[0].clientX - xOffset;
+        initialY = e.changedTouches[0].clientY - yOffset;
     } else {
         initialX = e.clientX - xOffset;
         initialY = e.clientY - yOffset;
     }
-    if (e.target === dragItem) {
-        active = true;
-    }
+    active = true;
+  }
 }
 
 function dragEnd(e) {
-    if (e.type === 'touchend') {
-        if (e.touches.length >0) return; 
+    if (e.target === dragItem) {
+      if (autocenter)
+      {
+            currentX=0; currentY=0;
+            xOffset =0; yOffset =0;
+      }
+      initialX = currentX;
+      initialY = currentY;
+      active = false;
+      setTranslate(currentX, currentY, dragItem);
     }
-    if (autocenter)
-    {
-          currentX=0; currentY=0;
-          xOffset =0; yOffset =0;
-    }
-    initialX = currentX;
-    initialY = currentY;
-    active = false;
-    setTranslate(currentX, currentY, dragItem);
 }
 
 function drag(e) {
     if (active) {
         e.preventDefault();
         if (e.type === 'touchmove') {
-            currentX = e.touches[0].clientX - initialX;
-            currentY = e.touches[0].clientY - initialY;
+          for (var i=0; i<e.changedTouches.length; i++) {
+              var id = e.changedTouches[i].identifier;
+              if (id == touchid) {
+                currentX = e.changedTouches[i].clientX - initialX;
+                currentY = e.changedTouches[i].clientY - initialY;
+              }
+          }  
         } else {
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
