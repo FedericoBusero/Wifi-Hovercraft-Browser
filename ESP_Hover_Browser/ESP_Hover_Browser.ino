@@ -248,7 +248,8 @@ void setup()
 
   // Wifi setup
   uint8_t macAddr[6];
-  WiFi.softAPmacAddress(macAddr);
+  WiFi.macAddress(macAddr);
+
 #if defined(USE_SOFTAP)
   /* set up access point */
   WiFi.mode(WIFI_AP);
@@ -256,14 +257,11 @@ void setup()
   // ssidmac = ssid + 4 hexadecimal values of MAC address
   char ssidmac[33];
   sprintf(ssidmac, "%s%02X%02X", ssid, macAddr[4], macAddr[5]);
-#ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.print(F("SoftAP SSID="));
-  DEBUG_SERIAL.println(ssidmac);
-#endif
-  // WiFi.softAP(ssid, password);
   WiFi.softAP(ssidmac, password);
   IPAddress apIP = WiFi.softAPIP();
 #ifdef DEBUG_SERIAL
+  DEBUG_SERIAL.print(F("SoftAP SSID="));
+  DEBUG_SERIAL.println(ssidmac);
   DEBUG_SERIAL.print(F("IP: "));
   DEBUG_SERIAL.println(apIP);
 #endif
