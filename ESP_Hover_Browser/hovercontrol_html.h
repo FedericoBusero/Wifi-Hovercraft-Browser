@@ -127,7 +127,7 @@ var active = false;
 var autocenter = true;
 var currentX;
 var currentY;
-var touchnr;
+var touchid;
 var initialX;
 var initialY;
 var xOffset = 0;
@@ -143,9 +143,9 @@ container.addEventListener('mousemove', drag, false);
 function dragStart(e) {
   if (e.target === dragItem) {
     if (e.type === 'touchstart') {
-        touchnr = e.touches.length-1;
-        initialX = e.touches[touchnr].clientX - xOffset;
-        initialY = e.touches[touchnr].clientY - yOffset;
+        touchid = e.changedTouches[0].identifier;
+        initialX = e.changedTouches[0].clientX - xOffset;
+        initialY = e.changedTouches[0].clientY - yOffset;
     } else {
         initialX = e.clientX - xOffset;
         initialY = e.clientY - yOffset;
@@ -172,8 +172,13 @@ function drag(e) {
     if (active) {
         e.preventDefault();
         if (e.type === 'touchmove') {
-            currentX = e.touches[touchnr].clientX - initialX;
-            currentY = e.touches[touchnr].clientY - initialY;
+          for (var i=0; i<e.changedTouches.length; i++) {
+              var id = e.changedTouches[i].identifier;
+              if (id == touchid) {
+                currentX = e.changedTouches[i].clientX - initialX;
+                currentY = e.changedTouches[i].clientY - initialY;
+              }
+          }  
         } else {
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
