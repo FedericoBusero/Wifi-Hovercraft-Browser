@@ -127,6 +127,7 @@ var active = false;
 var autocenter = true;
 var currentX;
 var currentY;
+var touchnr;
 var initialX;
 var initialY;
 var xOffset = 0;
@@ -140,39 +141,39 @@ container.addEventListener('mouseup', dragEnd, false);
 container.addEventListener('mousemove', drag, false);
 
 function dragStart(e) {
+  if (e.target === dragItem) {
     if (e.type === 'touchstart') {
-        initialX = e.touches[0].clientX - xOffset;
-        initialY = e.touches[0].clientY - yOffset;
+        touchnr = e.touches.length-1;
+        initialX = e.touches[touchnr].clientX - xOffset;
+        initialY = e.touches[touchnr].clientY - yOffset;
     } else {
         initialX = e.clientX - xOffset;
         initialY = e.clientY - yOffset;
     }
-    if (e.target === dragItem) {
-        active = true;
-    }
+    active = true;
+  }
 }
 
 function dragEnd(e) {
-    if (e.type === 'touchend') {
-        if (e.touches.length >0) return; 
+    if (e.target === dragItem) {
+      if (autocenter)
+      {
+            currentX=0; currentY=0;
+            xOffset =0; yOffset =0;
+      }
+      initialX = currentX;
+      initialY = currentY;
+      active = false;
+      setTranslate(currentX, currentY, dragItem);
     }
-    if (autocenter)
-    {
-          currentX=0; currentY=0;
-          xOffset =0; yOffset =0;
-    }
-    initialX = currentX;
-    initialY = currentY;
-    active = false;
-    setTranslate(currentX, currentY, dragItem);
 }
 
 function drag(e) {
     if (active) {
         e.preventDefault();
         if (e.type === 'touchmove') {
-            currentX = e.touches[0].clientX - initialX;
-            currentY = e.touches[0].clientY - initialY;
+            currentX = e.touches[touchnr].clientX - initialX;
+            currentY = e.touches[touchnr].clientY - initialY;
         } else {
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
