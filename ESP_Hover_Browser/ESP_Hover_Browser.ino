@@ -296,9 +296,7 @@ void setup()
   }
 
 #ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.println();
-  DEBUG_SERIAL.println(F("WiFi connected"));
-  DEBUG_SERIAL.println(F("IP address: "));
+  DEBUG_SERIAL.print("\nWiFi connected - IP address: ");
   DEBUG_SERIAL.println(WiFi.localIP());   // You can get IP address assigned to ESP
 #endif
 
