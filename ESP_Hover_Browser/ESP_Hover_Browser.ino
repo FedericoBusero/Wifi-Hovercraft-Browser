@@ -274,7 +274,7 @@ void setup()
   char host_name[33];
   sprintf(host_name, "Hover-%02X%02X%02X", macAddr[3], macAddr[4], macAddr[5]);
 #ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.print("Hostname: ");
+  DEBUG_SERIAL.print(F("Hostname: "));
   DEBUG_SERIAL.println(host_name);
 #endif
 #ifdef ESP8266
@@ -368,19 +368,19 @@ void handleJoystick(int x, int y)
 void onEventsCallback(WebsocketsEvent event, String data) {
   if (event == WebsocketsEvent::ConnectionOpened) {
 #ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println("Connnection Opened");
+    DEBUG_SERIAL.println(F("Connnection Opened"));
 #endif
   } else if (event == WebsocketsEvent::ConnectionClosed) {
 #ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println("Connnection Closed");
+    DEBUG_SERIAL.println(F("Connnection Closed"));
 #endif
   } else if (event == WebsocketsEvent::GotPing) {
 #ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println("Got a Ping!");
+    DEBUG_SERIAL.println(F("Got a Ping!"));
 #endif
   } else if (event == WebsocketsEvent::GotPong) {
 #ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println("Got a Pong!");
+    DEBUG_SERIAL.println(F("Got a Pong!"));
 #endif
     digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_HANDLEMESSAGE);
     last_activity_message = millis();
