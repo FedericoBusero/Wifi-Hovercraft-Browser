@@ -21,14 +21,14 @@
 
 #define PWM_RANGE 255 // PWM range voor analogWrite (in ESP32Servo)
 
-#define PIN_SERVO          12 
-#define PIN_MOTOR          2 
-#define PIN_LEDCONNECTIE   4 
+#define PIN_SERVO          18 
+#define PIN_MOTOR          19 
+#define PIN_LEDCONNECTIE   LED_BUILTIN
 
-#define LED_BRIGHTNESS_NO_CONNECTION LOW
-#define LED_BRIGHTNESS_HANDLEMESSAGE LOW
-#define LED_BRIGHTNESS_BOOT          LOW
-#define LED_BRIGHTNESS_OFF           HIGH
+#define LED_BRIGHTNESS_NO_CONNECTION HIGH
+#define LED_BRIGHTNESS_HANDLEMESSAGE HIGH
+#define LED_BRIGHTNESS_BOOT          HIGH
+#define LED_BRIGHTNESS_OFF           LOW
 
 #else // ESP8266
 
