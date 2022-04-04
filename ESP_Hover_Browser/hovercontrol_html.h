@@ -81,7 +81,6 @@ const char index_html[] PROGMEM = R"=====(
 </head>
 <body>
 <div id='outerContainer'>
-<span id="numberdisplay"></span>
 <span id="connectiondisplay">Trying to connect</span>
 <input type="range" min="-180" max="180" value="0" step="1" class="slider-color" oninput="showValue(3,this.value)" />
 <input type="range" min="0" max="360" value="240" step="1" class="slider-color" oninput="showValue(2,this.value)" />
@@ -93,15 +92,12 @@ const char index_html[] PROGMEM = R"=====(
 
 <script>
 var retransmitInterval;
-const nrdisplay= document.getElementById('numberdisplay');
 const connectiondisplay= document.getElementById('connectiondisplay');
 const WS_URL = "ws://" + window.location.host + ":82";
 const ws = new WebSocket(WS_URL);
 ws.onopen = function() {
     connectiondisplay.textContent = "Connected";
     retransmitInterval=setInterval(() => {
-      qu=ws.bufferedAmount; 
-      // nrdisplay.textContent = qu.toString();
       ws.send("0");
     }, 1000);
 };
@@ -206,8 +202,6 @@ function drag(e) {
 function send(txt) {
     const min_time_transmit = 80;
     var now = new Date().getTime();
-    qu=ws.bufferedAmount; 
-    // nrdisplay.textContent = qu.toString();
     if (sendTimeout)
     {
        clearTimeout(sendTimeout);
