@@ -239,7 +239,7 @@ function send(txt) {
 }
 
 function setTranslate(xPos, yPos, el) {
-    el.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
+    el.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
     var xval = xPos * 180 / (container.offsetWidth / joystickfactor);
     var yval = yPos * 180 / (container.offsetHeight / joystickfactor);
   send('1:'+Math.round(xval) + ',' + Math.round(yval));
