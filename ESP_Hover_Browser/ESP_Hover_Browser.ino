@@ -35,6 +35,7 @@
 #include <ESP8266WiFi.h>
 #include <Servo.h>
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
+#include "esp8266_voltage_reader.h"
 
 #define PWM_RANGE 1023 // PWM range voor analogWrite
 #define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
@@ -463,6 +464,27 @@ void onDisconnect()
   init_motors();
 }
 
+void updatevoltage()
+{
+#ifdef ESP8266
+  static unsigned long lastupdate_voltage = 0;
+  unsigned long currentmillis = millis();
+  char voltagestr[20];
+
+  if (currentmillis > lastupdate_voltage + 10000L)
+  {
+    lastupdate_voltage = currentmillis;
+    float voltage = ESP.getVcc() / VOLTAGE_FACTOR;
+    snprintf(voltagestr, 10, "%4.2f V", voltage);
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.print("Sending voltage: ");
+    DEBUG_SERIAL.println(voltagestr);
+#endif
+    sclient.send(voltagestr);
+  }
+#endif
+}
+
 void loop()
 {
   static int is_connected = 0;
@@ -492,6 +514,8 @@ void loop()
   {
     if (sclient.available()) { // als return non-nul, dan is er een client geconnecteerd
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
+
+      updatevoltage();
 
       updateMotors();
     }
