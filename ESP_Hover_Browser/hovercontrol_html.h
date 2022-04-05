@@ -94,8 +94,12 @@ const char index_html[] PROGMEM = R"=====(
 var retransmitInterval;
 const connectiondisplay= document.getElementById('connectiondisplay');
 const WS_URL = "ws://" + window.location.host + ":82";
-const ws = new WebSocket(WS_URL);
-ws.onopen = function() {
+var ws;
+
+function connect_ws() {
+  ws = new WebSocket(WS_URL);
+  
+  ws.onopen = function() {
     connectiondisplay.textContent = "Connected";
     retransmitInterval=setInterval(function ws_onopen_ping() {
       if (ws.bufferedAmount == 0)
@@ -103,20 +107,32 @@ ws.onopen = function() {
         ws.send("0");
       }
     }, 1000);
-};
+  };
 
-ws.onclose = function() {
-    connectiondisplay.textContent = "Disconnected. Refresh!";
+  ws.onclose = function() {
+    connectiondisplay.textContent = "Disconnected";
     if (retransmitInterval)    
     {        
       clearInterval(retransmitInterval);        
       retransmitInterval = null;     
     }
-};
+  };
 
-ws.onerror = function() {
-    connectiondisplay.textContent = "Error";
-};
+  ws.onmessage = function (message) {
+    if (typeof message.data === "string") {
+      connectiondisplay.textContent = message.data;
+    }
+  };
+}
+
+connect_ws();
+
+var checkConnectionInterval = setInterval(function check_connection_interval() {
+  if (ws.readyState == WebSocket.CLOSED) {
+    connectiondisplay.textContent = "Reconnecting ...";
+    connect_ws();
+  }
+}, 5000);
 
 const joystickfactor = 2.8;
     
