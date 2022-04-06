@@ -6,6 +6,7 @@
  * Er is op dat netwerk uiteraard geen internet, dus "wifi behouden" aanvinken indien dat gevraagd wordt
  * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website 192.168.4.1 maar elke andere http-URL werkt ook bv. http://a.be
  * 
+ * De bovenste regel toont de connectie-status. Op ESP8266 wordt het voltage getoond tijdens de connectie, te calibreren met VOLTAGE_FACTOR in esp8266_voltage_reader.h
  * De bovenste slider dient om de servo te trimmen, de slider eronder om de maximum snelheid in te stellen, 
  * met de joystick worden servo (links-rechts) en motor (midden-boven) bestuurd
  * 
@@ -15,7 +16,7 @@
 #ifdef ARDUINO_ARCH_ESP32
 #include <WiFi.h>
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
-#include <ESP32Servo.h>
+#include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo 
 
 #define DEBUG_SERIAL Serial
 
@@ -35,7 +36,7 @@
 #include <ESP8266WiFi.h>
 #include <Servo.h>
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
-#include "esp8266_voltage_reader.h"
+#include "esp8266_voltage_reader.h" // hierin staat VOLTAGE_FACTOR aan te passen per chip
 
 #define PWM_RANGE 1023 // PWM range voor analogWrite
 #define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
@@ -77,7 +78,7 @@ const char password[] = "12345678";
 DNSServer dnsServer;
 #endif
 
-#include "hovercontrol_html.h" // Do not put html code in .ino file to avoid preprocessor problems
+#include "hovercontrol_html.h" // Deze code niet verplaatsen naar de ino file, want de preprocessor kan die overhoop halen
 
 using namespace websockets;
 WebsocketsServer server;
@@ -85,8 +86,8 @@ AsyncWebServer webserver(80);
 WebsocketsClient sclient;
 
 // timeoutes
-#define TIMEOUT_MS_MOTORS 2500L // Safety shutdown: motors will go to power off position after x milliseconds no message received
-#define TIMEOUT_MS_LED 1L        // LED will light up for x milliseconds after message received
+#define TIMEOUT_MS_MOTORS 2500L // Timeout om motoren uit veiligheid stil te leggen, na x milliseconden niks te hebben ontvangen
+#define TIMEOUT_MS_LED 1L        // Aantal milliseconden dat LED blijft branden na het ontvangen van een boodschap
 
 long last_activity_message;
 
@@ -225,7 +226,7 @@ void setup()
 
   setup_pin_mode_output(PIN_LEDCONNECTIE);
 
-  // flash 2 time to show we are rebooting
+  // De LEd flasht 2x om te tonen dat er een reboot is
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_BOOT);
   delay(10);
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
@@ -247,15 +248,15 @@ void setup()
 
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_NO_CONNECTION );
 
-  // Wifi setup
+  // Wifi instellingen
   uint8_t macAddr[6];
   WiFi.macAddress(macAddr);
 
 #if defined(USE_SOFTAP)
-  /* set up access point */
+  /* zet een access point op */
   WiFi.mode(WIFI_AP);
 
-  // ssidmac = ssid + 4 hexadecimal values of MAC address
+  // ssidmac = ssid + 4 laatste hexadecimale waarden van het MAC-adres
   char ssidmac[33];
   sprintf(ssidmac, "%s%02X%02X", ssid, macAddr[4], macAddr[5]);
   WiFi.softAP(ssidmac, password);
@@ -266,12 +267,12 @@ void setup()
   DEBUG_SERIAL.print(F("IP: "));
   DEBUG_SERIAL.println(apIP);
 #endif
-  /* Setup the DNS server redirecting all the domains to the apIP */
+  /* DNS server opzetten die alle domeinen vertaalt naar apIP */
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
   dnsServer.start(53, "*", apIP);
   
 #else
-  // host_name = "Hover-" + 6 hexadecimal values of MAC address
+  // host_name = "Hover-" + 6 hexadecimale waarden van het MAC-adres
   char host_name[33];
   sprintf(host_name, "Hover-%02X%02X%02X", macAddr[3], macAddr[4], macAddr[5]);
 #ifdef DEBUG_SERIAL
@@ -288,7 +289,7 @@ void setup()
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   
-  // Wait some time to connect to wifi
+  // Even wachten tot er verbinding is met het wifi netwerk
   for (int i = 0; i < 15 && WiFi.status() != WL_CONNECTED; i++) {
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.print('.');
@@ -298,7 +299,7 @@ void setup()
 
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.print("\nWiFi connected - IP address: ");
-  DEBUG_SERIAL.println(WiFi.localIP());   // You can get IP address assigned to ESP
+  DEBUG_SERIAL.println(WiFi.localIP());  
 #endif
 
 #endif
@@ -537,7 +538,7 @@ void loop()
     DEBUG_SERIAL.println(F("Connection accept"));
 #endif
     sclient.onMessage(handle_message);
-    sclient.onEvent(onEventsCallback); // run callback when events are occuring
+    sclient.onEvent(onEventsCallback); // voer de callback functie uit als er events worden ontvangen
 
     onConnect();
     is_connected = 1;
