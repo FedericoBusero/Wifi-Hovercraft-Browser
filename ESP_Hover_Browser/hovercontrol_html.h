@@ -216,8 +216,6 @@ function drag(e) {
     }
 }
 
-// limit sending to one message every 100 ms
-// https://github.com/neonious/lowjs_esp32_examples/blob/master/neonious_one/cellphone_controlled_rc_car/www/index.html
 function send(txt) {
     const min_time_transmit = 80;
     var now = new Date().getTime();
