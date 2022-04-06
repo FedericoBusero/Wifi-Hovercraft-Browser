@@ -60,6 +60,13 @@ ESP32:
 - ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
 - https://github.com/me-no-dev/ESPAsyncWebServer
 
+## Inspiratie
+Bij het ontwikkelen van deze software werden volgende inspiratie-bronnen gebruikt: 
+- [ESP32-CAM_TANK van PepeTheFroggie](https://github.com/PepeTheFroggie/ESP32CAM_RCTANK)
+- [RobotZero One: ESP32-CAM-rc-car](https://robotzero.one/esp32-cam-rc-car/) met software op https://github.com/robotzero1/esp32cam-rc-car
+- [Cellphone controlled RC car](https://github.com/neonious/lowjs_esp32_examples/tree/master/neonious_one/cellphone_controlled_rc_car) 
+- de joystick gebaseerd op [Kirupa: Create a Draggable Element in JavaScript](https://www.kirupa.com/html5/drag.htm)
+
 ## Hoe maak je een Hovercraft?
 De bouwinstructies van de hovercraft - zonder wifi verbinding- zijn te vinden op https://activiteiten.decreatievestem.be/Lasergesneden-hovercraft/.
 Voor workshops hovercraft bouwen kan je terecht bij MasynMachien: https://www.instructables.com/masynmachiens-workshops/
