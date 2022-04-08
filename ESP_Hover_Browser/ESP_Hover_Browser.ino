@@ -26,10 +26,8 @@
 #define PIN_MOTOR          19 
 #define PIN_LEDCONNECTIE   LED_BUILTIN
 
-#define LED_BRIGHTNESS_NO_CONNECTION HIGH
-#define LED_BRIGHTNESS_HANDLEMESSAGE HIGH
-#define LED_BRIGHTNESS_BOOT          HIGH
-#define LED_BRIGHTNESS_OFF           LOW
+#define LED_BRIGHTNESS_ON  HIGH
+#define LED_BRIGHTNESS_OFF LOW
 
 #else // ESP8266
 
@@ -58,10 +56,8 @@
 
 #endif // MODE_ESP01
 
-#define LED_BRIGHTNESS_NO_CONNECTION LOW
-#define LED_BRIGHTNESS_HANDLEMESSAGE LOW
-#define LED_BRIGHTNESS_BOOT          LOW
-#define LED_BRIGHTNESS_OFF           HIGH
+#define LED_BRIGHTNESS_ON  LOW
+#define LED_BRIGHTNESS_OFF HIGH
 
 #endif // ARDUINO_ARCH_ESP32
 
@@ -227,11 +223,11 @@ void setup()
   setup_pin_mode_output(PIN_LEDCONNECTIE);
 
   // De LEd flasht 2x om te tonen dat er een reboot is
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_BOOT);
+  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON);
   delay(10);
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
   delay(100);
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_BOOT);
+  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON);
   delay(10);
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
 
@@ -246,7 +242,7 @@ void setup()
   
   init_motors();
 
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_NO_CONNECTION );
+  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON );
 
   // Wifi instellingen
   uint8_t macAddr[6];
@@ -399,7 +395,7 @@ void handle_message(WebsocketsMessage msg) {
   DEBUG_SERIAL.println(param2);
 #endif
 
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_HANDLEMESSAGE);
+  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON);
 
   last_activity_message = millis();
 
