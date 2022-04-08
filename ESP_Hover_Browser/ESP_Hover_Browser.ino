@@ -365,28 +365,6 @@ void handleJoystick(int x, int y)
   updateMotors();
 }
 
-void onEventsCallback(WebsocketsEvent event, String data) {
-  if (event == WebsocketsEvent::ConnectionOpened) {
-#ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println(F("Connnection Opened"));
-#endif
-  } else if (event == WebsocketsEvent::ConnectionClosed) {
-#ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println(F("Connnection Closed"));
-#endif
-  } else if (event == WebsocketsEvent::GotPing) {
-#ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println(F("Got a Ping!"));
-#endif
-  } else if (event == WebsocketsEvent::GotPong) {
-#ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.println(F("Got a Pong!"));
-#endif
-    digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_HANDLEMESSAGE);
-    last_activity_message = millis();
-  }
-}
-
 void handle_message(WebsocketsMessage msg) {
   const char *msgstr = msg.c_str();
   const char *p;
@@ -538,7 +516,6 @@ void loop()
     DEBUG_SERIAL.println(F("Connection accept"));
 #endif
     sclient.onMessage(handle_message);
-    sclient.onEvent(onEventsCallback); // voer de callback functie uit als er events worden ontvangen
 
     onConnect();
     is_connected = 1;
