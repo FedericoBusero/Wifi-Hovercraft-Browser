@@ -89,6 +89,7 @@ WebsocketsClient sclient;
 // timeoutes
 #define TIMEOUT_MS_MOTORS 2500L // Timeout om motoren uit veiligheid stil te leggen, na x milliseconden niks te hebben ontvangen
 #define TIMEOUT_MS_LED 1L        // Aantal milliseconden dat LED blijft branden na het ontvangen van een boodschap
+#define TIMEOUT_MS_VOLTAGE 10000L // Aantal milliseconden tussen update voltage
 
 long last_activity_message;
 
@@ -451,7 +452,7 @@ void updatevoltage()
   unsigned long currentmillis = millis();
   char voltagestr[20];
 
-  if (currentmillis > lastupdate_voltage + 10000L)
+  if (currentmillis > lastupdate_voltage + TIMEOUT_MS_VOLTAGE)
   {
     lastupdate_voltage = currentmillis;
     float voltage = ESP.getVcc() / VOLTAGE_FACTOR;
