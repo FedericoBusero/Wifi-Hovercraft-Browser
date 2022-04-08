@@ -6,12 +6,14 @@
  * Er is op dat netwerk uiteraard geen internet, dus "wifi behouden" aanvinken indien dat gevraagd wordt
  * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website 192.168.4.1 maar elke andere http-URL werkt ook bv. http://a.be
  * 
- * De bovenste regel toont de connectie-status. Op ESP8266 wordt het voltage getoond tijdens de connectie, te calibreren met VOLTAGE_FACTOR in esp8266_voltage_reader.h
+ * De bovenste regel toont de connectie-status. Op ESP8266 wordt het voltage getoond tijdens de connectie, te calibreren met VOLTAGE_FACTOR
  * De bovenste slider dient om de servo te trimmen, de slider eronder om de maximum snelheid in te stellen, 
  * met de joystick worden servo (links-rechts) en motor (midden-boven) bestuurd
  * 
  */
 
+#include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
+#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 
 #ifdef ARDUINO_ARCH_ESP32
 #include <WiFi.h>
@@ -31,10 +33,11 @@
 
 #else // ESP8266
 
+ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
+
 #include <ESP8266WiFi.h>
 #include <Servo.h>
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
-#include "esp8266_voltage_reader.h" // hierin staat VOLTAGE_FACTOR aan te passen per chip
 
 #define PWM_RANGE 1023 // PWM range voor analogWrite
 #define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
@@ -47,6 +50,9 @@
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   1
 
+// Pas de voltagefactor aan, dat is bij elke chip hetzelfde. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
+#define VOLTAGE_FACTOR 1060.0f 
+
 #else // Wemos D1 mini, NodeMCU, ...
 #define DEBUG_SERIAL Serial
 
@@ -54,16 +60,15 @@
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 #define PIN_LEDCONNECTIE   2 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 2 als de LED niet werkt
 
+// Pas de voltagefactor aan, dat is bij elke chip hetzelfde. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
+#define VOLTAGE_FACTOR 910.0f 
+
 #endif // MODE_ESP01
 
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
 
 #endif // ARDUINO_ARCH_ESP32
-
-#include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
-#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
-
 
 #define USE_SOFTAP
 const char ssid[] = "hover-";
@@ -361,7 +366,7 @@ void handleJoystick(int x, int y)
   updateMotors();
 }
 
-void handle_message(WebsocketsMessage msg) {
+void handle_message(websockets::WebsocketsMessage msg) {
   const char *msgstr = msg.c_str();
   const char *p;
 
