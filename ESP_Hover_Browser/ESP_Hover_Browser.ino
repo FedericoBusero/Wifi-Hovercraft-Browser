@@ -223,7 +223,7 @@ void setup()
 
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.begin(115200);
-  DEBUG_SERIAL.println(F("Hover Browser setup started"));
+  DEBUG_SERIAL.println(F("\nHover Browser setup started"));
 #endif
 
   setup_pin_mode_output(PIN_LEDCONNECTIE);
