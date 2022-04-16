@@ -221,6 +221,8 @@ void setup()
 #endif
   analogWrite(PIN_MOTOR, 0); 
 
+  delay(200); // 200 milliseconden wachten tot de stroom stabiel is
+  
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.begin(115200);
   DEBUG_SERIAL.println(F("\nHover Browser setup started"));
