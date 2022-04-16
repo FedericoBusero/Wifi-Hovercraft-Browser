@@ -253,6 +253,8 @@ void setup()
   digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON );
 
   // Wifi instellingen
+  WiFi.persistent(true);
+  
   uint8_t macAddr[6];
   WiFi.macAddress(macAddr);
 
