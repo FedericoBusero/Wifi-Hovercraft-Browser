@@ -255,6 +255,7 @@ void setup()
   WiFi.macAddress(macAddr);
 
 #if defined(USE_SOFTAP)
+  WiFi.disconnect();
   /* zet een access point op */
   WiFi.mode(WIFI_AP);
 
@@ -274,6 +275,7 @@ void setup()
   dnsServer.start(53, "*", apIP);
   
 #else
+  WiFi.softAPdisconnect(true);
   // host_name = "Hover-" + 6 hexadecimale waarden van het MAC-adres
   char host_name[33];
   sprintf(host_name, "Hover-%02X%02X%02X", macAddr[3], macAddr[4], macAddr[5]);
