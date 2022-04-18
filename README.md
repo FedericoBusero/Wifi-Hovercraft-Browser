@@ -44,8 +44,10 @@ Hiertoe moet je volgende regel uncommenten:
 | SERVO         | GPIO12 |
 | MOTOR         | GPIO2  |
 
-## Arduino ESP8266 board issue
-Het is aangeraden om de meest recente Arduino ESP8266 board versie 3.0.2 niet te gebruiken, die werkt extreem slecht in combinatie met deze software. Beter is voorlopig ESP8266 versie 2.7.4 te blijven gebruiken.
+## Arduino ESP8266 board settings
+- Het is aangeraden om de meest recente Arduino ESP8266 board versie 3.0.2 niet te gebruiken, die werkt extreem slecht in combinatie met deze software. Beter is voorlopig ESP8266 versie 2.7.4 te blijven gebruiken.
+- Je kan bij de board settings ook de lwIP settings aanpassen: de default "v2 Lower Memory" is goed, maar "v2 Higher Bandwidth" is beter
+- Kies bij "Erase Flash" "All Flash Contents", zoniet kunnen wifi settings van een vorige sessie (of andere configuraties) blijven hangen.
 
 ## Arduino bibliotheken
 Volgende bibliotheken zijn nodig:
