@@ -71,6 +71,7 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 #endif // ARDUINO_ARCH_ESP32
 
 #define USE_SOFTAP
+#define WIFI_SOFTAP_CHANNEL 1 // 1-13
 const char ssid[] = "hover-";
 const char password[] = "12345678";
 
@@ -266,7 +267,7 @@ void setup()
   // ssidmac = ssid + 4 laatste hexadecimale waarden van het MAC-adres
   char ssidmac[33];
   sprintf(ssidmac, "%s%02X%02X", ssid, macAddr[4], macAddr[5]);
-  WiFi.softAP(ssidmac, password);
+  WiFi.softAP(ssidmac, password, WIFI_SOFTAP_CHANNEL);
   IPAddress apIP = WiFi.softAPIP();
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.print(F("SoftAP SSID="));
