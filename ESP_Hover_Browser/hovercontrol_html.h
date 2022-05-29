@@ -33,12 +33,12 @@ const char index_html[] PROGMEM = R"=====(
      touch-action: none;
      user-select: none;
 }
- #item:active {
-     background-color: rgba(168, 218, 220, 1.00);
-}
  #item:hover {
      cursor: pointer;
      border-width: 20px;
+}
+ #item:active {
+     background-color: rgba(168, 218, 220, 1.00);
 }
 </style>
 <style>
