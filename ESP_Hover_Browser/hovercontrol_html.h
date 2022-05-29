@@ -110,7 +110,15 @@ function connect_ws() {
   };
 
   ws.onclose = function() {
-    connectiondisplay.textContent = "Disconnected";
+    if (checkConnectionInterval)
+    {
+      connectiondisplay.textContent = "Disconnected";
+    }
+    else
+    {
+      connectiondisplay.textContent = "Disconnected. Another client is active, refresh to continue";
+    }
+
     if (retransmitInterval)    
     {        
       clearInterval(retransmitInterval);        
@@ -120,7 +128,18 @@ function connect_ws() {
 
   ws.onmessage = function (message) {
     if (typeof message.data === "string") {
-      connectiondisplay.textContent = message.data;
+      if (message.data === "CLOSE")
+      {
+        if (checkConnectionInterval)
+        {        
+          clearInterval(checkConnectionInterval);
+          checkConnectionInterval= null;     
+        }
+      }
+      else
+      {
+        connectiondisplay.textContent = message.data;
+      }
     }
   };
 }
