@@ -71,5 +71,5 @@ Bij het ontwikkelen van deze software werden volgende inspiratie-bronnen gebruik
 - de joystick gebaseerd op [Kirupa: Create a Draggable Element in JavaScript](https://www.kirupa.com/html5/drag.htm)
 
 ## Hoe maak je een Hovercraft?
-De bouwinstructies van de hovercraft zijn te vinden op https://drive.google.com/file/d/1SUZypw2QWQQqCWgGDMl3Ls_pUvmDDozy/view/.
+De bouwinstructies van de hovercraft zijn te vinden op https://drive.google.com/file/d/1SUZypw2QWQQqCWgGDMl3Ls_pUvmDDozy/view?usp=sharing 
 Voor workshops hovercraft bouwen kan je terecht bij MasynMachien: https://www.instructables.com/masynmachiens-workshops/
