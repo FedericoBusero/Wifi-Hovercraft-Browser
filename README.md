@@ -8,7 +8,7 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 - SSID = hover- + 4 laatste hexadecimale karakters van het Wifi-MAC adres van de ESP8266 chip
 - Wifi-paswoord: 12345678
 - App: browser (Chrome, Firefox, safari, ...)
-- URL : http://192.168.4.1 maar elke andere DNS http-URL werkt ook bv. http://a.be
+- URL : http://192.168.4.1 of http://h.be
 
 ## App User interface 
 ![Screenshot_browser_hovercraft.png](Screenshot_browser_hovercraft.png "Hover user interface")

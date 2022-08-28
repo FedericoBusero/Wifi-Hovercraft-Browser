@@ -4,7 +4,7 @@
  * Hoe gebruiken?
  * Voeg wifi netwerk hover-xxxx toe met paswoord 12345678
  * Er is op dat netwerk uiteraard geen internet, dus "wifi behouden" aanvinken indien dat gevraagd wordt
- * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website 192.168.4.1 maar elke andere http-URL werkt ook bv. http://a.be
+ * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website http://192.168.4.1 of http://h.be
  * 
  * De bovenste regel toont de connectie-status. Op ESP8266 wordt het voltage getoond tijdens de connectie, te calibreren met VOLTAGE_FACTOR
  * De bovenste slider dient om de servo te trimmen, de slider eronder om de maximum snelheid in te stellen, 
@@ -277,7 +277,7 @@ void setup()
 #endif
   /* DNS server opzetten die alle domeinen vertaalt naar apIP */
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
-  dnsServer.start(53, "*", apIP);
+  dnsServer.start(53, "h.be", apIP);
   
 #else
   WiFi.softAPdisconnect(true);
