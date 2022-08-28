@@ -277,7 +277,7 @@ void setup()
 #endif
   /* DNS server opzetten die alle domeinen vertaalt naar apIP */
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
-  dnsServer.start(53, "*", apIP);
+  dnsServer.start(53, "h.be", apIP);
   
 #else
   WiFi.softAPdisconnect(true);
