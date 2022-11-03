@@ -230,15 +230,30 @@ void setup()
 #endif
 
   setup_pin_mode_output(PIN_LEDCONNECTIE1);
+#ifdef PIN_LEDCONNECTIE2
+  setup_pin_mode_output(PIN_LEDCONNECTIE2);
+#endif
 
   // De LEd flasht 2x om te tonen dat er een reboot is
   digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
+#endif
   delay(10);
   digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
+#endif
   delay(100);
   digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
+#endif
   delay(10);
   digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
+#endif
 
 
   // steering servo PWM
@@ -252,6 +267,10 @@ void setup()
   init_motors();
 
   digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON );
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON );
+#endif
+
 
   // Wifi instellingen
   WiFi.persistent(true);
@@ -409,7 +428,9 @@ void handle_message(websockets::WebsocketsMessage msg) {
 #endif
 
   digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
-
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
+#endif
   last_activity_message = millis();
 
   switch (id)
@@ -437,6 +458,9 @@ void handle_message(websockets::WebsocketsMessage msg) {
 void onConnect()
 {
   digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
+#endif
 
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("onConnect"));
@@ -484,6 +508,9 @@ void loop()
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
     digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
+#ifdef PIN_LEDCONNECTIE2
+    digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
+#endif    
   }
 
   if (millis() > last_activity_message + TIMEOUT_MS_MOTORS)
@@ -537,6 +564,9 @@ void loop()
   if (!is_connected)
   {
     digitalWrite(PIN_LEDCONNECTIE1, (millis() % 1000) > 500 ? LOW : HIGH);
+#ifdef PIN_LEDCONNECTIE2
+    digitalWrite(PIN_LEDCONNECTIE2, (millis() % 1000) > 500 ? LOW : HIGH);
+#endif
   }
   
   delay(2);
