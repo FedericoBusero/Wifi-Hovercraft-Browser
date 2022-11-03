@@ -49,6 +49,7 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE1  1
+#define PIN_LEDCONNECTIE2  2
 
 // Pas de voltagefactor aan, dat is bij elke chip hetzelfde. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
@@ -58,7 +59,9 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
-#define PIN_LEDCONNECTIE1   2 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 16 als de LED niet werkt
+// De ingebouwde LED zit meestal op GPIO2 of GPIO16
+#define PIN_LEDCONNECTIE1   2 
+#define PIN_LEDCONNECTIE2   16 
 
 // Pas de voltagefactor aan, dat is bij elke chip hetzelfde. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 910.0f 
