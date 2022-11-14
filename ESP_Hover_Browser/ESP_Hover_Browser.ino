@@ -26,7 +26,7 @@
 
 #define PIN_SERVO          18 
 #define PIN_MOTOR          19 
-#define PIN_LEDCONNECTIE   LED_BUILTIN
+#define PIN_LEDCONNECTIE1  LED_BUILTIN
 
 #define LED_BRIGHTNESS_ON  HIGH
 #define LED_BRIGHTNESS_OFF LOW
@@ -48,7 +48,8 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
-#define PIN_LEDCONNECTIE   1
+#define PIN_LEDCONNECTIE1  1
+#define PIN_LEDCONNECTIE2  2
 
 // Pas de voltagefactor aan, dat is bij elke chip hetzelfde. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
@@ -58,7 +59,9 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
-#define PIN_LEDCONNECTIE   2 // De ingebouwde LED zit op GPIO2 of GPIO16, dus aanpassen naar 16 als de LED niet werkt
+// De ingebouwde LED zit meestal op GPIO2 of GPIO16
+#define PIN_LEDCONNECTIE1   2 
+#define PIN_LEDCONNECTIE2   16 
 
 // Pas de voltagefactor aan, dat is bij elke chip hetzelfde. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 910.0f 
@@ -229,16 +232,31 @@ void setup()
   DEBUG_SERIAL.println(F("\nHover Browser setup started"));
 #endif
 
-  setup_pin_mode_output(PIN_LEDCONNECTIE);
+  setup_pin_mode_output(PIN_LEDCONNECTIE1);
+#ifdef PIN_LEDCONNECTIE2
+  setup_pin_mode_output(PIN_LEDCONNECTIE2);
+#endif
 
   // De LEd flasht 2x om te tonen dat er een reboot is
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON);
+  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
+#endif
   delay(10);
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
+  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
+#endif
   delay(100);
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON);
+  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
+#endif
   delay(10);
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
+  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
+#endif
 
 
   // steering servo PWM
@@ -251,7 +269,11 @@ void setup()
   
   init_motors();
 
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON );
+  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON );
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON );
+#endif
+
 
   // Wifi instellingen
   WiFi.persistent(true);
@@ -408,8 +430,10 @@ void handle_message(websockets::WebsocketsMessage msg) {
   DEBUG_SERIAL.println(param2);
 #endif
 
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_ON);
-
+  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
+#endif
   last_activity_message = millis();
 
   switch (id)
@@ -436,7 +460,10 @@ void handle_message(websockets::WebsocketsMessage msg) {
 
 void onConnect()
 {
-  digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
+  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
+#endif
 
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("onConnect"));
@@ -483,7 +510,10 @@ void loop()
   
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
-    digitalWrite(PIN_LEDCONNECTIE, LED_BRIGHTNESS_OFF);
+    digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
+#ifdef PIN_LEDCONNECTIE2
+    digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
+#endif    
   }
 
   if (millis() > last_activity_message + TIMEOUT_MS_MOTORS)
@@ -536,7 +566,10 @@ void loop()
   
   if (!is_connected)
   {
-    digitalWrite(PIN_LEDCONNECTIE, (millis() % 1000) > 500 ? LOW : HIGH);
+    digitalWrite(PIN_LEDCONNECTIE1, (millis() % 1000) > 500 ? LOW : HIGH);
+#ifdef PIN_LEDCONNECTIE2
+    digitalWrite(PIN_LEDCONNECTIE2, (millis() % 1000) > 500 ? LOW : HIGH);
+#endif
   }
   
   delay(2);
