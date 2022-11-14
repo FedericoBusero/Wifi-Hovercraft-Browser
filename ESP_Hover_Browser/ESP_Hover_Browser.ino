@@ -127,7 +127,7 @@ bool motors_halt;
 
 void setup_pin_mode_output(int pin)
 {
-#if defined(ESP8266) || defined(CONFIG_IDF_TARGET_ESP32)
+#ifdef ESP8266
   if ((pin == 1) || (pin == 3)) // RX & TX
   {
     pinMode (pin, FUNCTION_3);
