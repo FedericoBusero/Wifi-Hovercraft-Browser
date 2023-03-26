@@ -70,6 +70,9 @@ Bij het ontwikkelen van deze software werden volgende inspiratie-bronnen gebruik
 - [Cellphone controlled RC car](https://github.com/neonious/lowjs_esp32_examples/tree/master/neonious_one/cellphone_controlled_rc_car) 
 - de joystick gebaseerd op [Kirupa: Create a Draggable Element in JavaScript](https://www.kirupa.com/html5/drag.htm)
 
+## Micropython
+Gebruik je liever micropython dan Arduino? Er is ook een micropython versie voor ESP32: https://github.com/FedericoBusero/HoverMicropyton
+
 ## Hoe maak je een Hovercraft?
 De bouwinstructies van de hovercraft zijn te vinden op https://drive.google.com/file/d/1SUZypw2QWQQqCWgGDMl3Ls_pUvmDDozy/view?usp=sharing 
 Voor workshops hovercraft bouwen kan je terecht bij MasynMachien: https://www.instructables.com/masynmachiens-workshops/
