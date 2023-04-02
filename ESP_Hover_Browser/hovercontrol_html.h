@@ -82,8 +82,8 @@ const char index_html[] PROGMEM = R"=====(
 <body>
 <div id='outerContainer'>
 <span id="connectiondisplay">Trying to connect</span>
-<input type="range" min="-180" max="180" value="0" step="1" class="slider-color" oninput="showValue(3,this.value)" />
-<input type="range" min="0" max="360" value="240" step="1" class="slider-color" oninput="showValue(2,this.value)" />
+<input type="range" min="-180" max="180" value="0"   step="1" class="slider-color" oninput="send(3, this.value,80,this)" onChange="send(3, this.value,0,this)" />
+<input type="range" min="0"    max="360" value="240" step="1" class="slider-color" oninput="send(2, this.value,80,this)" onChange="send(2, this.value,0,this)" />
 <br>
   <div id='container'>
     <div id='item'> </div>
@@ -91,6 +91,51 @@ const char index_html[] PROGMEM = R"=====(
 </div>
 
 <script>
+function send(id,value,min_time_transmit,elem) {
+    var now = new Date().getTime();
+    if (elem.sendTimeout)
+    {
+       clearTimeout(elem.sendTimeout);
+       elem.sendTimeout = null;
+    }
+    if (ws.readyState !== WebSocket.OPEN) {
+      return;
+    }
+    if(elem.lastSend === undefined || now - elem.lastSend >= min_time_transmit) {
+        if (ws.bufferedAmount>0)
+        {
+          elem.lastId = id;
+          elem.lastValue = value;
+          elem.sendTimeout = setTimeout(function send_trafficjam() {
+            elem.sendTimeout = null;
+            send(elem.lastId,elem.lastValue,min_time_transmit,elem);
+          }, min_time_transmit);
+        }
+        else
+        {
+          try {
+            ws.send(id+':'+value);
+            elem.lastSend = new Date().getTime();
+            return;
+          } catch(e) {
+            console.log(e);
+          }
+        }
+    }
+    else
+    {
+        elem.lastValue = value;
+        elem.lastId = id;
+        var ms = elem.lastSend !== undefined ? min_time_transmit - (now - elem.lastSend) : min_time_transmit;
+        if(ms < 0)
+            ms = 0;
+        elem.sendTimeout = setTimeout(function send_waittransmit() {
+            elem.sendTimeout = null;
+            send(elem.lastId,elem.lastValue,min_time_transmit,elem);
+        }, ms);
+    }
+}
+
 var retransmitInterval;
 const connectiondisplay= document.getElementById('connectiondisplay');
 const WS_URL = "ws://" + window.location.host + ":82";
@@ -156,126 +201,72 @@ var checkConnectionInterval = setInterval(function check_connection_interval() {
 const joystickfactor = 2.8;
     
 var dragItem = document.querySelector('#item');
-var container = document.querySelector('#container');
-var active = false;
-var autocenter = true;
-var currentX;
-var currentY;
-var touchid;
-var initialX;
-var initialY;
-var xOffset = 0;
-var yOffset = 0;
-var lastText, lastSend, sendTimeout;
-container.addEventListener('touchstart', dragStart, false);
-container.addEventListener('touchend', dragEnd, false);
-container.addEventListener('touchmove', drag, false);
-container.addEventListener('mousedown', dragStart, false);
-container.addEventListener('mouseup', dragEnd, false);
-container.addEventListener('mousemove', drag, false);
+var joystick = document.querySelector('#container');
 
-function dragStart(e) {
+// currentX, currentY, touchid, initialX, initialY
+joystick.active = false;
+joystick.autocenter = true;
+joystick.xOffset = 0;
+joystick.yOffset = 0;
+
+joystick.dragStart = function (e) {
   if (e.target === dragItem) {
     if (e.type === 'touchstart') {
-        touchid = e.changedTouches[0].identifier;
-        initialX = e.changedTouches[0].clientX - xOffset;
-        initialY = e.changedTouches[0].clientY - yOffset;
+        this.touchid = e.changedTouches[0].identifier;
+        this.initialX = e.changedTouches[0].clientX - this.xOffset;
+        this.initialY = e.changedTouches[0].clientY - this.yOffset;
     } else {
-        initialX = e.clientX - xOffset;
-        initialY = e.clientY - yOffset;
+        this.initialX = e.clientX - this.xOffset;
+        this.initialY = e.clientY - this.yOffset;
     }
     active = true;
   }
 }
 
-function dragEnd(e) {
+joystick.dragEnd = function(e) {
     if (e.target === dragItem) {
-      if (autocenter)
+      if (this.autocenter)
       {
-            currentX=0; currentY=0;
-            xOffset =0; yOffset =0;
+            this.currentX=0; this.currentY=0;
+            this.xOffset =0; this.yOffset =0;
       }
-      initialX = currentX;
-      initialY = currentY;
-      active = false;
-      setTranslate(currentX, currentY, dragItem);
+      this.initialX = this.currentX;
+      this.initialY = this.currentY;
+      this.active = false;
+      this.setTranslate(this.currentX, this.currentY, dragItem);
     }
 }
 
-function drag(e) {
-    if (active) {
+joystick.drag = function (e) {
+    if (this.active) {
         e.preventDefault();
         if (e.type === 'touchmove') {
           for (var i=0; i<e.changedTouches.length; i++) {
               var id = e.changedTouches[i].identifier;
-              if (id == touchid) {
-                currentX = e.changedTouches[i].clientX - initialX;
-                currentY = e.changedTouches[i].clientY - initialY;
+              if (id == this.touchid) {
+                this.currentX = e.changedTouches[i].clientX - this.initialX;
+                this.currentY = e.changedTouches[i].clientY - this.initialY;
               }
           }  
         } else {
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
+            this.currentX = e.clientX - this.initialX;
+            this.currentY = e.clientY - this.initialY;
         }
-        if (currentY >= (container.offsetHeight / joystickfactor))  {
-            currentY = container.offsetHeight / joystickfactor;
+        if (this.currentY >= (this.offsetHeight / joystickfactor))  {
+            this.currentY = this.offsetHeight / joystickfactor;
         }
-        if (currentY <= (-container.offsetHeight / joystickfactor))  {
-            currentY = -container.offsetHeight / joystickfactor;
+        if (this.currentY <= (-this.offsetHeight / joystickfactor))  {
+            this.currentY = -this.offsetHeight / joystickfactor;
         }
-        if (currentX >= (container.offsetWidth / joystickfactor))  {
-            currentX = container.offsetWidth / joystickfactor;
+        if (this.currentX >= (this.offsetWidth / joystickfactor))  {
+            this.currentX = this.offsetWidth / joystickfactor;
         }
-        if (currentX <= (-container.offsetWidth / joystickfactor))  {
-            currentX = -container.offsetWidth / joystickfactor;
+        if (this.currentX <= (-this.offsetWidth / joystickfactor))  {
+            this.currentX = -this.offsetWidth / joystickfactor;
         }
-        xOffset = currentX;
-        yOffset = currentY;
-        setTranslate(currentX, currentY, dragItem);
-    }
-}
-
-function send(txt) {
-    const min_time_transmit = 80;
-    var now = new Date().getTime();
-    if (sendTimeout)
-    {
-       clearTimeout(sendTimeout);
-       sendTimeout = null;
-    }
-    if (ws.readyState !== WebSocket.OPEN) {
-      return;
-    }
-    if(lastSend === undefined || now - lastSend >= min_time_transmit) {
-        if (ws.bufferedAmount>0)
-        {
-          lastText = txt;
-          sendTimeout = setTimeout(function send_trafficjam() {
-            sendTimeout = null;
-            send(lastText);
-          }, min_time_transmit);
-        }
-        else
-        {
-          try {
-            ws.send(txt);
-            lastSend = new Date().getTime();
-            return;
-          } catch(e) {
-            console.log(e);
-          }
-        }
-    }
-    else
-    {
-        lastText = txt;
-        var ms = lastSend !== undefined ? min_time_transmit - (now - lastSend) : min_time_transmit;
-        if(ms < 0)
-            ms = 0;
-        sendTimeout = setTimeout(function send_waittransmit() {
-            sendTimeout = null;
-            send(lastText);
-        }, ms);
+        this.xOffset = this.currentX;
+        this.yOffset = this.currentY;
+        this.setTranslate(this.currentX, this.currentY, dragItem);
     }
 }
 
@@ -283,17 +274,17 @@ function setTranslate(xPos, yPos, el) {
     var transformstr = 'translate(' + xPos + 'px, ' + yPos + 'px)';
     el.style.transform = transformstr;
     el.style.webkitTransform = transformstr;
-    var xval = xPos * 180 / (container.offsetWidth / joystickfactor);
-    var yval = yPos * 180 / (container.offsetHeight / joystickfactor);
-  send('1:'+Math.round(xval) + ',' + Math.round(yval));
+    var xval = xPos * 180 / (this.offsetWidth / joystickfactor);
+    var yval = yPos * 180 / (this.offsetHeight / joystickfactor);
+    send('1',Math.round(xval) + ',' + Math.round(yval),80,this);
 }
 
-function showValue(id,v) {
-  if (ws.readyState !== WebSocket.OPEN) {
-    return;
-  }
-  ws.send(id+':'+v+',0');
-}
+joystick.addEventListener('touchstart', function(event) { this.dragStart(event); }.bind(joystick), false);
+joystick.addEventListener('touchend',   function(event) { this.dragEnd(event);   }.bind(joystick), false);
+joystick.addEventListener('touchmove',  function(event) { this.drag(event);      }.bind(joystick), false);
+joystick.addEventListener('mousedown',  function(event) { this.dragStart(event); }.bind(joystick), false);
+joystick.addEventListener('mouseup',    function(event) { this.dragEnd(event);   }.bind(joystick), false);
+joystick.addEventListener('mousemove',  function(event) { this.drag(event);      }.bind(joystick), false);
 
 </script>
 </body>
