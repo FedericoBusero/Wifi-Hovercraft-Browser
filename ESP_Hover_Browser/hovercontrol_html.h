@@ -219,7 +219,7 @@ joystick.dragStart = function (e) {
         this.initialX = e.clientX - this.xOffset;
         this.initialY = e.clientY - this.yOffset;
     }
-    active = true;
+    this.active = true;
   }
 }
 
