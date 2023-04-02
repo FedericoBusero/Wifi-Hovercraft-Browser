@@ -271,7 +271,7 @@ joystick.drag = function (e) {
     }
 }
 
-function setTranslate(xPos, yPos, el) {
+joystick.setTranslate = function (xPos, yPos, el) {
     var transformstr = 'translate(' + xPos + 'px, ' + yPos + 'px)';
     el.style.transform = transformstr;
     el.style.webkitTransform = transformstr;
