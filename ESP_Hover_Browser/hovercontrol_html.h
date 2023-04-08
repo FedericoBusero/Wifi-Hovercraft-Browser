@@ -284,8 +284,8 @@ joystick.addEventListener('touchstart', function(event) { this.dragStart(event);
 joystick.addEventListener('touchend',   function(event) { this.dragEnd(event);   }.bind(joystick), false);
 joystick.addEventListener('touchmove',  function(event) { this.drag(event);      }.bind(joystick), false);
 joystick.addEventListener('mousedown',  function(event) { this.dragStart(event); }.bind(joystick), false);
-joystick.addEventListener('mouseup',    function(event) { this.dragEnd(event);   }.bind(joystick), false);
-joystick.addEventListener('mousemove',  function(event) { this.drag(event);      }.bind(joystick), false);
+document.addEventListener('mouseup',    function(event) { this.dragEnd(event);   }.bind(joystick), false);
+document.addEventListener('mousemove',  function(event) { this.drag(event);      }.bind(joystick), false);
 
 </script>
 </body>
