@@ -234,7 +234,7 @@ joystick.dragEnd = function(e) {
       this.initialX = this.currentX;
       this.initialY = this.currentY;
       this.active = false;
-      this.setTranslate(this.currentX, this.currentY, dragItem);
+      this.setTranslate();
     }
 }
 
@@ -267,16 +267,16 @@ joystick.drag = function (e) {
         }
         this.xOffset = this.currentX;
         this.yOffset = this.currentY;
-        this.setTranslate(this.currentX, this.currentY, dragItem);
+        this.setTranslate();
     }
 }
 
-joystick.setTranslate = function (xPos, yPos, el) {
-    var transformstr = 'translate(' + xPos + 'px, ' + yPos + 'px)';
-    el.style.transform = transformstr;
-    el.style.webkitTransform = transformstr;
-    var xval = xPos * 180 / (this.offsetWidth / joystickfactor);
-    var yval = yPos * 180 / (this.offsetHeight / joystickfactor);
+joystick.setTranslate = function () {
+    var transformstr = 'translate(' + this.currentX + 'px, ' + this.currentY + 'px)';
+    dragItem.style.transform = transformstr;
+    dragItem.style.webkitTransform = transformstr;
+    var xval = this.currentX * 180 / (this.offsetWidth / joystickfactor);
+    var yval = this.currentY * 180 / (this.offsetHeight / joystickfactor);
     send('1',Math.round(xval) + ',' + Math.round(yval),80,this);
 }
 
