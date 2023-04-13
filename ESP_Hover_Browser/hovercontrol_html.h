@@ -83,8 +83,8 @@ const char index_html[] PROGMEM = R"=====(
 <body>
 <div id='outerContainer'>
 <span id="connectiondisplay">Trying to connect</span>
-<input type="range" min="-180" max="180" value="0"   step="1" class="slider-color" oninput="send(3, this.value,80,this)" onChange="send(3, this.value,0,this)" />
-<input type="range" min="0"    max="360" value="240" step="1" class="slider-color" oninput="send(2, this.value,80,this)" onChange="send(2, this.value,0,this)" />
+<input id="servotrim" type="range" min="-180" max="180" value="0"   step="1" class="slider-color" oninput="send(3, this.value,80,this)" onChange="send(3, this.value,0,this)" />
+<input id="maxspeed" type="range" min="0"    max="360" value="240" step="1" class="slider-color" oninput="send(2, this.value,80,this)" onChange="send(2, this.value,0,this)" />
 <br>
   <div id='container'>
     <div id='item'> </div>
@@ -92,6 +92,11 @@ const char index_html[] PROGMEM = R"=====(
 </div>
 
 <script>
+var trimslider = document.querySelector('#servotrim');
+var maxspeedslider = document.querySelector('#maxspeed');
+var dragItem = document.querySelector('#item');
+var joystick = document.querySelector('#container');
+
 function send(id,value,min_time_transmit,elem) {
     var now = new Date().getTime();
     if (elem.sendTimeout)
@@ -147,6 +152,8 @@ function connect_ws() {
   
   ws.onopen = function() {
     connectiondisplay.textContent = "Connected";
+    send(3, trimslider.value,0,trimslider);
+    send(2, maxspeedslider.value,0,maxspeedslider); 
     retransmitInterval=setInterval(function ws_onopen_ping() {
       if (ws.bufferedAmount == 0)
       {
@@ -201,8 +208,6 @@ var checkConnectionInterval = setInterval(function check_connection_interval() {
 
 const joystickfactor = 2.8;
     
-var dragItem = document.querySelector('#item');
-var joystick = document.querySelector('#container');
 
 // currentX, currentY, touchid, initialX, initialY
 joystick.active = false;
