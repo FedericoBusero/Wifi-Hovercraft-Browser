@@ -156,13 +156,29 @@ void updateMotors()
   }
   else
   {
-    /* We berekenen naar welke doelpositie we de servo willen krijgen:
+    float regelX;
+    if (gyroBeschikbaar) // gyro
+    {
+      // "gyro"-regeling
+      float Pfactor = 2.4; 
+      float max_draai_factor = 2.0;
+
+      sensor.read();
+      float werkelijke_draaisnelheid = sensor.getGyroZ(); // getGyroX, getGyroY zijn ook mogelijk afhankelijk van positie sensor
+      // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
+      float doel_draaisnelheid = (float)Servopositie_x * (-1.0) * max_draai_factor; 
+      regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid); 
+    }
+    else
+    {
+      /* We berekenen naar welke doelpositie we de servo willen krijgen:
         we herschalen de som van de slider posities in de browser ( Servopositie_x (-180 .. 180) en TrimServopositie (-180 .. 180) )
         naar de minimum en maximum graden die de servo motor aankan (SERVO_HOEK_MIN .. SERVO_HOEK_MAX)
-    */
-    doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
-
-    servo1.write(doel_servohoek);  // We verplaatsen de servo naar de nieuwe positie doel_servohoek
+      */
+      regelX = Servopositie_x;
+    }
+    doel_servohoek = map(regelX + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    servo1.write(constrain(doel_servohoek,SERVO_HOEK_MIN,SERVO_HOEK_MAX));  // We verplaatsen de servo naar de nieuwe positie doel_servohoek
 
     /*
       We gaan de motor nog niet onmiddellijk naar zijn snelheid doel_motorsnelheid brengen, maar elke keer dat we hier passeren
