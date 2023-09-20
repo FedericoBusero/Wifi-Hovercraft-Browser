@@ -157,7 +157,7 @@ void updateMotors()
   else
   {
     float regelX;
-    if (gyroBeschikbaar) // gyro
+    if (gyroBeschikbaar && (doel_motorsnelheid>5)) // gyro
     {
       // "gyro"-regeling
       float Pfactor = 2.4; 
