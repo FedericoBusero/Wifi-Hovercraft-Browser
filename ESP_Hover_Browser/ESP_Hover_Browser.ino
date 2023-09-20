@@ -107,15 +107,9 @@ Servo servo1;
 #define SERVO_HOEK_MIN 0
 #define SERVO_HOEK_MAX 180
 
-// We verplaatsen de servo in stapjes om geen al te bruuske bewegingen te maken
-// Pas dit gerust aan, 1=servo traag bewegen, 2=normaal en vanaf 4 gaat het heel snel.
-// De waarde is minimaal 1 en maximaal 180, dan is er geen vertraging meer
-#define SERVO_HOEK_STAP 2
-
 int Servopositie_x;   // -180 .. 180
 int TrimServopositie; // -180 .. 180
-int servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
-int doel_servohoek;
+int doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;;
 
 // Bij het verhogen van de snelheid van de motor, doen we dat in stappen om niet te bruusk op te trekken
 // want dit kan de hovercraft onbestuurbaar maken of teveel stroom trekken waardoor de chip gaat resetten
@@ -152,14 +146,7 @@ void updateMotors()
     */
     doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
 
-    /*
-      We gaan de servo nog niet onmiddellijk naar zijn nieuwe positie doel_servohoek brengen, maar elke keer dat we hier passeren
-      gaan we ietsje dichter naar zijn doel. Daartoe beperken we de verplaatsing t.o.v. de oude servohoek tot maximum SERVO_HOEK_STAP stappen
-    */
-    servohoek = constrain(doel_servohoek, servohoek - SERVO_HOEK_STAP, servohoek + SERVO_HOEK_STAP);
-
-    servo1.write(servohoek);  // We verplaatsen de servo naar de nieuwe positie servohoek
-
+    servo1.write(doel_servohoek);  // We verplaatsen de servo naar de nieuwe positie doel_servohoek
 
     /*
       We gaan de motor nog niet onmiddellijk naar zijn snelheid doel_motorsnelheid brengen, maar elke keer dat we hier passeren
@@ -202,7 +189,6 @@ void init_motors()
 {
   TrimServopositie = 0;
   Servopositie_x = 0;
-  servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
   doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 
   motor_snelheid = 0;
