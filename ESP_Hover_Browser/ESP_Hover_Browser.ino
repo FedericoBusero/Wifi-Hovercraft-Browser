@@ -97,7 +97,7 @@ WebsocketsClient sclient;
 #define TIMEOUT_MS_LED 1L        // Aantal milliseconden dat LED blijft branden na het ontvangen van een boodschap
 #define TIMEOUT_MS_VOLTAGE 10000L // Aantal milliseconden tussen update voltage
 
-long last_activity_message;
+unsigned long last_activity_message;
 
 // We maken een servo "object" aan om de servo aan te sturen.
 Servo servo1;
