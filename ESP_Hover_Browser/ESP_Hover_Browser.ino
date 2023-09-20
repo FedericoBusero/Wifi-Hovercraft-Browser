@@ -118,8 +118,8 @@ Servo servo1;
 
 // De minimum en maximum hoek van de servo, pas dit gerust aan als de servo de uitersten niet kan halen
 // De waarden zijn minimaal 0, maximaal 180
-#define SERVO_HOEK_MIN 0
-#define SERVO_HOEK_MAX 180
+#define SERVO_HOEK_MIN 35
+#define SERVO_HOEK_MAX 145
 
 int Servopositie_x;   // -180 .. 180
 int TrimServopositie; // -180 .. 180
