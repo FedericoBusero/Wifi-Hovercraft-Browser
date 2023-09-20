@@ -15,6 +15,20 @@
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 
+#include "GY521.h" // library; https://github.com/RobTillaart/GY521/
+/*
+   Wemos D1 mini:
+   SCL: D1
+   SDA: D2
+   XDA: niet aangesloten
+   XCL: niet aangesloten
+   AD0: niet aangesloten  . De vice heeft 0x68 als I2C adres, waarschijnlijk wordt het 0x69 als je dit naar 3.3V verhoogt
+   INT: niet aangesloten
+   VCC: 3V
+   GND: uiteraard
+*/
+GY521 sensor(0x68);
+
 #ifdef ARDUINO_ARCH_ESP32
 #include <WiFi.h>
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
@@ -110,6 +124,8 @@ Servo servo1;
 int Servopositie_x;   // -180 .. 180
 int TrimServopositie; // -180 .. 180
 int doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;;
+
+bool gyroBeschikbaar = false;
 
 // Bij het verhogen van de snelheid van de motor, doen we dat in stappen om niet te bruusk op te trekken
 // want dit kan de hovercraft onbestuurbaar maken of teveel stroom trekken waardoor de chip gaat resetten
@@ -262,6 +278,45 @@ void setup()
   digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON );
 #endif
 
+  // setup gyro module
+  Wire.begin();
+
+  delay(100);
+
+  gyroBeschikbaar = false;
+  for (int t = 0; t < 3; t++) // 3 keer proberen of gyro beschikbaar is
+  {
+    if (sensor.wakeup() == false)
+    {
+#ifdef DEBUG_SERIAL
+      DEBUG_SERIAL.print(millis());
+      DEBUG_SERIAL.println("\tCould not connect to GY521");
+#endif
+      delay(1000);
+    }
+    else
+    {
+      gyroBeschikbaar = true;
+      break;
+    }
+  }
+
+  if (gyroBeschikbaar)
+  {
+    sensor.setAccelSensitivity(2);  // 8g
+    sensor.setGyroSensitivity(1);   // 500 degrees/s
+
+    sensor.setThrottle();
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.println("start...");
+#endif
+
+    // set all calibration errors to zero
+    sensor.gxe = 0;
+    sensor.gye = 0;
+    sensor.gze = 0;
+    sensor.read();
+  }
 
   // Wifi instellingen
   WiFi.persistent(true);
@@ -467,12 +522,12 @@ void onDisconnect()
   init_motors();
 }
 
-void updatevoltage()
+void updatestatusbar()
 {
 #ifdef ESP8266
   static unsigned long lastupdate_voltage = 0;
   unsigned long currentmillis = millis();
-  char voltagestr[50];
+  char statusstr[50];
 
   if (currentmillis > lastupdate_voltage + TIMEOUT_MS_VOLTAGE)
   {
@@ -481,21 +536,30 @@ void updatevoltage()
 
     if (voltage >= VOLTAGE_THRESHOLD)
     {
-      snprintf(voltagestr, sizeof(voltagestr), "%4.2f V", voltage);
+      snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
+
+      if (gyroBeschikbaar)
+      {
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, sensor.getGyroZ());
+      } else
+      {
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
+      }       
+
 #ifdef DEBUG_SERIAL
-      DEBUG_SERIAL.print("Sending voltage: ");
-      DEBUG_SERIAL.println(voltagestr);
+      DEBUG_SERIAL.print("Sending status: ");
+      DEBUG_SERIAL.println(statusstr);
 #endif
-      sclient.send(voltagestr);
+      sclient.send(statusstr);
     }
     else
     {
-      snprintf(voltagestr, sizeof(voltagestr), "Battery low: %4.2f V. Shutting down", voltage);
+      snprintf(statusstr, sizeof(statusstr), "Battery low: %4.2f V. Shutting down", voltage);
 #ifdef DEBUG_SERIAL
       DEBUG_SERIAL.print("Sending voltage: ");
-      DEBUG_SERIAL.println(voltagestr);
+      DEBUG_SERIAL.println(statusstr);
 #endif
-      sclient.send(voltagestr);
+      sclient.send(statusstr);
       motors_pause();
       delay(20000); // boodschap wordt 20 seconden getoond in browser alvorens hij disconnecteert
       ESP.deepSleep(0);
@@ -537,7 +601,7 @@ void loop()
     if (sclient.available()) { // als return non-nul, dan is er een client geconnecteerd
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
-      updatevoltage();
+      updatestatusbar();
 
       updateMotors();
     }
