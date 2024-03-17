@@ -21,7 +21,7 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 | Functie       | Pin | GPIO   |
 | ------------- | --- | ------ |
 | LEDCONNECTIE  | D0  | GPIO16 |
-| SERVO         | D2  | GPIO4  |
+| SERVO         | D5  | GPIO14 |
 | MOTOR         | D8  | GPIO15 |
 
 ## pinallocatie ESP01
