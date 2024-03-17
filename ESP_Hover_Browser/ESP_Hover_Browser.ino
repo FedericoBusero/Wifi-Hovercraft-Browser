@@ -213,6 +213,21 @@ void init_motors()
   updateMotors();
 }
 
+void led_init()
+{
+  setup_pin_mode_output(PIN_LEDCONNECTIE1);
+#ifdef PIN_LEDCONNECTIE2
+  setup_pin_mode_output(PIN_LEDCONNECTIE2);
+#endif
+}
+
+void led_set(int ledmode)
+{
+  digitalWrite(PIN_LEDCONNECTIE1, ledmode);
+#ifdef PIN_LEDCONNECTIE2
+  digitalWrite(PIN_LEDCONNECTIE2, ledmode);
+#endif
+}
 
 void setup()
 {
@@ -234,32 +249,16 @@ void setup()
   DEBUG_SERIAL.println(F("\nHover Browser setup started"));
 #endif
 
-  setup_pin_mode_output(PIN_LEDCONNECTIE1);
-#ifdef PIN_LEDCONNECTIE2
-  setup_pin_mode_output(PIN_LEDCONNECTIE2);
-#endif
+  led_init();
 
   // De LEd flasht 2x om te tonen dat er een reboot is
-  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
-#ifdef PIN_LEDCONNECTIE2
-  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
-#endif
+  led_set(LED_BRIGHTNESS_ON);
   delay(10);
-  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
-#ifdef PIN_LEDCONNECTIE2
-  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
-#endif
+  led_set(LED_BRIGHTNESS_OFF);
   delay(100);
-  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
-#ifdef PIN_LEDCONNECTIE2
-  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
-#endif
+  led_set(LED_BRIGHTNESS_ON);
   delay(10);
-  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
-#ifdef PIN_LEDCONNECTIE2
-  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
-#endif
-
+  led_set(LED_BRIGHTNESS_OFF);
 
   // steering servo PWM
   setup_pin_mode_output(PIN_SERVO);
@@ -271,11 +270,7 @@ void setup()
   
   init_motors();
 
-  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON );
-#ifdef PIN_LEDCONNECTIE2
-  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON );
-#endif
-
+  led_set(LED_BRIGHTNESS_ON);
 
   // Wifi instellingen
   WiFi.persistent(true);
@@ -432,10 +427,7 @@ void handle_message(websockets::WebsocketsMessage msg) {
   DEBUG_SERIAL.println(param2);
 #endif
 
-  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_ON);
-#ifdef PIN_LEDCONNECTIE2
-  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_ON);
-#endif
+  led_set(LED_BRIGHTNESS_ON);
   last_activity_message = millis();
 
   switch (id)
@@ -462,11 +454,7 @@ void handle_message(websockets::WebsocketsMessage msg) {
 
 void onConnect()
 {
-  digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
-#ifdef PIN_LEDCONNECTIE2
-  digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
-#endif
-
+  led_set(LED_BRIGHTNESS_OFF);
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("onConnect"));
 #endif
@@ -528,10 +516,7 @@ void loop()
   
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
-    digitalWrite(PIN_LEDCONNECTIE1, LED_BRIGHTNESS_OFF);
-#ifdef PIN_LEDCONNECTIE2
-    digitalWrite(PIN_LEDCONNECTIE2, LED_BRIGHTNESS_OFF);
-#endif    
+    led_set(LED_BRIGHTNESS_OFF);
   }
 
   if (millis() > last_activity_message + TIMEOUT_MS_MOTORS)
@@ -584,10 +569,7 @@ void loop()
   
   if (!is_connected)
   {
-    digitalWrite(PIN_LEDCONNECTIE1, (millis() % 1000) > 500 ? LOW : HIGH);
-#ifdef PIN_LEDCONNECTIE2
-    digitalWrite(PIN_LEDCONNECTIE2, (millis() % 1000) > 500 ? LOW : HIGH);
-#endif
+    led_set((millis() % 1000) > 500 ? LOW : HIGH);
   }
   
   delay(2);
