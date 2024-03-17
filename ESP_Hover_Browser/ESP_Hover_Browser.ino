@@ -469,12 +469,12 @@ void onDisconnect()
   init_motors();
 }
 
-void updatevoltage()
+void updatestatusbar()
 {
 #ifdef ESP8266
   static unsigned long lastupdate_voltage = 0;
   unsigned long currentmillis = millis();
-  char voltagestr[50];
+  char statusstr[50];
 
   if (currentmillis > lastupdate_voltage + TIMEOUT_MS_VOLTAGE)
   {
@@ -483,21 +483,21 @@ void updatevoltage()
 
     if (voltage >= VOLTAGE_THRESHOLD)
     {
-      snprintf(voltagestr, sizeof(voltagestr), "%4.2f V", voltage);
+      snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
 #ifdef DEBUG_SERIAL
       DEBUG_SERIAL.print("Sending voltage: ");
-      DEBUG_SERIAL.println(voltagestr);
+      DEBUG_SERIAL.println(statusstr);
 #endif
-      sclient.send(voltagestr);
+      sclient.send(statusstr);
     }
     else
     {
-      snprintf(voltagestr, sizeof(voltagestr), "Battery low: %4.2f V. Shutting down", voltage);
+      snprintf(statusstr, sizeof(statusstr), "Battery low: %4.2f V. Shutting down", voltage);
 #ifdef DEBUG_SERIAL
       DEBUG_SERIAL.print("Sending voltage: ");
-      DEBUG_SERIAL.println(voltagestr);
+      DEBUG_SERIAL.println(statusstr);
 #endif
-      sclient.send(voltagestr);
+      sclient.send(statusstr);
       motors_pause();
       delay(20000); // boodschap wordt 20 seconden getoond in browser alvorens hij disconnecteert
       ESP.deepSleep(0);
@@ -536,7 +536,7 @@ void loop()
     if (sclient.available()) { // als return non-nul, dan is er een client geconnecteerd
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
-      updatevoltage();
+      updatestatusbar();
 
       updateMotors();
     }
