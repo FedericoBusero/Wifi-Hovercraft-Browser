@@ -15,6 +15,20 @@
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 
+#include "GY521.h" // library; https://github.com/RobTillaart/GY521/
+/*
+   Wemos D1 mini:
+   SCL: D1
+   SDA: D2
+   XDA: niet aangesloten
+   XCL: niet aangesloten
+   AD0: niet aangesloten  . De vice heeft 0x68 als I2C adres, waarschijnlijk wordt het 0x69 als je dit naar 3.3V verhoogt
+   INT: niet aangesloten
+   VCC: 3V
+   GND: uiteraard
+*/
+GY521 sensor(0x68);
+
 #ifdef ARDUINO_ARCH_ESP32
 #include <WiFi.h>
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
@@ -58,7 +72,7 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 #else // Wemos D1 mini, NodeMCU, ...
 #define DEBUG_SERIAL Serial
 
-#define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
+#define PIN_SERVO          D5 // D5 = GPIO14  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
 #define PIN_LEDCONNECTIE1   2 
@@ -95,7 +109,7 @@ WebsocketsClient sclient;
 // timeoutes
 #define TIMEOUT_MS_MOTORS 1200L // Timeout om motoren uit veiligheid stil te leggen, na x milliseconden niks te hebben ontvangen, moet groter zijn dan retransmit in html code
 #define TIMEOUT_MS_LED 1L        // Aantal milliseconden dat LED blijft branden na het ontvangen van een boodschap
-#define TIMEOUT_MS_VOLTAGE 10000L // Aantal milliseconden tussen update voltage
+#define TIMEOUT_MS_VOLTAGE 1000L // Aantal milliseconden tussen update voltage
 
 unsigned long last_activity_message;
 
@@ -104,18 +118,14 @@ Servo servo1;
 
 // De minimum en maximum hoek van de servo, pas dit gerust aan als de servo de uitersten niet kan halen
 // De waarden zijn minimaal 0, maximaal 180
-#define SERVO_HOEK_MIN 0
-#define SERVO_HOEK_MAX 180
-
-// We verplaatsen de servo in stapjes om geen al te bruuske bewegingen te maken
-// Pas dit gerust aan, 1=servo traag bewegen, 2=normaal en vanaf 4 gaat het heel snel.
-// De waarde is minimaal 1 en maximaal 180, dan is er geen vertraging meer
-#define SERVO_HOEK_STAP 2
+#define SERVO_HOEK_MIN 35
+#define SERVO_HOEK_MAX 145
 
 int Servopositie_x;   // -180 .. 180
 int TrimServopositie; // -180 .. 180
-int servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
-int doel_servohoek;
+int doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;;
+
+bool gyroBeschikbaar = false;
 
 // Bij het verhogen van de snelheid van de motor, doen we dat in stappen om niet te bruusk op te trekken
 // want dit kan de hovercraft onbestuurbaar maken of teveel stroom trekken waardoor de chip gaat resetten
@@ -146,20 +156,29 @@ void updateMotors()
   }
   else
   {
-    /* We berekenen naar welke doelpositie we de servo willen krijgen:
+    float regelX;
+    if (gyroBeschikbaar && (doel_motorsnelheid>5)) // gyro
+    {
+      // "gyro"-regeling
+      float Pfactor = 2.4; 
+      float max_draai_factor = 2.0;
+
+      sensor.read();
+      float werkelijke_draaisnelheid = sensor.getGyroZ(); // getGyroX, getGyroY zijn ook mogelijk afhankelijk van positie sensor
+      // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
+      float doel_draaisnelheid = (float)Servopositie_x * (-1.0) * max_draai_factor; 
+      regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid); 
+    }
+    else
+    {
+      /* We berekenen naar welke doelpositie we de servo willen krijgen:
         we herschalen de som van de slider posities in de browser ( Servopositie_x (-180 .. 180) en TrimServopositie (-180 .. 180) )
         naar de minimum en maximum graden die de servo motor aankan (SERVO_HOEK_MIN .. SERVO_HOEK_MAX)
-    */
-    doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
-
-    /*
-      We gaan de servo nog niet onmiddellijk naar zijn nieuwe positie doel_servohoek brengen, maar elke keer dat we hier passeren
-      gaan we ietsje dichter naar zijn doel. Daartoe beperken we de verplaatsing t.o.v. de oude servohoek tot maximum SERVO_HOEK_STAP stappen
-    */
-    servohoek = constrain(doel_servohoek, servohoek - SERVO_HOEK_STAP, servohoek + SERVO_HOEK_STAP);
-
-    servo1.write(servohoek);  // We verplaatsen de servo naar de nieuwe positie servohoek
-
+      */
+      regelX = Servopositie_x;
+    }
+    doel_servohoek = map(regelX + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    servo1.write(constrain(doel_servohoek,SERVO_HOEK_MIN,SERVO_HOEK_MAX));  // We verplaatsen de servo naar de nieuwe positie doel_servohoek
 
     /*
       We gaan de motor nog niet onmiddellijk naar zijn snelheid doel_motorsnelheid brengen, maar elke keer dat we hier passeren
@@ -202,7 +221,6 @@ void init_motors()
 {
   TrimServopositie = 0;
   Servopositie_x = 0;
-  servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
   doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 
   motor_snelheid = 0;
@@ -271,6 +289,46 @@ void setup()
   init_motors();
 
   led_set(LED_BRIGHTNESS_ON);
+
+  // setup gyro module
+  Wire.begin();
+
+  delay(100);
+
+  gyroBeschikbaar = false;
+  for (int t = 0; t < 3; t++) // 3 keer proberen of gyro beschikbaar is
+  {
+    if (sensor.wakeup() == false)
+    {
+#ifdef DEBUG_SERIAL
+      DEBUG_SERIAL.print(millis());
+      DEBUG_SERIAL.println("\tCould not connect to GY521");
+#endif
+      delay(1000);
+    }
+    else
+    {
+      gyroBeschikbaar = true;
+      break;
+    }
+  }
+
+  if (gyroBeschikbaar)
+  {
+    sensor.setAccelSensitivity(2);  // 8g
+    sensor.setGyroSensitivity(1);   // 500 degrees/s
+
+    sensor.setThrottle();
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.println("start...");
+#endif
+
+    // set all calibration errors to zero
+    sensor.gxe = 0;
+    sensor.gye = 0;
+    sensor.gze = 0;
+    sensor.read();
+  }
 
   // Wifi instellingen
   WiFi.persistent(true);
@@ -484,8 +542,18 @@ void updatestatusbar()
     if (voltage >= VOLTAGE_THRESHOLD)
     {
       snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
+
+      if (gyroBeschikbaar)
+      {
+        sensor.read();
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, sensor.getGyroZ());
+      } else
+      {
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
+      }       
+
 #ifdef DEBUG_SERIAL
-      DEBUG_SERIAL.print("Sending voltage: ");
+      DEBUG_SERIAL.print("Sending status: ");
       DEBUG_SERIAL.println(statusstr);
 #endif
       sclient.send(statusstr);
