@@ -77,9 +77,9 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 #define PWM_RANGE 1023 // PWM range voor analogWrite
 #define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
 
-// #define MODE_ESP01
+// #define MODE_ESP01GYRO
 
-#ifdef MODE_ESP01
+#ifdef MODE_ESP01GYRO
 
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
