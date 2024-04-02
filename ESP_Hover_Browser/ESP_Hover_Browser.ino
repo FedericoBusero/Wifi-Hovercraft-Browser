@@ -13,16 +13,33 @@
  */
 
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
-#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 
-#ifdef ARDUINO_ARCH_ESP32
+#if defined (CONFIG_IDF_TARGET_ESP32C3)
+#include <ESPAsyncWebSrv.h> // ESPAsyncWebSrv, version 1.2.6 by dvarrel : https://github.com/dvarrel/ESPAsyncWebSrv/
 #include <WiFi.h>
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
 #include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo 
 
 #define DEBUG_SERIAL Serial
 
-#define PWM_RANGE 255 // PWM range voor analogWrite (in ESP32Servo)
+#define PWM_RANGE 255 // PWM range voor analogWrite 
+
+#define PIN_SERVO          1
+#define PIN_MOTOR          5
+// #define PIN_LEDCONNECTIE1  LED_BUILTIN
+
+#define LED_BRIGHTNESS_ON  HIGH
+#define LED_BRIGHTNESS_OFF LOW
+
+#elif defined(ARDUINO_ARCH_ESP32)
+#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
+#include <WiFi.h>
+#include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
+#include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo 
+
+#define DEBUG_SERIAL Serial
+
+#define PWM_RANGE 255 // PWM range voor analogWrite
 
 #define PIN_SERVO          18 
 #define PIN_MOTOR          19 
@@ -32,6 +49,7 @@
 #define LED_BRIGHTNESS_OFF LOW
 
 #else // ESP8266
+#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 
 ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 
@@ -215,7 +233,9 @@ void init_motors()
 
 void led_init()
 {
+#ifdef PIN_LEDCONNECTIE1
   setup_pin_mode_output(PIN_LEDCONNECTIE1);
+#endif
 #ifdef PIN_LEDCONNECTIE2
   setup_pin_mode_output(PIN_LEDCONNECTIE2);
 #endif
@@ -223,7 +243,9 @@ void led_init()
 
 void led_set(int ledmode)
 {
+#ifdef PIN_LEDCONNECTIE1
   digitalWrite(PIN_LEDCONNECTIE1, ledmode);
+#endif
 #ifdef PIN_LEDCONNECTIE2
   digitalWrite(PIN_LEDCONNECTIE2, ledmode);
 #endif
