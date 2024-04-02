@@ -117,6 +117,8 @@ WebsocketsClient sclient;
 
 unsigned long last_activity_message;
 
+#include "Easer.h"
+
 // We maken een servo "object" aan om de servo aan te sturen.
 Servo servo1;
 
@@ -125,22 +127,12 @@ Servo servo1;
 #define SERVO_HOEK_MIN 0
 #define SERVO_HOEK_MAX 180
 
-// We verplaatsen de servo in stapjes om geen al te bruuske bewegingen te maken
-// Pas dit gerust aan, 1=servo traag bewegen, 2=normaal en vanaf 4 gaat het heel snel.
-// De waarde is minimaal 1 en maximaal 180, dan is er geen vertraging meer
-#define SERVO_HOEK_STAP 2
-
 int Servopositie_x;   // -180 .. 180
 int TrimServopositie; // -180 .. 180
-int servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 int doel_servohoek;
+Easer servohoek;
 
-// Bij het verhogen van de snelheid van de motor, doen we dat in stappen om niet te bruusk op te trekken
-// want dit kan de hovercraft onbestuurbaar maken of teveel stroom trekken waardoor de chip gaat resetten
-// Pas gerust aan, 1=traag optrekken, 5=snel optrekken
-// De waarde is minimaal 1 en maximaal 1023
-#define MAX_MOTOR_SPEED_STAP 4
-int motor_snelheid = 0;
+Easer motor_snelheid;
 int doel_motorsnelheid;
 int max_motorsnelheid;
 bool motors_halt;
@@ -169,31 +161,19 @@ void updateMotors()
         naar de minimum en maximum graden die de servo motor aankan (SERVO_HOEK_MIN .. SERVO_HOEK_MAX)
     */
     doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    servohoek.easeTo(doel_servohoek);
+    servohoek.update();
+    servo1.write(servohoek.getCurrentValue());  // We verplaatsen de servo naar de nieuwe positie servohoek
 
-    /*
-      We gaan de servo nog niet onmiddellijk naar zijn nieuwe positie doel_servohoek brengen, maar elke keer dat we hier passeren
-      gaan we ietsje dichter naar zijn doel. Daartoe beperken we de verplaatsing t.o.v. de oude servohoek tot maximum SERVO_HOEK_STAP stappen
-    */
-    servohoek = constrain(doel_servohoek, servohoek - SERVO_HOEK_STAP, servohoek + SERVO_HOEK_STAP);
-
-    servo1.write(servohoek);  // We verplaatsen de servo naar de nieuwe positie servohoek
-
-
-    /*
-      We gaan de motor nog niet onmiddellijk naar zijn snelheid doel_motorsnelheid brengen, maar elke keer dat we hier passeren
-      gaan we ietsje dichter naar zijn doel. Daartoe mag hij elke keer maximum MAX_MOTOR_SPEED_STAP verhogen in snelheid
-    */
     /*
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.print(F("doel_motorsnelheid="));
     DEBUG_SERIAL.println(doel_motorsnelheid);
-    DEBUG_SERIAL.print(F("motor_snelheid="));
-    DEBUG_SERIAL.println(motor_snelheid);
 #endif
   */
-    motor_snelheid = min(doel_motorsnelheid, motor_snelheid + MAX_MOTOR_SPEED_STAP);
-  
-    analogWrite(PIN_MOTOR, motor_snelheid); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motor_snelheid
+    motor_snelheid.easeTo(doel_motorsnelheid);
+    motor_snelheid.update();
+    analogWrite(PIN_MOTOR, motor_snelheid.getCurrentValue()); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motor_snelheid
   }
 }
 
@@ -220,10 +200,10 @@ void init_motors()
 {
   TrimServopositie = 0;
   Servopositie_x = 0;
-  servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
+  servohoek.setValue((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
   doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 
-  motor_snelheid = 0;
+  motor_snelheid.setValue(0);
   doel_motorsnelheid = 0;
   max_motorsnelheid = (300*PWM_RANGE)/360;
   motors_halt = false;  
