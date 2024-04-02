@@ -318,6 +318,7 @@ void setup()
   
   servohoek.begin((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
   servohoek.set_speed(SERVO_SWEEP_TIME / 180);
+  servohoek.setAntiBibber(2.0); // als bestemming <= x graden verwijderd, blijf gewoon staan
 
   motor_snelheid.begin(0, false);
   motor_snelheid.set_speed((float)MOTOR_TIME_UP / (float)PWM_RANGE);
