@@ -204,6 +204,12 @@ void updateMotors()
     doel_servohoek = map(regelX + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
+#ifdef DEBUG_SERIAL
+    // DEBUG_SERIAL.print(F("doel_motorsnelheid="));
+    // DEBUG_SERIAL.println(doel_motorsnelheid);
+    // DEBUG_SERIAL.print(F("servohoek="));
+    // DEBUG_SERIAL.println(servohoek.getCurrentValue());
+#endif
     servo1.write(servohoek.getCurrentValue());  // We verplaatsen de servo naar de nieuwe positie servohoek
   
   /*
