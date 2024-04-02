@@ -119,6 +119,8 @@ unsigned long last_activity_message;
 
 #include "Easer.h"
 
+#define SERVO_SWEEP_TIME 200 // in ms
+
 // We maken een servo "object" aan om de servo aan te sturen.
 Servo servo1;
 
@@ -131,6 +133,8 @@ int Servopositie_x;   // -180 .. 180
 int TrimServopositie; // -180 .. 180
 int doel_servohoek;
 Easer servohoek;
+
+#define MOTOR_TIME_UP 200 // ms to go to ease to full power of a motor 
 
 Easer motor_snelheid;
 int doel_motorsnelheid;
@@ -268,7 +272,12 @@ void setup()
      een blokgolf signaal van 544ms stemt overeen met de servo-arm op 0° en 2400ms met 180°).
   */
   servo1.attach(PIN_SERVO, 544, 2400);
+  
+  servohoek.begin((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
+  servohoek.set_speed(SERVO_SWEEP_TIME / 180);
 
+  motor_snelheid.begin(0, false);
+  motor_snelheid.set_speed((float)MOTOR_TIME_UP / (float)PWM_RANGE);
   
   init_motors();
 
