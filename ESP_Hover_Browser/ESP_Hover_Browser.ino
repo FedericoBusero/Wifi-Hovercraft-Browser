@@ -205,8 +205,8 @@ void updateMotors()
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
 #ifdef DEBUG_SERIAL
-    // DEBUG_SERIAL.print(F("doel_motorsnelheid="));
-    // DEBUG_SERIAL.println(doel_motorsnelheid);
+    // DEBUG_SERIAL.print(F("doel_servohoek="));
+    // DEBUG_SERIAL.println(doel_servohoek);
     // DEBUG_SERIAL.print(F("servohoek="));
     // DEBUG_SERIAL.println(servohoek.getCurrentValue());
 #endif
