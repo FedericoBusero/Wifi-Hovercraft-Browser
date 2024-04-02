@@ -12,6 +12,8 @@ class Easer
     float changeValue;
     float ms_per_unit; // time in ms to move 1 unit
 
+    float antibibber; // in degrees 
+
     unsigned long durMillis;    // duration
     unsigned long startMillis; // time when we started
 
@@ -30,6 +32,7 @@ class Easer
     // when _ease_down is false, only ease when increasing the value
     void begin(float _startvalue,boolean _ease_down=true) {
       ms_per_unit = 0;
+      antibibber = 0.0;
       ease_down = _ease_down;
 
       setValue(_startvalue);
@@ -37,6 +40,10 @@ class Easer
 
     void set_speed(float _ms_per_unit) {
       ms_per_unit = _ms_per_unit;
+    }
+
+    void setAntiBibber(float _antibibber) {
+      antibibber = _antibibber;
     }
 
     // reset easer to initial conditions, set current value to new start value
@@ -54,6 +61,11 @@ class Easer
       if (!ease_down && (destinationvalue<currentValue))
       {
         setValue(destinationvalue);
+        return;
+      }
+      if (fabs(destinationvalue-currentValue)<=antibibber)
+      {
+        arrived = true;
         return;
       }
       startValue = currentValue;
