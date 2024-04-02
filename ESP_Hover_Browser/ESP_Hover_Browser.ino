@@ -81,10 +81,12 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 
 #ifdef MODE_ESP01
 
-#define PIN_SERVO          0
+#define PIN_SERVO          1
 #define PIN_MOTOR          3
-#define PIN_LEDCONNECTIE1  1
-#define PIN_LEDCONNECTIE2  2
+// #define PIN_LEDCONNECTIE1  1
+// #define PIN_LEDCONNECTIE2  2
+#define PIN_SDA 2
+#define PIN_SCL 0
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
