@@ -201,7 +201,7 @@ void updateMotors()
 
       regelX = Servopositie_x;
     }
-    doel_servohoek = map(regelX + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    doel_servohoek = map(constrain(regelX + TrimServopositie,-360,360), -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
 #ifdef DEBUG_SERIAL
