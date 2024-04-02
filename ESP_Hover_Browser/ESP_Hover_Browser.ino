@@ -199,7 +199,13 @@ void updateMotors()
       regelX = Servopositie_x;
     }
     doel_servohoek = map(regelX + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
-    servo1.write(constrain(doel_servohoek,SERVO_HOEK_MIN,SERVO_HOEK_MAX));  // We verplaatsen de servo naar de nieuwe positie doel_servohoek
+
+    int servo_waarde = constrain(doel_servohoek,SERVO_HOEK_MIN,SERVO_HOEK_MAX); 
+#ifdef DEBUG_SERIAL
+    // DEBUG_SERIAL.print(F("servo_waarde="));
+    // DEBUG_SERIAL.println(servo_waarde);
+#endif
+    servo1.write(servo_waarde);  // We verplaatsen de servo naar de nieuwe positie doel_servohoek
 
     /*
       We gaan de motor nog niet onmiddellijk naar zijn snelheid doel_motorsnelheid brengen, maar elke keer dat we hier passeren
