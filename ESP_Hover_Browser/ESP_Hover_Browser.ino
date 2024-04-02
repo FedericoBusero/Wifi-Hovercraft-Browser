@@ -643,7 +643,13 @@ void loop()
 
       updatestatusbar();
 
-      updateMotors();
+      static unsigned long lastupdate_motors = 0;
+      unsigned long currentmillis = millis();
+      if (currentmillis > lastupdate_motors + 10) // min 10 ms tussen aanroepen updatemotors als er geen nieuwe waarde ontvangen is vanuit browser
+      {
+        lastupdate_motors = currentmillis;
+        updateMotors();
+      }
     }
     else
     {
