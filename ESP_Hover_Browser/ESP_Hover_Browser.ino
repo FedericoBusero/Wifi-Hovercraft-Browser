@@ -211,7 +211,7 @@ void updateMotors()
       regelX = (float)ui_joystick_x;
     }
     int TrimServopositie = ui_slider1;
-    doel_servohoek = map(constrain(regelX + ui_slider1,-360,360), -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    doel_servohoek = map(constrain(regelX + TrimServopositie,-360,360), -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
 #ifdef DEBUG_SERIAL
