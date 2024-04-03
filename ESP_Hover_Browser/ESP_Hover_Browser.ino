@@ -129,8 +129,9 @@ Servo servo1;
 #define SERVO_HOEK_MIN 0
 #define SERVO_HOEK_MAX 180
 
-int ui_joystick_x;   // -180 .. 180
-int TrimServopositie; // -180 .. 180
+int ui_joystick_x;
+int ui_joystick_y;
+int ui_slider1; // -180 .. 180
 int doel_servohoek;
 Easer servohoek;
 
@@ -169,7 +170,7 @@ void updateMotors()
     {
       doel_motorsnelheid = 0;
     }
-
+    int TrimServoPositie = ui_slider1; // -180 .. 180
     doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
@@ -214,7 +215,7 @@ void motors_resume()
 
 void init_motors()
 {
-  TrimServopositie = 0;
+  ui_slider1 = 0;
   ui_joystick_x = 0;
   ui_joystick_y = 0;
   servohoek.setValue((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
@@ -382,14 +383,14 @@ void handleSliderMaxSpeed(int value)
   updateMotors();
 }
 
-void handleSliderTrimServo(int value)
+void handleSlider1(int value)
 {
 #ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.print(F("handleSliderTrimServo value="));
+  DEBUG_SERIAL.print(F("handleSlider1 value="));
   DEBUG_SERIAL.println(value);
 #endif
 
-  TrimServopositie = value;
+  ui_slider1 = value;
 
   updateMotors();
 }
@@ -459,7 +460,7 @@ void handle_message(websockets::WebsocketsMessage msg) {
     case 2: handleSliderMaxSpeed(param1);
       break;
       
-    case 3: handleSliderTrimServo(param1);
+    case 3: handleSlider1(param1);
       break;
       
   }
