@@ -129,7 +129,7 @@ Servo servo1;
 #define SERVO_HOEK_MIN 0
 #define SERVO_HOEK_MAX 180
 
-int Servopositie_x;   // -180 .. 180
+int ui_joystick_x;   // -180 .. 180
 int TrimServopositie; // -180 .. 180
 int doel_servohoek;
 Easer servohoek;
@@ -160,11 +160,7 @@ void updateMotors()
   }
   else
   {
-    /* We berekenen naar welke doelpositie we de servo willen krijgen:
-        we herschalen de som van de slider posities in de browser ( Servopositie_x (-180 .. 180) en TrimServopositie (-180 .. 180) )
-        naar de minimum en maximum graden die de servo motor aankan (SERVO_HOEK_MIN .. SERVO_HOEK_MAX)
-    */
-    doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
 #ifdef DEBUG_SERIAL
@@ -209,7 +205,7 @@ void motors_resume()
 void init_motors()
 {
   TrimServopositie = 0;
-  Servopositie_x = 0;
+  ui_joystick_x = 0;
   servohoek.setValue((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
   doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 
@@ -397,7 +393,7 @@ void handleJoystick(int x, int y)
   DEBUG_SERIAL.println(y);
 #endif
 
-  Servopositie_x = x;
+  ui_joystick_x = x;
   if (y <= 0)
   {
     doel_motorsnelheid = map(-y, 0, 180, 0, max_motorsnelheid);
