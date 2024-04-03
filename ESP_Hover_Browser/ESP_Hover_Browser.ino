@@ -129,16 +129,16 @@ Servo servo1;
 #define SERVO_HOEK_MIN 0
 #define SERVO_HOEK_MAX 180
 
-int Servopositie_x;   // -180 .. 180
-int TrimServopositie; // -180 .. 180
+int ui_joystick_x;
+int ui_joystick_y;
+int ui_slider1; // -180 .. 180
+int ui_slider2; // 0 .. 360
 int doel_servohoek;
 Easer servohoek;
 
 #define MOTOR_TIME_UP 200 // ms to go to ease to full power of a motor 
 
 Easer motor_snelheid;
-int doel_motorsnelheid;
-int max_motorsnelheid;
 bool motors_halt;
 
 void setup_pin_mode_output(int pin)
@@ -160,11 +160,19 @@ void updateMotors()
   }
   else
   {
-    /* We berekenen naar welke doelpositie we de servo willen krijgen:
-        we herschalen de som van de slider posities in de browser ( Servopositie_x (-180 .. 180) en TrimServopositie (-180 .. 180) )
-        naar de minimum en maximum graden die de servo motor aankan (SERVO_HOEK_MIN .. SERVO_HOEK_MAX)
-    */
-    doel_servohoek = map(Servopositie_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    int doel_motorsnelheid;
+    int max_motorsnelheid = map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
+
+    if (ui_joystick_y <= 0)
+    {
+      doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
+    }
+    else
+    {
+      doel_motorsnelheid = 0;
+    }
+    int TrimServopositie = ui_slider1; // -180 .. 180
+    doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
 #ifdef DEBUG_SERIAL
@@ -208,14 +216,14 @@ void motors_resume()
 
 void init_motors()
 {
-  TrimServopositie = 0;
-  Servopositie_x = 0;
+  ui_slider1 = 0;
+  ui_slider2 = 240;
+  ui_joystick_x = 0;
+  ui_joystick_y = 0;
   servohoek.setValue((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
   doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 
   motor_snelheid.setValue(0);
-  doel_motorsnelheid = 0;
-  max_motorsnelheid = (300*PWM_RANGE)/360;
   motors_halt = false;  
   
   updateMotors();
@@ -365,51 +373,6 @@ void setup()
   last_activity_message = millis();
 }
 
-void handleSliderMaxSpeed(int value)
-{
-#ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.print(F("handleSliderMaxSpeed value="));
-  DEBUG_SERIAL.println(value);
-#endif
-  max_motorsnelheid=map(value,0,360,PWM_RANGE/2,PWM_RANGE);
-
-  updateMotors();
-}
-
-void handleSliderTrimServo(int value)
-{
-#ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.print(F("handleSliderTrimServo value="));
-  DEBUG_SERIAL.println(value);
-#endif
-
-  TrimServopositie = value;
-
-  updateMotors();
-}
-
-void handleJoystick(int x, int y)
-{
-#ifdef DEBUG_SERIAL
-  DEBUG_SERIAL.print(F("handleJoystick x="));
-  DEBUG_SERIAL.print(x);
-  DEBUG_SERIAL.print(F(" y="));
-  DEBUG_SERIAL.println(y);
-#endif
-
-  Servopositie_x = x;
-  if (y <= 0)
-  {
-    doel_motorsnelheid = map(-y, 0, 180, 0, max_motorsnelheid);
-  }
-  else
-  {
-    doel_motorsnelheid = 0;
-  }
-
-  updateMotors();
-}
-
 void handle_message(websockets::WebsocketsMessage msg) {
   const char *msgstr = msg.c_str();
   const char *p;
@@ -452,14 +415,20 @@ void handle_message(websockets::WebsocketsMessage msg) {
     case 0:       // ping
       break;
       
-    case 1:
-      handleJoystick(param1, param2);
+    case 1: // joystick
+      ui_joystick_x = param1;
+      ui_joystick_y = param2;
+      updateMotors();
       break;
 
-    case 2: handleSliderMaxSpeed(param1);
+    case 2: // slider2
+      ui_slider2 = param1;
+      updateMotors();
       break;
       
-    case 3: handleSliderTrimServo(param1);
+    case 3: // slider1
+      ui_slider1 = param1;
+      updateMotors();
       break;
       
   }
