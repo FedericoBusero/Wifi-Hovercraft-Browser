@@ -137,7 +137,6 @@ Easer servohoek;
 #define MOTOR_TIME_UP 200 // ms to go to ease to full power of a motor 
 
 Easer motor_snelheid;
-int doel_motorsnelheid;
 int max_motorsnelheid;
 bool motors_halt;
 
@@ -160,6 +159,17 @@ void updateMotors()
   }
   else
   {
+    int doel_motorsnelheid;
+
+    if (ui_joystick_y <= 0)
+    {
+      doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
+    }
+    else
+    {
+      doel_motorsnelheid = 0;
+    }
+
     doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
@@ -206,11 +216,11 @@ void init_motors()
 {
   TrimServopositie = 0;
   ui_joystick_x = 0;
+  ui_joystick_y = 0;
   servohoek.setValue((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
   doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
 
   motor_snelheid.setValue(0);
-  doel_motorsnelheid = 0;
   max_motorsnelheid = (300*PWM_RANGE)/360;
   motors_halt = false;  
   
@@ -394,14 +404,8 @@ void handleJoystick(int x, int y)
 #endif
 
   ui_joystick_x = x;
-  if (y <= 0)
-  {
-    doel_motorsnelheid = map(-y, 0, 180, 0, max_motorsnelheid);
-  }
-  else
-  {
-    doel_motorsnelheid = 0;
-  }
+  ui_joystick_y = y;
+
 
   updateMotors();
 }
