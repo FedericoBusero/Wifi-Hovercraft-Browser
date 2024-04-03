@@ -171,7 +171,7 @@ void updateMotors()
     {
       doel_motorsnelheid = 0;
     }
-    int TrimServoPositie = ui_slider1; // -180 .. 180
+    int TrimServopositie = ui_slider1; // -180 .. 180
     doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
