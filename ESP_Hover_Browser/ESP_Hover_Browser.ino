@@ -183,7 +183,7 @@ void updateMotors()
   {
     float regelX;
     int doel_motorsnelheid;
-    int max_motorsnelheid=map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
+    int max_motorsnelheid = map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
     
     if (ui_joystick_y <= 0)
     {
