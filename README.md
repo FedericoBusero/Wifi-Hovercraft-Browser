@@ -17,7 +17,22 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 - Tweede slider: stel maximum snelheid in (links = halve kracht, rechts=volle kracht)
 - Joystick: besturing servo (links-rechts) en motor (midden-boven)
 
-## pinallocatie ESP8266
+## pinallocatie Wemos D1 Lite (ESP8266)
+Hiertoe moet je volgende regel uncommenten:
+```
+// #define ENV_HOVER_ESP8266_LOLIND1MINILITE
+```
+| Functie       | Pin | GPIO   |
+| ------------- | --- | ------ |
+| LEDCONNECTIE  |     | GPIO2  |
+| SERVO         | D2  | GPIO4  |
+| MOTOR         | D8  | GPIO15 |
+
+## pinallocatie NodeMCU
+Hiertoe moet je volgende regel uncommenten:
+```
+// #define ENV_HOVER_ESP8266_NODEMCU
+```
 | Functie       | Pin | GPIO   |
 | ------------- | --- | ------ |
 | LEDCONNECTIE  | D0  | GPIO16 |
@@ -25,24 +40,28 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 | MOTOR         | D8  | GPIO15 |
 
 ## pinallocatie ESP01
-Hiertoe moet je volgende regel uncommenten:
+Naargelang de led pin op GPIO1 of GPIO2 zit moet je volgende regel uncommenten:
 ```
-// #define MODE_ESP01
+// #define ENV_HOVER_ESP8266_ESP01_LEDPIN1_V0
 ```
-
 | Functie       | Pin | GPIO  |
 | ------------- | --- | ----- |
 | LEDCONNECTIE  | TX  | GPIO1 |
 | SERVO         |     | GPIO0 |
 | MOTOR         | RX  | GPIO3 |
 
+ofwel
+```
+// #define ENV_HOVER_ESP8266_ESP01_LEDPIN2_V0
+| Functie       | Pin | GPIO  |
+| ------------- | --- | ----- |
+| LEDCONNECTIE  |     | GPIO2 |
+| SERVO         |     | GPIO0 |
+| MOTOR         | RX  | GPIO3 |
+```
 
-## pinallocatie ESP32
-| Functie       | GPIO   |
-| ------------- | ------ |
-| LEDCONNECTIE  | GPIO4  |
-| SERVO         | GPIO12 |
-| MOTOR         | GPIO2  |
+
+
 
 ## Arduino ESP8266 board settings
 - Het is aangeraden om de meest recente Arduino ESP8266 board versie 3.0.2 niet te gebruiken, die werkt extreem slecht in combinatie met deze software. Beter is voorlopig ESP8266 versie 2.7.4 te blijven gebruiken.
