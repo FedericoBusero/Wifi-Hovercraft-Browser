@@ -14,15 +14,43 @@
 
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 
+// Architectuur afhankelijke settings
 #if defined (CONFIG_IDF_TARGET_ESP32C3)
+
 #include <ESPAsyncWebSrv.h> // ESPAsyncWebSrv, version 1.2.6 by dvarrel : https://github.com/dvarrel/ESPAsyncWebSrv/
 #include <WiFi.h>
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
 #include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo 
 
-#define DEBUG_SERIAL Serial
-
 #define PWM_RANGE 255 // PWM range voor analogWrite 
+
+#elif defined(ARDUINO_ARCH_ESP32)
+
+#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
+#include <WiFi.h>
+#include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
+#include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo 
+
+#define PWM_RANGE 255 // PWM range voor analogWrite
+
+#else // ESP8266
+ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
+
+#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
+#include <ESP8266WiFi.h>
+#include <Servo.h>
+#include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
+
+#define PWM_RANGE 1023 // PWM range voor analogWrite
+#define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
+
+#endif // ARDUINO_ARCH_ESP32
+
+// Board settings
+
+#if defined (CONFIG_IDF_TARGET_ESP32C3)
+// ESP32C3 Wemos Lolin C3 Pico 
+#define DEBUG_SERIAL Serial
 
 #define PIN_SERVO          1
 #define PIN_MOTOR          5
@@ -32,14 +60,8 @@
 #define LED_BRIGHTNESS_OFF LOW
 
 #elif defined(ARDUINO_ARCH_ESP32)
-#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
-#include <WiFi.h>
-#include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
-#include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo 
-
+// ESP32 Wemos Lolin32 lite
 #define DEBUG_SERIAL Serial
-
-#define PWM_RANGE 255 // PWM range voor analogWrite
 
 #define PIN_SERVO          18 
 #define PIN_MOTOR          19 
@@ -49,16 +71,6 @@
 #define LED_BRIGHTNESS_OFF LOW
 
 #else // ESP8266
-#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
-
-ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
-
-#include <ESP8266WiFi.h>
-#include <Servo.h>
-#include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
-
-#define PWM_RANGE 1023 // PWM range voor analogWrite
-#define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
 
 // #define MODE_ESP01
 
@@ -73,7 +85,8 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 #define VOLTAGE_FACTOR 1060.0f 
 #define VOLTAGE_THRESHOLD 2.4 // onder dit voltage valt de chip uit om de batterij te beschermen
 
-#else // Wemos D1 mini, NodeMCU, ...
+#else 
+// Wemos D1 mini, NodeMCU, ...
 #define DEBUG_SERIAL Serial
 
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
