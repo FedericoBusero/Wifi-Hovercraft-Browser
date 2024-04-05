@@ -53,12 +53,13 @@ Naargelang de led pin op GPIO1 of GPIO2 zit moet je volgende regel uncommenten:
 ofwel
 ```
 // #define ENV_HOVER_ESP8266_ESP01_LEDPIN2_V0
+```
 | Functie       | Pin | GPIO  |
 | ------------- | --- | ----- |
 | LEDCONNECTIE  |     | GPIO2 |
 | SERVO         |     | GPIO0 |
 | MOTOR         | RX  | GPIO3 |
-```
+
 
 
 
