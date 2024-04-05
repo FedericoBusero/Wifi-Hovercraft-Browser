@@ -29,7 +29,7 @@
 
 #define PIN_SERVO          18 
 #define PIN_MOTOR          19 
-#define PIN_LEDCONNECTIE1  LED_BUILTIN
+#define PIN_LEDCONNECTIE   LED_BUILTIN
 
 #define LED_BRIGHTNESS_ON  HIGH
 #define LED_BRIGHTNESS_OFF LOW
@@ -38,7 +38,7 @@
 
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
-#define PIN_LEDCONNECTIE1  1
+#define PIN_LEDCONNECTIE   1
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
@@ -51,7 +51,7 @@
 
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
-#define PIN_LEDCONNECTIE1  2
+#define PIN_LEDCONNECTIE   2
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
@@ -67,7 +67,7 @@
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
-#define PIN_LEDCONNECTIE1   2 
+#define PIN_LEDCONNECTIE    2 
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 910.0f 
@@ -82,7 +82,7 @@
 
 #define PIN_SERVO          39 
 #define PIN_MOTOR          18 
-#define PIN_LEDCONNECTIE1  15
+#define PIN_LEDCONNECTIE   15
 
 #define LED_BRIGHTNESS_ON  HIGH
 #define LED_BRIGHTNESS_OFF LOW
