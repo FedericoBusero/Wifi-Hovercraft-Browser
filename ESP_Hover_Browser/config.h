@@ -152,8 +152,9 @@
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
 
-#define PIN_LEDCONNECTIE   2 // dual use !
-#define PIN_SDA 2            // dual use !
+#define PIN_LEDCONNECTIE   2 
+#define PIN_LED_DUALUSE
+#define PIN_SDA 2            
 #define PIN_SCL 0
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
@@ -170,8 +171,9 @@
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
-#define PIN_LEDCONNECTIE   2 // dual use !
-#define PIN_SDA 2            // dual use !
+#define PIN_LEDCONNECTIE
+#define PIN_LED_DUALUSE
+#define PIN_SDA 2
 #define PIN_SCL 0
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
