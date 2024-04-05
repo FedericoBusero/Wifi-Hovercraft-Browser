@@ -13,6 +13,7 @@
  */
 
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
+#include "config.h"
 
 // Architectuur afhankelijke settings
 #if defined (CONFIG_IDF_TARGET_ESP32C3)
@@ -43,66 +44,6 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 
 #define PWM_RANGE 1023 // PWM range voor analogWrite
 #define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
-
-#endif // ARDUINO_ARCH_ESP32
-
-// Board settings
-
-#if defined (CONFIG_IDF_TARGET_ESP32C3)
-// ESP32C3 Wemos Lolin C3 Pico 
-#define DEBUG_SERIAL Serial
-
-#define PIN_SERVO          1
-#define PIN_MOTOR          5
-// #define PIN_LEDCONNECTIE1  LED_BUILTIN
-
-#define LED_BRIGHTNESS_ON  HIGH
-#define LED_BRIGHTNESS_OFF LOW
-
-#elif defined(ARDUINO_ARCH_ESP32)
-// ESP32 Wemos Lolin32 lite
-#define DEBUG_SERIAL Serial
-
-#define PIN_SERVO          18 
-#define PIN_MOTOR          19 
-#define PIN_LEDCONNECTIE1  LED_BUILTIN
-
-#define LED_BRIGHTNESS_ON  HIGH
-#define LED_BRIGHTNESS_OFF LOW
-
-#else // ESP8266
-
-// #define MODE_ESP01
-
-#ifdef MODE_ESP01
-
-#define PIN_SERVO          0
-#define PIN_MOTOR          3
-#define PIN_LEDCONNECTIE1  1
-#define PIN_LEDCONNECTIE2  2
-
-// Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
-#define VOLTAGE_FACTOR 1060.0f 
-#define VOLTAGE_THRESHOLD 2.4 // onder dit voltage valt de chip uit om de batterij te beschermen
-
-#else 
-// Wemos D1 mini, NodeMCU, ...
-#define DEBUG_SERIAL Serial
-
-#define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
-#define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
-// De ingebouwde LED zit meestal op GPIO2 of GPIO16
-#define PIN_LEDCONNECTIE1   2 
-#define PIN_LEDCONNECTIE2   16 
-
-// Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
-#define VOLTAGE_FACTOR 910.0f 
-#define VOLTAGE_THRESHOLD 2.4 // onder dit voltage valt de chip uit om de batterij te beschermen
-
-#endif // MODE_ESP01
-
-#define LED_BRIGHTNESS_ON  LOW
-#define LED_BRIGHTNESS_OFF HIGH
 
 #endif // ARDUINO_ARCH_ESP32
 
