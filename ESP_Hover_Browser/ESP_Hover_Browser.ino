@@ -185,21 +185,15 @@ void init_motors()
 
 void led_init()
 {
-#ifdef PIN_LEDCONNECTIE1
-  setup_pin_mode_output(PIN_LEDCONNECTIE1);
-#endif
-#ifdef PIN_LEDCONNECTIE2
-  setup_pin_mode_output(PIN_LEDCONNECTIE2);
+#ifdef PIN_LEDCONNECTIE
+  setup_pin_mode_output(PIN_LEDCONNECTIE);
 #endif
 }
 
 void led_set(int ledmode)
 {
-#ifdef PIN_LEDCONNECTIE1
-  digitalWrite(PIN_LEDCONNECTIE1, ledmode);
-#endif
-#ifdef PIN_LEDCONNECTIE2
-  digitalWrite(PIN_LEDCONNECTIE2, ledmode);
+#ifdef PIN_LEDCONNECTIE
+  digitalWrite(PIN_LEDCONNECTIE, ledmode);
 #endif
 }
 
