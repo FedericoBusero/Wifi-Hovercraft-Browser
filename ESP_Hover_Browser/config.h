@@ -171,7 +171,7 @@
 #define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
-#define PIN_LEDCONNECTIE
+#define PIN_LEDCONNECTIE    2
 #define PIN_LED_DUALUSE
 #define PIN_SDA 2
 #define PIN_SCL 0
