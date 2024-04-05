@@ -13,6 +13,7 @@
 // #define ENV_HOVER_ESP32S3_LOLINS3MINI
 
 // #define ENV_HOVERSERVOGYRO_ESP32C3_LOLINC3PICO
+// #define ENV_HOVERSERVOGYRO_ESP32C3_LOLINC3MINI
 // #define ENV_HOVERSERVOGYRO_ESP32_LOLIN32LITE
 // #define ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0
 // #define ENV_HOVERSERVOGYRO_ESP8266_LOLIND1MINILITE
@@ -113,6 +114,20 @@
 #define PIN_SERVO          1
 #define PIN_MOTOR          5
 // #define PIN_RGBLED         7
+#define PIN_SDA            8
+#define PIN_SCL            10
+
+#define LED_BRIGHTNESS_ON  HIGH
+#define LED_BRIGHTNESS_OFF LOW
+
+#elif defined(ENV_HOVERSERVOGYRO_ESP32C3_LOLINC3MINI)
+// ESP32C3 Wemos Lolin C3 mini
+#define DEBUG_SERIAL Serial
+
+#define PIN_SERVO          21
+#define PIN_MOTOR          7 
+// #define PIN_RGBLED         7 gr
+
 #define PIN_SDA            8
 #define PIN_SCL            10
 
