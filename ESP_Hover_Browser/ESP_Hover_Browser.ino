@@ -15,6 +15,9 @@
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include "config.h"
 
+#include "GY521.h" // library; https://github.com/RobTillaart/GY521/
+GY521 sensor(0x68);
+
 // Architectuur afhankelijke settings
 #if defined (CONFIG_IDF_TARGET_ESP32C3)
 
@@ -80,8 +83,8 @@ Servo servo1;
 
 // De minimum en maximum hoek van de servo, pas dit gerust aan als de servo de uitersten niet kan halen
 // De waarden zijn minimaal 0, maximaal 180
-#define SERVO_HOEK_MIN 0
-#define SERVO_HOEK_MAX 180
+#define SERVO_HOEK_MIN 35
+#define SERVO_HOEK_MAX 145
 
 int ui_joystick_x;
 int ui_joystick_y;
@@ -94,6 +97,8 @@ Easer servohoek;
 
 Easer motor_snelheid;
 bool motors_halt;
+
+bool gyroBeschikbaar = false;
 
 void setup_pin_mode_output(int pin)
 {
@@ -114,9 +119,10 @@ void updateMotors()
   }
   else
   {
+    float regelX;
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
-
+    
     if (ui_joystick_y <= 0)
     {
       doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
@@ -125,8 +131,25 @@ void updateMotors()
     {
       doel_motorsnelheid = 0;
     }
-    int TrimServopositie = ui_slider1; // -180 .. 180
-    doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+
+    if (gyroBeschikbaar && (doel_motorsnelheid>5)) // gyro
+    {
+      // "gyro"-regeling
+      float Pfactor = 2.4; 
+      float max_draai_factor = 2.0;
+
+      sensor.read();
+      float werkelijke_draaisnelheid = sensor.getGyroZ(); // getGyroX, getGyroY zijn ook mogelijk afhankelijk van positie sensor
+      // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
+      float doel_draaisnelheid = (float)ui_joystick_x* (-1.0) * max_draai_factor; 
+      regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid); 
+    }
+    else
+    {
+      regelX = (float)ui_joystick_x;
+    }
+    int TrimServopositie = ui_slider1;
+    doel_servohoek = map(constrain(regelX + TrimServopositie,-360,360), -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
 #ifdef DEBUG_SERIAL
@@ -136,8 +159,8 @@ void updateMotors()
     // DEBUG_SERIAL.println(servohoek.getCurrentValue());
 #endif
     servo1.write(servohoek.getCurrentValue());  // We verplaatsen de servo naar de nieuwe positie servohoek
-
-    /*
+  
+  /*
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.print(F("doel_motorsnelheid="));
     DEBUG_SERIAL.println(doel_motorsnelheid);
@@ -237,6 +260,7 @@ void setup()
   
   servohoek.begin((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
   servohoek.set_speed(SERVO_SWEEP_TIME / 180);
+  servohoek.setAntiBibber(2.0); // als bestemming <= x graden verwijderd, blijf gewoon staan
 
   motor_snelheid.begin(0, false);
   motor_snelheid.set_speed((float)MOTOR_TIME_UP / (float)PWM_RANGE);
@@ -244,6 +268,46 @@ void setup()
   init_motors();
 
   led_set(LED_BRIGHTNESS_ON);
+
+  // setup gyro module
+  Wire.begin();
+
+  delay(100);
+
+  gyroBeschikbaar = false;
+  for (int t = 0; t < 3; t++) // 3 keer proberen of gyro beschikbaar is
+  {
+    if (sensor.wakeup() == false)
+    {
+#ifdef DEBUG_SERIAL
+      DEBUG_SERIAL.print(millis());
+      DEBUG_SERIAL.println("\tCould not connect to GY521");
+#endif
+      delay(1000);
+    }
+    else
+    {
+      gyroBeschikbaar = true;
+      break;
+    }
+  }
+
+  if (gyroBeschikbaar)
+  {
+    sensor.setAccelSensitivity(2);  // 8g
+    sensor.setGyroSensitivity(1);   // 500 degrees/s
+
+    sensor.setThrottle();
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.println("start...");
+#endif
+
+    // set all calibration errors to zero
+    sensor.gxe = 0;
+    sensor.gye = 0;
+    sensor.gze = 0;
+    sensor.read();
+  }
 
   // Wifi instellingen
   WiFi.persistent(true);
@@ -418,8 +482,18 @@ void updatestatusbar()
     if (voltage >= VOLTAGE_THRESHOLD)
     {
       snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
+
+      if (gyroBeschikbaar)
+      {
+        sensor.read();
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, sensor.getGyroZ());
+      } else
+      {
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
+      }       
+
 #ifdef DEBUG_SERIAL
-      DEBUG_SERIAL.print("Sending voltage: ");
+      DEBUG_SERIAL.print("Sending status: ");
       DEBUG_SERIAL.println(statusstr);
 #endif
       sclient.send(statusstr);
@@ -472,7 +546,13 @@ void loop()
 
       updatestatusbar();
 
-      updateMotors();
+      static unsigned long lastupdate_motors = 0;
+      unsigned long currentmillis = millis();
+      if (currentmillis > lastupdate_motors + 10) // min 10 ms tussen aanroepen updatemotors als er geen nieuwe waarde ontvangen is vanuit browser
+      {
+        lastupdate_motors = currentmillis;
+        updateMotors();
+      }
     }
     else
     {
