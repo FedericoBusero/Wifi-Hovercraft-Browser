@@ -63,7 +63,7 @@ Op ESP8266-chips wordt het voltage gemeten, voeg volgende defines toe
 
 #define DEBUG_SERIAL Serial
 
-#define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
+#define PIN_SERVO          D5 // D5 = GPIO14  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
 #define PIN_LEDCONNECTIE    2 
@@ -79,7 +79,7 @@ Op ESP8266-chips wordt het voltage gemeten, voeg volgende defines toe
 
 #define DEBUG_SERIAL Serial
 
-#define PIN_SERVO          D2 // D2 = GPIO4  op NodeMCU & Wemos D1 mini
+#define PIN_SERVO          D5 // D5 = GPIO14  op NodeMCU & Wemos D1 mini
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
 #define PIN_LEDCONNECTIE    D0 // D0=GPIO16
