@@ -281,7 +281,7 @@ void setup()
 
   gyroBeschikbaar = false;
 
-#ifdef GY521
+#ifdef USE_GY521
   // setup gyro module
 #ifdef PIN_SDA
   Wire.begin(PIN_SDA,PIN_SCL);
