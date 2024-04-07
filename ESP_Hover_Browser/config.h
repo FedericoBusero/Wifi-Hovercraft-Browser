@@ -95,6 +95,7 @@ Op ESP8266-chips wordt het voltage gemeten, voeg volgende defines toe
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0)
+#define USE_GY521
 
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
