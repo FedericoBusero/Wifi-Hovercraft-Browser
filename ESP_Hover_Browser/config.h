@@ -16,6 +16,9 @@
 
 /*
 Als je een ander board wenst te gebruiken, zijn volgende defines nodig:
+* USE_GY521
+Als er een gyro aangesloten wordt
+
 * Als je seriële output wenst (en de RX/TX pinnen zijn niet in gebruik voor andere doelen):
 #define DEBUG_SERIAL Serial
 
