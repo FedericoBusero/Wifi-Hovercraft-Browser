@@ -434,7 +434,16 @@ void updatestatusbar()
       sclient.send(statusstr);
       motors_pause();
       delay(20000); // boodschap wordt 20 seconden getoond in browser alvorens hij disconnecteert
-      ESP.deepSleep(0);
+      WiFi.mode(WIFI_OFF);
+      WiFi.forceSleepBegin();
+      delay(1);
+      while (1)
+      {
+        led_set(LED_BRIGHTNESS_ON);
+        delay(10);
+        led_set(LED_BRIGHTNESS_OFF);
+        delay(5000);
+      }      
     }
   }
 #endif
