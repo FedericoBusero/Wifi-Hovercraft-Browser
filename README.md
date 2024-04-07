@@ -20,7 +20,7 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 ## pinallocatie Wemos D1 Lite (ESP8266)
 Hiertoe moet je volgende regel uncommenten:
 ```
-// #define ENV_HOVER_ESP8266_LOLIND1MINILITE
+// #define ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE
 ```
 | Functie       | Pin | GPIO   |
 | ------------- | --- | ------ |
@@ -31,7 +31,7 @@ Hiertoe moet je volgende regel uncommenten:
 ## pinallocatie NodeMCU
 Hiertoe moet je volgende regel uncommenten:
 ```
-// #define ENV_HOVER_ESP8266_NODEMCU
+// #define ENV_HOVERSERVO_ESP8266_NODEMCU
 ```
 | Functie       | Pin | GPIO   |
 | ------------- | --- | ------ |
@@ -42,7 +42,7 @@ Hiertoe moet je volgende regel uncommenten:
 ## pinallocatie ESP01
 Naargelang de led pin op GPIO1 of GPIO2 zit moet je volgende regel uncommenten:
 ```
-// #define ENV_HOVER_ESP8266_ESP01_LEDPIN1_V0
+// #define ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0
 ```
 | Functie       | Pin | GPIO  |
 | ------------- | --- | ----- |
@@ -52,15 +52,13 @@ Naargelang de led pin op GPIO1 of GPIO2 zit moet je volgende regel uncommenten:
 
 ofwel
 ```
-// #define ENV_HOVER_ESP8266_ESP01_LEDPIN2_V0
+// #define ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN2_V0
 ```
 | Functie       | Pin | GPIO  |
 | ------------- | --- | ----- |
 | LEDCONNECTIE  |     | GPIO2 |
 | SERVO         |     | GPIO0 |
 | MOTOR         | RX  | GPIO3 |
-
-
 
 
 
