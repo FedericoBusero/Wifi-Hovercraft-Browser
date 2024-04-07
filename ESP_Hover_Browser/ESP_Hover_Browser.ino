@@ -124,6 +124,7 @@ void updateMotors()
     float regelX;
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
+    int TrimServopositie = ui_slider1;
     
     if (ui_joystick_y <= 0)
     {
@@ -152,7 +153,6 @@ void updateMotors()
     {
       regelX = (float)ui_joystick_x;
     }
-    int TrimServopositie = ui_slider1;
     doel_servohoek = map(constrain(regelX + TrimServopositie,-360,360), -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
