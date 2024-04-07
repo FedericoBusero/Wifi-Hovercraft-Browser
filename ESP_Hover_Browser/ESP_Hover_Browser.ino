@@ -15,8 +15,10 @@
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include "config.h"
 
+#ifdef USE_GY521
 #include "GY521.h" // library; https://github.com/RobTillaart/GY521/
 GY521 sensor(0x68);
+#endif
 
 // Architectuur afhankelijke settings
 #if defined (CONFIG_IDF_TARGET_ESP32C3)
@@ -134,6 +136,7 @@ void updateMotors()
 
     if (gyroBeschikbaar && (doel_motorsnelheid>5)) // gyro
     {
+#ifdef USE_GY521
       // "gyro"-regeling
       float Pfactor = 2.4; 
       float max_draai_factor = 2.0;
@@ -143,6 +146,7 @@ void updateMotors()
       // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
       float doel_draaisnelheid = (float)ui_joystick_x* (-1.0) * max_draai_factor; 
       regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid); 
+#endif
     }
     else
     {
@@ -272,16 +276,16 @@ void setup()
 
   led_set(LED_BRIGHTNESS_ON,false);
 
+  gyroBeschikbaar = false;
+
+#ifdef GY521
   // setup gyro module
 #ifdef PIN_SDA
   Wire.begin(PIN_SDA,PIN_SCL);
 #else
   Wire.begin();
 #endif
-  
   delay(100);
-
-  gyroBeschikbaar = false;
   for (int t = 0; t < 3; t++) // 3 keer proberen of gyro beschikbaar is
   {
     if (sensor.wakeup() == false)
@@ -315,6 +319,7 @@ void setup()
     sensor.gze = 0;
     sensor.read();
   }
+#endif // USE_GY521
 #ifdef PIN_LED_DUALUSE
    led_init();
 #endif
@@ -502,8 +507,10 @@ void updatestatusbar()
 
       if (gyroBeschikbaar)
       {
+  #ifdef USE_GY521
         sensor.read();
         snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, sensor.getGyroZ());
+  #endif
       } else
       {
         snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
