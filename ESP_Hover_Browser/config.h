@@ -4,10 +4,10 @@
 
 // Uncomment één van volgende defines
 
-// #define ENV_HOVER_ESP8266_ESP01_LEDPIN1_V0
-// #define ENV_HOVER_ESP8266_ESP01_LEDPIN2_V0
-// #define ENV_HOVER_ESP8266_LOLIND1MINILITE
-// #define ENV_HOVER_ESP8266_NODEMCU
+// #define ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0
+// #define ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN2_V0
+// #define ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE
+// #define ENV_HOVERSERVO_ESP8266_NODEMCU
 
 // Als de defines in platformio.ini gedefinieerd zijn:
 // #define ENV_USER_DEFINED
@@ -33,7 +33,7 @@ Op ESP8266-chips wordt het voltage gemeten, voeg volgende defines toe
 
 */
 
-#if defined(ENV_HOVER_ESP8266_ESP01_LEDPIN1_V0)
+#if defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0)
 
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
@@ -46,9 +46,9 @@ Op ESP8266-chips wordt het voltage gemeten, voeg volgende defines toe
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
 
-#elif defined(ENV_HOVER_ESP8266_ESP01_LEDPIN2_V0)
+#elif defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN2_V0)
 
-#define PIN_SERVO          0
+#define PIN_SERVO          1
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   2
 
@@ -59,7 +59,7 @@ Op ESP8266-chips wordt het voltage gemeten, voeg volgende defines toe
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
 
-#elif defined (ENV_HOVER_ESP8266_LOLIND1MINILITE)
+#elif defined (ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE)
 
 #define DEBUG_SERIAL Serial
 
@@ -75,7 +75,7 @@ Op ESP8266-chips wordt het voltage gemeten, voeg volgende defines toe
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
 
-#elif defined (ENV_HOVER_ESP8266_NODEMCU)
+#elif defined (ENV_HOVERSERVO_ESP8266_NODEMCU)
 
 #define DEBUG_SERIAL Serial
 
