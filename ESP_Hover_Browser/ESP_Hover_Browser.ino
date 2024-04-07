@@ -270,8 +270,12 @@ void setup()
   led_set(LED_BRIGHTNESS_ON);
 
   // setup gyro module
+#ifdef PIN_SDA
+  Wire.begin(PIN_SDA,PIN_SCL);
+#else
   Wire.begin();
-
+#endif
+  
   delay(100);
 
   gyroBeschikbaar = false;
