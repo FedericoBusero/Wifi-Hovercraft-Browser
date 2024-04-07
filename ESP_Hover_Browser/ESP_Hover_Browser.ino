@@ -48,7 +48,6 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 #include <ESPAsyncTCP.h> // https://github.com/me-no-dev/ESPAsyncTCP
 
 #define PWM_RANGE 1023 // PWM range voor analogWrite
-#define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
 
 #endif // ARDUINO_ARCH_ESP32
 
@@ -95,6 +94,7 @@ int ui_slider2; // 0 .. 360
 int doel_servohoek;
 Easer servohoek;
 
+#define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
 #define MOTOR_TIME_UP 200 // ms to go to ease to full power of a motor 
 
 Easer motor_snelheid;
@@ -237,6 +237,9 @@ void setup()
   
   // Verander de frequentie van analogWrite van 1000 Hz naar 400 Hz voor een aangenamer geluid
   analogWriteFreq(MOTOR_FREQ);
+#elif defined (ESP32)
+  // Verander de frequentie van analogWrite van 1000 Hz naar 400 Hz voor een aangenamer geluid
+  analogWriteFrequency(MOTOR_FREQ);
 #endif
   analogWrite(PIN_MOTOR, 0); 
 
