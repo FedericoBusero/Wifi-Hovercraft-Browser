@@ -213,8 +213,11 @@ void led_init()
 #endif
 }
 
-void led_set(int ledmode)
+void led_set(int ledmode, boolean except_when_dual_use)
 {
+#ifdef PIN_LED_DUALUSE
+  if (except_when_dual_use) return;
+#endif
 #ifdef PIN_LEDCONNECTIE
   digitalWrite(PIN_LEDCONNECTIE, ledmode);
 #endif
@@ -243,13 +246,13 @@ void setup()
   led_init();
 
   // De LEd flasht 2x om te tonen dat er een reboot is
-  led_set(LED_BRIGHTNESS_ON);
+  led_set(LED_BRIGHTNESS_ON,false);
   delay(10);
-  led_set(LED_BRIGHTNESS_OFF);
+  led_set(LED_BRIGHTNESS_OFF,false);
   delay(100);
-  led_set(LED_BRIGHTNESS_ON);
+  led_set(LED_BRIGHTNESS_ON,false);
   delay(10);
-  led_set(LED_BRIGHTNESS_OFF);
+  led_set(LED_BRIGHTNESS_OFF,false);
 
   // steering servo PWM
   setup_pin_mode_output(PIN_SERVO);
@@ -267,7 +270,7 @@ void setup()
   
   init_motors();
 
-  led_set(LED_BRIGHTNESS_ON);
+  led_set(LED_BRIGHTNESS_ON,false);
 
   // setup gyro module
 #ifdef PIN_SDA
@@ -312,6 +315,9 @@ void setup()
     sensor.gze = 0;
     sensor.read();
   }
+#ifdef PIN_LED_DUALUSE
+   led_init();
+#endif
 
   // Wifi instellingen
   WiFi.persistent(true);
@@ -423,7 +429,7 @@ void handle_message(websockets::WebsocketsMessage msg) {
   DEBUG_SERIAL.println(param2);
 #endif
 
-  led_set(LED_BRIGHTNESS_ON);
+  led_set(LED_BRIGHTNESS_ON,true);
   last_activity_message = millis();
 
   switch (id)
@@ -456,7 +462,11 @@ void handle_message(websockets::WebsocketsMessage msg) {
 
 void onConnect()
 {
-  led_set(LED_BRIGHTNESS_OFF);
+#ifdef PIN_LED_DUALUSE
+  digitalWrite(PIN_LEDCONNECTIE,LOW);
+#else
+  led_set(LED_BRIGHTNESS_OFF,false);
+#endif
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("onConnect"));
 #endif
@@ -469,6 +479,9 @@ void onDisconnect()
   DEBUG_SERIAL.println(F("onDisconnect"));
 #endif
   init_motors();
+#ifdef PIN_LED_DUALUSE
+  led_init();
+#endif
 }
 
 void updatestatusbar()
@@ -517,9 +530,9 @@ void updatestatusbar()
       delay(1);
       while (1)
       {
-        led_set(LED_BRIGHTNESS_ON);
+        led_set(LED_BRIGHTNESS_ON,false);
         delay(10);
-        led_set(LED_BRIGHTNESS_OFF);
+        led_set(LED_BRIGHTNESS_OFF,false);
         delay(5000);
       }      
     }
@@ -537,7 +550,7 @@ void loop()
   
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
-    led_set(LED_BRIGHTNESS_OFF);
+    led_set(LED_BRIGHTNESS_OFF,true);
   }
 
   if (millis() > last_activity_message + TIMEOUT_MS_MOTORS)
@@ -596,7 +609,7 @@ void loop()
   
   if (!is_connected)
   {
-    led_set((millis() % 1000) > 500 ? LOW : HIGH);
+    led_set((millis() % 1000) > 500 ? LOW : HIGH,false);
   }
   
   delay(2);
