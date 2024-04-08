@@ -207,6 +207,10 @@ void setup()
   
   // Verander de frequentie van analogWrite van 1000 Hz naar 400 Hz voor een aangenamer geluid
   analogWriteFreq(MOTOR_FREQ);
+#if ARDUINO_ESP8266_MAJOR>=3
+  // workaround extreeme trage servo write vanaf Arduino 3: https://github.com/esp8266/Arduino/issues/8081
+  enablePhaseLockedWaveform();
+#endif
 #elif defined (ESP32)
   // Verander de frequentie van analogWrite van 1000 Hz naar 400 Hz voor een aangenamer geluid
   analogWriteFrequency(MOTOR_FREQ);
