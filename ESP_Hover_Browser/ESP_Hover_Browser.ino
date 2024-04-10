@@ -113,6 +113,7 @@ void setup_pin_mode_output(int pin)
   pinMode(pin, OUTPUT);
 }
 
+#ifdef USE_GY521
 float getGyro()
 {
   switch (GYRO_DIRECTION)
@@ -128,6 +129,7 @@ float getGyro()
   }
   return 0;
 }
+#endif
 
 void updateMotors()
 {
