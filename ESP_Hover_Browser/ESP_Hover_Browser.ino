@@ -160,14 +160,15 @@ void updateMotors()
     {
 #ifdef USE_GY521
       // "gyro"-regeling
-      float Pfactor = 2.4; 
-      float max_draai_factor = 2.0;
+      const float Pfactor = GYRO_REGELING_P; 
+      const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
+      const float bias = GYRO_REGELING_BIA;
 
       sensor.read();
       float werkelijke_draaisnelheid = getGyro();
       // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
       float doel_draaisnelheid = (float)ui_joystick_x* (-1.0) * max_draai_factor; 
-      regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid); 
+      regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid)-bias*doel_draaisnelheid; 
       regelX = constrain(regelX,-180,180);
 #endif
     }
