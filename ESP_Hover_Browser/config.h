@@ -16,9 +16,12 @@
 
 /*
 Als je een ander board wenst te gebruiken, zijn volgende defines nodig:
-* USE_GY521
-Als er een gyro aangesloten wordt.
-Daarnaast moet GYRO_DIRECTION gelijk zijn aan GYRO_DIRECTION_X, GYRO_DIRECTION_Y of GYRO_DIRECTION_Z
+* Als een gyro gebruikt wordt, zijn volgende defines nodig:
+- USE_GY521
+- GYRO_REGELING_P
+- GYRO_REGELING_MAX_DRAAI
+- GYRO_REGELING_BIAS
+- GYRO_DIRECTION : GYRO_DIRECTION_X, GYRO_DIRECTION_Y of GYRO_DIRECTION_Z
 
 * Als je seriële output wenst (en de RX/TX pinnen zijn niet in gebruik voor andere doelen):
 #define DEBUG_SERIAL Serial
@@ -108,6 +111,9 @@ enum
 #elif defined(ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0)
 #define USE_GY521
 #define GYRO_DIRECTION GYRO_DIRECTION_X
+#define GYRO_REGELING_P         4.0
+#define GYRO_REGELING_MAX_DRAAI 1.0
+#define GYRO_REGELING_BIAS      1.0
 
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
