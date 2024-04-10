@@ -84,9 +84,9 @@ Servo servo1;
 
 // De minimum en maximum hoek van de servo, pas dit gerust aan als de servo de uitersten niet kan halen
 // De waarden zijn minimaal 0, maximaal 180
-#define SERVO_HOEK_MIN 35
-#define SERVO_HOEK_MAX 145
-#define SERVO_HOEK_MID ((SERVO_HOEK_MIN+SERVO_HOEK_MAX)/2)
+#define SERVO_HOEK_MIN_NOTRIM 35
+#define SERVO_HOEK_MAX_NOTRIM 145
+#define SERVO_HOEK_MID ((SERVO_HOEK_MIN_NOTRIM+SERVO_HOEK_MAX_NOTRIM)/2)
 
 int ui_joystick_x;
 int ui_joystick_y;
@@ -172,7 +172,7 @@ void updateMotors()
     {
       regelX = (float)ui_joystick_x;
     }
-    doel_servohoek = map(constrain(regelX + TrimServopositie,-360,360), -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    doel_servohoek = map(constrain(regelX + TrimServopositie,-360,360), -360, 360, SERVO_HOEK_MIN_NOTRIM, SERVO_HOEK_MAX_NOTRIM);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
 #ifdef DEBUG_SERIAL
