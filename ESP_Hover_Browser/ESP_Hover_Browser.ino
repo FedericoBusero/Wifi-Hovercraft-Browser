@@ -81,6 +81,7 @@ Servo servo1;
 // De waarden zijn minimaal 0, maximaal 180
 #define SERVO_HOEK_MIN 0
 #define SERVO_HOEK_MAX 180
+#define SERVO_HOEK_MID ((SERVO_HOEK_MIN+SERVO_HOEK_MAX)/2)
 
 int ui_joystick_x;
 int ui_joystick_y;
@@ -174,8 +175,8 @@ void init_motors()
   ui_slider2 = 240;
   ui_joystick_x = 0;
   ui_joystick_y = 0;
-  servohoek.setValue((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
-  doel_servohoek = (SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2;
+  servohoek.setValue(SERVO_HOEK_MID);
+  doel_servohoek = SERVO_HOEK_MID;
 
   motor_snelheid.setValue(0);
   motors_halt = false;  
@@ -242,7 +243,7 @@ void setup()
   */
   servo1.attach(PIN_SERVO, 544, 2400);
   
-  servohoek.begin((SERVO_HOEK_MIN + SERVO_HOEK_MAX) / 2);
+  servohoek.begin(SERVO_HOEK_MID);
   servohoek.set_speed(SERVO_SWEEP_TIME / 180);
 
   motor_snelheid.begin(0, false);
