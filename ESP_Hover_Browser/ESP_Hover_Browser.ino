@@ -84,6 +84,9 @@ Servo servo1;
 
 // De minimum en maximum hoek van de servo, pas dit gerust aan als de servo de uitersten niet kan halen
 // De waarden zijn minimaal 0, maximaal 180
+#define SERVO_HOEK_MIN 0
+#define SERVO_HOEK_MAX 180
+
 #define SERVO_HOEK_MIN_NOTRIM 35
 #define SERVO_HOEK_MAX_NOTRIM 145
 #define SERVO_HOEK_MID ((SERVO_HOEK_MIN_NOTRIM+SERVO_HOEK_MAX_NOTRIM)/2)
@@ -143,7 +146,6 @@ void updateMotors()
     float regelX;
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
-    int TrimServopositie = ui_slider1;
     
     if (ui_joystick_y <= 0)
     {
@@ -166,14 +168,17 @@ void updateMotors()
       // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
       float doel_draaisnelheid = (float)ui_joystick_x* (-1.0) * max_draai_factor; 
       regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid); 
+      regelX = constrain(regelX,-180,180);
 #endif
     }
     else
     {
-      regelX = (float)ui_joystick_x;
+      regelX = (float)ui_joystick_x; // -180 .. 180
     }
-    doel_servohoek = map(constrain(regelX + TrimServopositie,-360,360), -360, 360, SERVO_HOEK_MIN_NOTRIM, SERVO_HOEK_MAX_NOTRIM);
-    servohoek.easeTo(doel_servohoek);
+    
+    int TrimServopositie = map(ui_slider1,-180,180,SERVO_HOEK_MIN-SERVO_HOEK_MIN_NOTRIM,SERVO_HOEK_MAX-SERVO_HOEK_MAX_NOTRIM);
+    doel_servohoek = map(regelX,-180, 180, SERVO_HOEK_MIN_NOTRIM+TrimServopositie, SERVO_HOEK_MAX_NOTRIM+TrimServopositie);
+    servohoek.easeTo(constrain(doel_servohoek,SERVO_HOEK_MIN,SERVO_HOEK_MAX));
     servohoek.update();
 #ifdef DEBUG_SERIAL
     // DEBUG_SERIAL.print(F("doel_servohoek="));
