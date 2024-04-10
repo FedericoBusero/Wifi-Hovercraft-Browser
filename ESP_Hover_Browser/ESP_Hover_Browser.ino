@@ -113,6 +113,22 @@ void setup_pin_mode_output(int pin)
   pinMode(pin, OUTPUT);
 }
 
+float getGyro()
+{
+  switch (GYRO_DIRECTION)
+  {
+    case GYRO_DIRECTION_X:
+      return sensor.getGyroX();
+
+    case GYRO_DIRECTION_Y:
+      return sensor.getGyroY();
+
+    case GYRO_DIRECTION_Z:
+      return sensor.getGyroZ();
+  }
+  return 0;
+}
+
 void updateMotors()
 {
   if (motors_halt)
@@ -143,7 +159,7 @@ void updateMotors()
       float max_draai_factor = 2.0;
 
       sensor.read();
-      float werkelijke_draaisnelheid = sensor.getGyroZ(); // getGyroX, getGyroY zijn ook mogelijk afhankelijk van positie sensor
+      float werkelijke_draaisnelheid = getGyro();
       // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
       float doel_draaisnelheid = (float)ui_joystick_x* (-1.0) * max_draai_factor; 
       regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid); 
@@ -516,7 +532,7 @@ void updatestatusbar()
       {
   #ifdef USE_GY521
         sensor.read();
-        snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, sensor.getGyroZ());
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, getGyro());
   #endif
       } else
       {
