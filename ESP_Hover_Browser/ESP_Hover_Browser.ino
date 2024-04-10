@@ -143,7 +143,7 @@ void updateMotors()
   }
   else
   {
-    float regelX;
+    float regelX=0.0;
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
     
