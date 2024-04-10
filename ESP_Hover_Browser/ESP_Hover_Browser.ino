@@ -162,7 +162,7 @@ void updateMotors()
       // "gyro"-regeling
       const float Pfactor = GYRO_REGELING_P; 
       const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
-      const float bias = GYRO_REGELING_BIA;
+      const float bias = GYRO_REGELING_BIAS;
 
       sensor.read();
       float werkelijke_draaisnelheid = getGyro();
