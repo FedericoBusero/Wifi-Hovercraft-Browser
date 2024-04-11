@@ -87,7 +87,6 @@ int ui_joystick_x;
 int ui_joystick_y;
 int ui_slider1; // -180 .. 180
 int ui_slider2; // 0 .. 360
-int doel_servohoek;
 Easer servohoek;
 
 #define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
@@ -127,7 +126,7 @@ void updateMotors()
       doel_motorsnelheid = 0;
     }
     int TrimServopositie = ui_slider1; // -180 .. 180
-    doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
+    int doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
     servohoek.easeTo(doel_servohoek);
     servohoek.update();
 #ifdef DEBUG_SERIAL
@@ -176,7 +175,6 @@ void init_motors()
   ui_joystick_x = 0;
   ui_joystick_y = 0;
   servohoek.setValue(SERVO_HOEK_MID);
-  doel_servohoek = SERVO_HOEK_MID;
 
   motor_snelheid.setValue(0);
   motors_halt = false;  
