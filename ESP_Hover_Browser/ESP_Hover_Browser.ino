@@ -134,6 +134,10 @@ float getGyro()
 }
 #endif
 
+float mapFloat(float value, float fromLow, float fromHigh, float toLow, float toHigh) {
+  return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+}
+
 void updateMotors()
 {
   if (motors_halt)
@@ -176,8 +180,8 @@ void updateMotors()
       regelX = (float)ui_joystick_x; // -180 .. 180
     }
     
-    int TrimServopositie = map(ui_slider1,-180,180,SERVO_HOEK_MIN-SERVO_HOEK_MIN_NOTRIM,SERVO_HOEK_MAX-SERVO_HOEK_MAX_NOTRIM);
-    int doel_servohoek = map(regelX,-180, 180, SERVO_HOEK_MIN_NOTRIM+TrimServopositie, SERVO_HOEK_MAX_NOTRIM+TrimServopositie);
+    float TrimServopositie = mapFloat((float)ui_slider1,-180.0,180.0,SERVO_HOEK_MIN-SERVO_HOEK_MIN_NOTRIM,SERVO_HOEK_MAX-SERVO_HOEK_MAX_NOTRIM);
+    float doel_servohoek = mapFloat(regelX,-180.0, 180.0, (float)SERVO_HOEK_MIN_NOTRIM+TrimServopositie, (float)SERVO_HOEK_MAX_NOTRIM+TrimServopositie);
     servohoek.easeTo(constrain(doel_servohoek,SERVO_HOEK_MIN,SERVO_HOEK_MAX));
     servohoek.update();
 #ifdef DEBUG_SERIAL
@@ -186,7 +190,7 @@ void updateMotors()
     // DEBUG_SERIAL.print(F("servohoek="));
     // DEBUG_SERIAL.println(servohoek.getCurrentValue());
 #endif
-    servo1.write(servohoek.getCurrentValue());  // We verplaatsen de servo naar de nieuwe positie servohoek
+    servo1.writeMicroseconds(mapFloat(servohoek.getCurrentValue(),SERVO_HOEK_MIN,SERVO_HOEK_MAX,544,2400));  // We verplaatsen de servo naar de nieuwe positie servohoek
   
   /*
 #ifdef DEBUG_SERIAL
