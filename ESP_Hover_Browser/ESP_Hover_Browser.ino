@@ -15,6 +15,11 @@
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include "config.h"
 
+#ifdef USE_GY521
+#include "GY521.h" // library; https://github.com/RobTillaart/GY521/
+GY521 sensor(0x68);
+#endif
+
 // Architectuur afhankelijke settings
 #if defined (CONFIG_IDF_TARGET_ESP32C3)
 
@@ -81,7 +86,10 @@ Servo servo1;
 // De waarden zijn minimaal 0, maximaal 180
 #define SERVO_HOEK_MIN 0
 #define SERVO_HOEK_MAX 180
-#define SERVO_HOEK_MID ((SERVO_HOEK_MIN+SERVO_HOEK_MAX)/2)
+
+#define SERVO_HOEK_MIN_NOTRIM 35
+#define SERVO_HOEK_MAX_NOTRIM 145
+#define SERVO_HOEK_MID ((SERVO_HOEK_MIN_NOTRIM+SERVO_HOEK_MAX_NOTRIM)/2)
 
 int ui_joystick_x;
 int ui_joystick_y;
@@ -95,6 +103,8 @@ Easer servohoek;
 Easer motor_snelheid;
 bool motors_halt;
 
+bool gyroBeschikbaar = false;
+
 void setup_pin_mode_output(int pin)
 {
 #ifdef ESP8266
@@ -106,6 +116,24 @@ void setup_pin_mode_output(int pin)
   pinMode(pin, OUTPUT);
 }
 
+#ifdef USE_GY521
+float getGyro()
+{
+  switch (GYRO_DIRECTION)
+  {
+    case GYRO_DIRECTION_X:
+      return sensor.getGyroX();
+
+    case GYRO_DIRECTION_Y:
+      return sensor.getGyroY();
+
+    case GYRO_DIRECTION_Z:
+      return sensor.getGyroZ();
+  }
+  return 0;
+}
+#endif
+
 void updateMotors()
 {
   if (motors_halt)
@@ -114,9 +142,10 @@ void updateMotors()
   }
   else
   {
+    float regelX=0.0;
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
-
+    
     if (ui_joystick_y <= 0)
     {
       doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
@@ -125,9 +154,31 @@ void updateMotors()
     {
       doel_motorsnelheid = 0;
     }
-    int TrimServopositie = ui_slider1; // -180 .. 180
-    int doel_servohoek = map(ui_joystick_x + TrimServopositie, -360, 360, SERVO_HOEK_MIN, SERVO_HOEK_MAX);
-    servohoek.easeTo(doel_servohoek);
+
+    if (gyroBeschikbaar && (doel_motorsnelheid>5)) // gyro
+    {
+#ifdef USE_GY521
+      // "gyro"-regeling
+      const float Pfactor = GYRO_REGELING_P; 
+      const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
+      const float bias = GYRO_REGELING_BIAS;
+
+      sensor.read();
+      float werkelijke_draaisnelheid = getGyro();
+      // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
+      float doel_draaisnelheid = (float)ui_joystick_x* (-1.0) * max_draai_factor; 
+      regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid)-bias*doel_draaisnelheid; 
+      regelX = constrain(regelX,-180,180);
+#endif
+    }
+    else
+    {
+      regelX = (float)ui_joystick_x; // -180 .. 180
+    }
+    
+    int TrimServopositie = map(ui_slider1,-180,180,SERVO_HOEK_MIN-SERVO_HOEK_MIN_NOTRIM,SERVO_HOEK_MAX-SERVO_HOEK_MAX_NOTRIM);
+    int doel_servohoek = map(regelX,-180, 180, SERVO_HOEK_MIN_NOTRIM+TrimServopositie, SERVO_HOEK_MAX_NOTRIM+TrimServopositie);
+    servohoek.easeTo(constrain(doel_servohoek,SERVO_HOEK_MIN,SERVO_HOEK_MAX));
     servohoek.update();
 #ifdef DEBUG_SERIAL
     // DEBUG_SERIAL.print(F("doel_servohoek="));
@@ -136,8 +187,8 @@ void updateMotors()
     // DEBUG_SERIAL.println(servohoek.getCurrentValue());
 #endif
     servo1.write(servohoek.getCurrentValue());  // We verplaatsen de servo naar de nieuwe positie servohoek
-
-    /*
+  
+  /*
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.print(F("doel_motorsnelheid="));
     DEBUG_SERIAL.println(doel_motorsnelheid);
@@ -189,8 +240,11 @@ void led_init()
 #endif
 }
 
-void led_set(int ledmode)
+void led_set(int ledmode, boolean except_when_dual_use)
 {
+#ifdef PIN_LED_DUALUSE
+  if (except_when_dual_use) return;
+#endif
 #ifdef PIN_LEDCONNECTIE
   digitalWrite(PIN_LEDCONNECTIE, ledmode);
 #endif
@@ -226,13 +280,13 @@ void setup()
   led_init();
 
   // De LEd flasht 2x om te tonen dat er een reboot is
-  led_set(LED_BRIGHTNESS_ON);
+  led_set(LED_BRIGHTNESS_ON,false);
   delay(10);
-  led_set(LED_BRIGHTNESS_OFF);
+  led_set(LED_BRIGHTNESS_OFF,false);
   delay(100);
-  led_set(LED_BRIGHTNESS_ON);
+  led_set(LED_BRIGHTNESS_ON,false);
   delay(10);
-  led_set(LED_BRIGHTNESS_OFF);
+  led_set(LED_BRIGHTNESS_OFF,false);
 
   // steering servo PWM
   setup_pin_mode_output(PIN_SERVO);
@@ -243,13 +297,62 @@ void setup()
   
   servohoek.begin(SERVO_HOEK_MID);
   servohoek.set_speed(SERVO_SWEEP_TIME / 180);
+  servohoek.setAntiBibber(2.0); // als bestemming <= x graden verwijderd, blijf gewoon staan
 
   motor_snelheid.begin(0, false);
   motor_snelheid.set_speed((float)MOTOR_TIME_UP / (float)PWM_RANGE);
   
   init_motors();
 
-  led_set(LED_BRIGHTNESS_ON);
+  led_set(LED_BRIGHTNESS_ON,false);
+
+  gyroBeschikbaar = false;
+
+#ifdef USE_GY521
+  // setup gyro module
+#ifdef PIN_SDA
+  Wire.begin(PIN_SDA,PIN_SCL);
+#else
+  Wire.begin();
+#endif
+  delay(100);
+  for (int t = 0; t < 3; t++) // 3 keer proberen of gyro beschikbaar is
+  {
+    if (sensor.wakeup() == false)
+    {
+#ifdef DEBUG_SERIAL
+      DEBUG_SERIAL.print(millis());
+      DEBUG_SERIAL.println("\tCould not connect to GY521");
+#endif
+      delay(1000);
+    }
+    else
+    {
+      gyroBeschikbaar = true;
+      break;
+    }
+  }
+
+  if (gyroBeschikbaar)
+  {
+    sensor.setAccelSensitivity(2);  // 8g
+    sensor.setGyroSensitivity(1);   // 500 degrees/s
+
+    sensor.setThrottle();
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.println("start...");
+#endif
+
+    // set all calibration errors to zero
+    sensor.gxe = 0;
+    sensor.gye = 0;
+    sensor.gze = 0;
+    sensor.read();
+  }
+#endif // USE_GY521
+#ifdef PIN_LED_DUALUSE
+   led_init();
+#endif
 
   // Wifi instellingen
   WiFi.persistent(true);
@@ -361,7 +464,7 @@ void handle_message(websockets::WebsocketsMessage msg) {
   DEBUG_SERIAL.println(param2);
 #endif
 
-  led_set(LED_BRIGHTNESS_ON);
+  led_set(LED_BRIGHTNESS_ON,true);
   last_activity_message = millis();
 
   switch (id)
@@ -394,7 +497,11 @@ void handle_message(websockets::WebsocketsMessage msg) {
 
 void onConnect()
 {
-  led_set(LED_BRIGHTNESS_OFF);
+#ifdef PIN_LED_DUALUSE
+  digitalWrite(PIN_LEDCONNECTIE,LOW);
+#else
+  led_set(LED_BRIGHTNESS_OFF,false);
+#endif
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("onConnect"));
 #endif
@@ -407,6 +514,9 @@ void onDisconnect()
   DEBUG_SERIAL.println(F("onDisconnect"));
 #endif
   init_motors();
+#ifdef PIN_LED_DUALUSE
+  led_init();
+#endif
 }
 
 void updatestatusbar()
@@ -424,8 +534,20 @@ void updatestatusbar()
     if (voltage >= VOLTAGE_THRESHOLD)
     {
       snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
+
+      if (gyroBeschikbaar)
+      {
+  #ifdef USE_GY521
+        sensor.read();
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, getGyro());
+  #endif
+      } else
+      {
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
+      }       
+
 #ifdef DEBUG_SERIAL
-      DEBUG_SERIAL.print("Sending voltage: ");
+      DEBUG_SERIAL.print("Sending status: ");
       DEBUG_SERIAL.println(statusstr);
 #endif
       sclient.send(statusstr);
@@ -445,9 +567,9 @@ void updatestatusbar()
       delay(1);
       while (1)
       {
-        led_set(LED_BRIGHTNESS_ON);
+        led_set(LED_BRIGHTNESS_ON,false);
         delay(10);
-        led_set(LED_BRIGHTNESS_OFF);
+        led_set(LED_BRIGHTNESS_OFF,false);
         delay(5000);
       }      
     }
@@ -465,7 +587,7 @@ void loop()
   
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
-    led_set(LED_BRIGHTNESS_OFF);
+    led_set(LED_BRIGHTNESS_OFF,true);
   }
 
   if (millis() > last_activity_message + TIMEOUT_MS_MOTORS)
@@ -487,7 +609,13 @@ void loop()
 
       updatestatusbar();
 
-      updateMotors();
+      static unsigned long lastupdate_motors = 0;
+      unsigned long currentmillis = millis();
+      if (currentmillis > lastupdate_motors + 10) // min 10 ms tussen aanroepen updatemotors als er geen nieuwe waarde ontvangen is vanuit browser
+      {
+        lastupdate_motors = currentmillis;
+        updateMotors();
+      }
     }
     else
     {
@@ -518,7 +646,7 @@ void loop()
   
   if (!is_connected)
   {
-    led_set((millis() % 1000) > 500 ? LOW : HIGH);
+    led_set((millis() % 1000) > 500 ? LOW : HIGH,false);
   }
   
   delay(2);
