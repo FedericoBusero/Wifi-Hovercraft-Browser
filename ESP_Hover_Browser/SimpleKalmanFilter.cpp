@@ -47,3 +47,7 @@ float SimpleKalmanFilter::getKalmanGain() {
 float SimpleKalmanFilter::getEstimateError() {
   return _err_estimate;
 }
+
+float SimpleKalmanFilter::getCurrentEstimate() {
+  return _current_estimate;
+}
