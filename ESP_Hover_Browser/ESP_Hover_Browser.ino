@@ -18,6 +18,10 @@
 #ifdef USE_GY521
 #include "GY521.h" // library; https://github.com/RobTillaart/GY521/
 GY521 sensor(0x68);
+
+#include "SimpleKalmanFilter.h"
+SimpleKalmanFilter simpleKalmanFilter(20, 20, 0.1);
+
 #endif
 
 // Architectuur afhankelijke settings
@@ -119,18 +123,24 @@ void setup_pin_mode_output(int pin)
 #ifdef USE_GY521
 float getGyro()
 {
+  float measured_value = 0.0;
+  if (sensor.read() ==  GY521_THROTTLED)
+  { 
+    return simpleKalmanFilter.getCurrentEstimate(); 
+  }
   switch (GYRO_DIRECTION)
   {
     case GYRO_DIRECTION_X:
-      return sensor.getGyroX();
+      measured_value = sensor.getGyroX();
 
     case GYRO_DIRECTION_Y:
-      return sensor.getGyroY();
+      measured_value = sensor.getGyroY();
 
     case GYRO_DIRECTION_Z:
-      return sensor.getGyroZ();
+      measured_value = sensor.getGyroZ();
   }
-  return 0;
+  float estimated_value = simpleKalmanFilter.updateEstimate(measured_value);  
+  return estimated_value;
 }
 #endif
 
@@ -167,7 +177,6 @@ void updateMotors()
       const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
       const float bias = GYRO_REGELING_BIAS;
 
-      sensor.read();
       float werkelijke_draaisnelheid = getGyro();
       // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
       float doel_draaisnelheid = (float)ui_joystick_x* (-1.0) * max_draai_factor; 
@@ -301,7 +310,7 @@ void setup()
   
   servohoek.begin(SERVO_HOEK_MID);
   servohoek.set_speed(SERVO_SWEEP_TIME / 180);
-  servohoek.setAntiBibber(2.0); // als bestemming <= x graden verwijderd, blijf gewoon staan
+  // servohoek.setAntiBibber(2.0); // als bestemming <= x graden verwijderd, blijf gewoon staan
 
   motor_snelheid.begin(0, false);
   motor_snelheid.set_speed((float)MOTOR_TIME_UP / (float)PWM_RANGE);
@@ -342,7 +351,7 @@ void setup()
     sensor.setAccelSensitivity(2);  // 8g
     sensor.setGyroSensitivity(1);   // 500 degrees/s
 
-    sensor.setThrottle();
+    sensor.setThrottle(2);
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println("start...");
 #endif
@@ -542,7 +551,6 @@ void updatestatusbar()
       if (gyroBeschikbaar)
       {
   #ifdef USE_GY521
-        sensor.read();
         snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, getGyro());
   #endif
       } else
@@ -653,5 +661,5 @@ void loop()
     led_set((millis() % 1000) > 500 ? LOW : HIGH,false);
   }
   
-  delay(2);
+  // delay(2);
 }
