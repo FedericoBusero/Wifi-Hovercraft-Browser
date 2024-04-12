@@ -57,7 +57,7 @@ class Easer
       arrived = true;
     }
 
-    void easeTo( int destinationvalue, unsigned long dur ) {
+    void easeTo(float destinationvalue, unsigned long dur ) {
       if (!ease_down && (destinationvalue<currentValue))
       {
         setValue(destinationvalue);
@@ -75,12 +75,12 @@ class Easer
       arrived = false;
     }
 
-    int getDestination() {
+    float getDestination() {
       return startValue+changeValue;
     }
 
     // ease with default speed
-    void easeTo( int destination ) {
+    void easeTo(float destination ) {
       this->update();
       easeTo(destination,abs(destination-currentValue)*ms_per_unit);
     }
