@@ -554,7 +554,7 @@ void updatestatusbar()
       if (gyroBeschikbaar)
       {
   #ifdef USE_GY521
-        snprintf(statusstr, sizeof(statusstr), "%4.2f V gz:%4.2f", voltage, getGyro());
+        snprintf(statusstr, sizeof(statusstr), "%4.2f V gyro:%4.2f", voltage, getGyro());
   #endif
       } else
       {
