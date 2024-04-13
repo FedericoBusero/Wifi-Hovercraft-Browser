@@ -132,12 +132,15 @@ float getGyro()
   {
     case GYRO_DIRECTION_X:
       measured_value = sensor.getGyroX();
+      break;
 
     case GYRO_DIRECTION_Y:
       measured_value = sensor.getGyroY();
+      break;
 
     case GYRO_DIRECTION_Z:
       measured_value = sensor.getGyroZ();
+      break;
   }
   float estimated_value = simpleKalmanFilter.updateEstimate(measured_value);  
   return estimated_value;
