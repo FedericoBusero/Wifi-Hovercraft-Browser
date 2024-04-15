@@ -119,7 +119,7 @@ enum
 #define USE_GY521
 #define GYRO_DIRECTION GYRO_DIRECTION_X
 #define GYRO_REGELING_P         4.0
-#define GYRO_REGELING_MAX_DRAAI 1.0
+#define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
 
 #define PIN_SERVO          1
