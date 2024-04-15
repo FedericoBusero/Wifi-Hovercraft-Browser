@@ -9,11 +9,20 @@
 // #define ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE
 // #define ENV_HOVERSERVO_ESP8266_NODEMCU
 
+// #define ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0
+
 // Als de defines in platformio.ini gedefinieerd zijn:
 // #define ENV_USER_DEFINED
 
 /*
 Als je een ander board wenst te definiëren, zijn volgende defines nodig:
+* Als een gyro gebruikt wordt, zijn volgende defines nodig:
+- USE_GY521
+- GYRO_REGELING_P
+- GYRO_REGELING_MAX_DRAAI
+- GYRO_REGELING_BIAS
+- GYRO_DIRECTION : GYRO_DIRECTION_X, GYRO_DIRECTION_Y of GYRO_DIRECTION_Z
+
 * Als je seriële output wenst (en de RX/TX pinnen zijn niet in gebruik voor andere doelen):
 #define DEBUG_SERIAL Serial
 
@@ -32,6 +41,13 @@ Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
 
 */
+
+enum 
+{
+    GYRO_DIRECTION_X,
+    GYRO_DIRECTION_Y,
+    GYRO_DIRECTION_Z,
+};
 
 #ifndef ENV_USER_DEFINED
 
@@ -98,8 +114,32 @@ Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
 
+
+#elif defined(ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0)
+#define USE_GY521
+#define GYRO_DIRECTION GYRO_DIRECTION_X
+#define GYRO_REGELING_P         4.0
+#define GYRO_REGELING_MAX_DRAAI 1.0
+#define GYRO_REGELING_BIAS      1.0
+
+#define PIN_SERVO          1
+#define PIN_MOTOR          3
+
+#define PIN_LEDCONNECTIE   2 
+#define PIN_LED_DUALUSE
+#define PIN_SDA            2            
+#define PIN_SCL            0
+
+// Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
+#define VOLTAGE_FACTOR 1060.0f 
+#define VOLTAGE_THRESHOLD 2.4 // onder dit voltage valt de chip uit om de batterij te beschermen
+
+#define LED_BRIGHTNESS_ON  LOW
+#define LED_BRIGHTNESS_OFF HIGH
+
 #elif defined ENV_USER_DEFINED
 // defines staan buiten de code
+
 #else
 // Geen ENV_XX geselecteerd
 #error "Defineer één van bovenstaande defines"
