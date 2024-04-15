@@ -56,9 +56,8 @@ ADC_MODE(ADC_VCC); // Nodig voor het inlezen van het voltage met ESP.getVcc
 #endif // ARDUINO_ARCH_ESP32
 
 #define USE_SOFTAP
-#define WIFI_SOFTAP_CHANNEL 1 // 1-13
-const char ssid[] = "hover-";
-const char password[] = "12345678";
+const char ssid[] = WIFI_SOFTAP_SSID_PREFIX;
+const char password[] = WIFI_SOFTAP_PASSWORD;
 
 #ifdef USE_SOFTAP
 #include <DNSServer.h>
