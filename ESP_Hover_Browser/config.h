@@ -123,6 +123,7 @@ enum
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
 #define GYRO_KALMAN_Q           0.04
+#define SERVO_ANTI_BIBBER       3.0
 
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
