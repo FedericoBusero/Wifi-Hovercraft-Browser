@@ -20,7 +20,7 @@
 GY521 sensor(0x68);
 
 #include "SimpleKalmanFilter.h"
-SimpleKalmanFilter simpleKalmanFilter(20, 20, 0.1);
+SimpleKalmanFilter simpleKalmanFilter(20, 20, GYRO_KALMAN_Q);
 
 #endif
 
