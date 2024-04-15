@@ -22,6 +22,7 @@ Als je een ander board wenst te definiëren, zijn volgende defines nodig:
 - GYRO_REGELING_MAX_DRAAI
 - GYRO_REGELING_BIAS
 - GYRO_DIRECTION : GYRO_DIRECTION_X, GYRO_DIRECTION_Y of GYRO_DIRECTION_Z
+- GYRO_KALMAN_Q
 
 * Als je seriële output wenst (en de RX/TX pinnen zijn niet in gebruik voor andere doelen):
 #define DEBUG_SERIAL Serial
@@ -121,6 +122,7 @@ enum
 #define GYRO_REGELING_P         4.0
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
+#define GYRO_KALMAN_Q           0.04
 
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
