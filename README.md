@@ -18,7 +18,7 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 - Joystick: besturing servo (links-rechts) en motor (midden-boven)
 
 ## pinallocatie Wemos D1 Lite (ESP8266)
-Hiertoe moet je volgende regel uncommenten:
+Hiertoe moet je volgende regel uncommenten in config.h:
 ```
 // #define ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE
 ```
@@ -29,7 +29,7 @@ Hiertoe moet je volgende regel uncommenten:
 | MOTOR         | D8  | GPIO15 |
 
 ## pinallocatie NodeMCU
-Hiertoe moet je volgende regel uncommenten:
+Hiertoe moet je volgende regel uncommenten in config.h:
 ```
 // #define ENV_HOVERSERVO_ESP8266_NODEMCU
 ```
@@ -40,7 +40,7 @@ Hiertoe moet je volgende regel uncommenten:
 | MOTOR         | D8  | GPIO15 |
 
 ## pinallocatie ESP01
-Naargelang de led pin op GPIO1 of GPIO2 zit moet je volgende regel uncommenten:
+Naargelang de led pin op GPIO1 of GPIO2 zit moet je volgende regel uncommenten in config.h:
 ```
 // #define ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0
 ```
@@ -61,7 +61,7 @@ ofwel
 | MOTOR         | RX  | GPIO3 |
 
 ## pinallocatie ESP01 met gyro GY-521
-Hiertoe moet je volgende regel uncommenten:
+Hiertoe moet je volgende regel uncommenten in config.h:
 ```
 // #define ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0
 ```
