@@ -1,5 +1,5 @@
 # Wifi-Hovercraft-Browser
-Wifi bestuurde (vanuit een browser ) hovercraft op een ESP8266 (NodeMCU, Wemos D1 mini) of ESP32
+Wifi bestuurde (vanuit een browser ) hovercraft op een ESP8266 (NodeMCU, Wemos D1 mini) of ESP32 en een optionele gyro GY-521
 
 Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 
@@ -60,7 +60,17 @@ ofwel
 | SERVO         |     | GPIO0 |
 | MOTOR         | RX  | GPIO3 |
 
-
+## pinallocatie ESP01 met gyro GY-521
+Hiertoe moet je volgende regel uncommenten:
+```
+// #define ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0
+```
+| Functie            | Pin | GPIO   |
+| ------------------ | --- | ------ |
+| SDA & LEDCONNECTIE |     | GPIO2 |
+| SCL                |     | GPIO0 |
+| SERVO              | TX  | GPIO1 |
+| MOTOR              | RX  | GPIO3 |
 
 ## Arduino ESP8266 board settings
 - Wij blijven de ESP8266 Arduino core 2.7.4 gebruiken, maar er zit nu ook een fix in om het ook op 3.1.2 vlot te laten lopen
