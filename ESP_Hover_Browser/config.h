@@ -23,6 +23,9 @@ Als je een ander board wenst te definiëren, zijn volgende defines nodig:
 - GYRO_REGELING_BIAS
 - GYRO_DIRECTION : GYRO_DIRECTION_X, GYRO_DIRECTION_Y of GYRO_DIRECTION_Z
 - GYRO_KALMAN_Q
+- (optioneel) SERVO_ANTI_BIBBER : aantal graden, als de doelpositie van de servo kleiner is dan deze waarde t.o.v. de huidige postie, blijft de servo gewoon staan op de huidige positie
+- (optioneel) PIN_SDA en PIN_SCL : indien niet gedefinieerd, worden de standaard Wire library pinnen van het bord gebruikt. 
+  Als één van de I2C pinnen ook als PIN_LEDCONNECTIE gebruikt wordt, definieer ook PIN_LED_DUALUSE
 
 * Als je seriële output wenst (en de RX/TX pinnen zijn niet in gebruik voor andere doelen):
 #define DEBUG_SERIAL Serial
@@ -38,7 +41,6 @@ Daarnaast zijn volgende defines verplicht (maar kunnen omgewisseld worden)
 
 Op ESP8266-chips wordt het voltage gemeten, voeg volgende define toe. Pas de voltagefactor aan, dat is bij elke chip verschillend. 
 Calibreer bv. met USB stroom die 3.3V op de chip moet geven
-
 #define VOLTAGE_FACTOR 1060.0f 
 
 */
@@ -57,7 +59,7 @@ enum
 #define WIFI_SOFTAP_PASSWORD "12345678"
 #define WIFI_SOFTAP_CHANNEL 1 // 1-13
 
-#define VOLTAGE_THRESHOLD 2.7 // onder dit voltage valt de chip uit om de batterij te beschermen
+#define VOLTAGE_THRESHOLD 2.7 // onder dit voltage valt de ESP8266-chip uit om de batterij te beschermen
 
 #endif
 
