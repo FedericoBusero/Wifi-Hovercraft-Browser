@@ -57,7 +57,7 @@ ofwel
 | Functie       | Pin | GPIO  |
 | ------------- | --- | ----- |
 | LEDCONNECTIE  |     | GPIO2 |
-| SERVO         |     | GPIO0 |
+| SERVO         |     | GPIO1 |
 | MOTOR         | RX  | GPIO3 |
 
 ## pinallocatie ESP01 met gyro GY-521
