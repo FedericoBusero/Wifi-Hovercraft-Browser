@@ -12,7 +12,7 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 
 ## App User interface 
 ![Screenshot_browser_hovercraft.png](Screenshot_browser_hovercraft.png "Hover user interface")
-- Bovenste regel: connectiestatus, en op ESP8266 het voltage tijdens connectie
+- Bovenste regel: connectiestatus, en op ESP8266 het voltage tijdens connectie (en optioneel de gyro draaisnelheid)
 - Bovenste slider: trim de servo
 - Tweede slider: stel maximum snelheid in (links = halve kracht, rechts=volle kracht)
 - Joystick: besturing servo (links-rechts) en motor (midden-boven)
