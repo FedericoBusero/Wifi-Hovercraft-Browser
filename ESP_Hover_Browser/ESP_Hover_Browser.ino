@@ -550,8 +550,6 @@ void updatestatusbar()
 
     if (voltage >= VOLTAGE_THRESHOLD)
     {
-      snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
-
       if (gyroBeschikbaar)
       {
   #ifdef USE_GY521
