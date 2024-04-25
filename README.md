@@ -1,5 +1,5 @@
 # Wifi-Hovercraft-Browser
-Wifi bestuurde (vanuit een browser ) hovercraft op een ESP8266 (NodeMCU, Wemos D1 mini) of ESP32
+Wifi bestuurde (vanuit een browser ) hovercraft op een ESP8266 (NodeMCU, Wemos D1 mini) of ESP32 en een optionele gyro GY-521
 
 Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 
@@ -12,13 +12,13 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 
 ## App User interface 
 ![Screenshot_browser_hovercraft.png](Screenshot_browser_hovercraft.png "Hover user interface")
-- Bovenste regel: connectiestatus, en op ESP8266 het voltage tijdens connectie
+- Bovenste regel: connectiestatus, en op ESP8266 het voltage tijdens connectie (en optioneel de gyro draaisnelheid)
 - Bovenste slider: trim de servo
 - Tweede slider: stel maximum snelheid in (links = halve kracht, rechts=volle kracht)
 - Joystick: besturing servo (links-rechts) en motor (midden-boven)
 
 ## pinallocatie Wemos D1 Lite (ESP8266)
-Hiertoe moet je volgende regel uncommenten:
+Hiertoe moet je volgende regel uncommenten in config.h:
 ```
 // #define ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE
 ```
@@ -29,7 +29,7 @@ Hiertoe moet je volgende regel uncommenten:
 | MOTOR         | D8  | GPIO15 |
 
 ## pinallocatie NodeMCU
-Hiertoe moet je volgende regel uncommenten:
+Hiertoe moet je volgende regel uncommenten in config.h:
 ```
 // #define ENV_HOVERSERVO_ESP8266_NODEMCU
 ```
@@ -40,7 +40,7 @@ Hiertoe moet je volgende regel uncommenten:
 | MOTOR         | D8  | GPIO15 |
 
 ## pinallocatie ESP01
-Naargelang de led pin op GPIO1 of GPIO2 zit moet je volgende regel uncommenten:
+Naargelang de led pin op GPIO1 of GPIO2 zit moet je volgende regel uncommenten in config.h:
 ```
 // #define ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0
 ```
@@ -57,10 +57,20 @@ ofwel
 | Functie       | Pin | GPIO  |
 | ------------- | --- | ----- |
 | LEDCONNECTIE  |     | GPIO2 |
-| SERVO         |     | GPIO0 |
+| SERVO         |     | GPIO1 |
 | MOTOR         | RX  | GPIO3 |
 
-
+## pinallocatie ESP01 met gyro GY-521
+Hiertoe moet je volgende regel uncommenten in config.h:
+```
+// #define ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0
+```
+| Functie            | Pin | GPIO   |
+| ------------------ | --- | ------ |
+| SDA & LEDCONNECTIE |     | GPIO2 |
+| SCL                |     | GPIO0 |
+| SERVO              | TX  | GPIO1 |
+| MOTOR              | RX  | GPIO3 |
 
 ## Arduino ESP8266 board settings
 - Wij blijven de ESP8266 Arduino core 2.7.4 gebruiken, maar er zit nu ook een fix in om het ook op 3.1.2 vlot te laten lopen
