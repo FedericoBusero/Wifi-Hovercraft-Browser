@@ -103,4 +103,4 @@ Gebruik je liever micropython dan Arduino? Er is ook een micropython versie voor
 
 ## Hoe maak je een Hovercraft?
 De bouwinstructies van de hovercraft zijn te vinden op https://drive.google.com/file/d/1SUZypw2QWQQqCWgGDMl3Ls_pUvmDDozy/view?usp=sharing 
-Voor workshops hovercraft bouwen kan je terecht bij MasynMachien: https://www.instructables.com/masynmachiens-workshops/
+Voor workshops hovercraft bouwen kan je terecht bij [MasynMachien](https://www.masynmachien.be/)
