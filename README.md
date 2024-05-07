@@ -102,5 +102,15 @@ Bij het ontwikkelen van deze software werden volgende inspiratie-bronnen gebruik
 Gebruik je liever micropython dan Arduino? Er is ook een micropython versie voor ESP32: https://github.com/FedericoBusero/HoverMicropyton
 
 ## Hoe maak je een Hovercraft?
-De bouwinstructies van de hovercraft zijn te vinden op https://drive.google.com/file/d/1SUZypw2QWQQqCWgGDMl3Ls_pUvmDDozy/view?usp=sharing 
-Voor workshops hovercraft bouwen kan je terecht bij [MasynMachien](https://www.masynmachien.be/)
+Voor workshops hovercraft bouwen kan je terecht bij [masynmachien](https://www.masynmachien.be/)
+- De bouwinstructies van de hovercraft zijn te vinden op https://drive.google.com/file/d/1SUZypw2QWQQqCWgGDMl3Ls_pUvmDDozy/view?usp=sharing 
+- Aanbevolen motor: 
+7.4V 8520 motor 1.25 Plug 48000RPM 1mm shaft, https://www.aliexpress.com/item/1005004245885110.html?spm=a2g0o.order_list.order_list_main.79.5e7b1802S1TcVB
+- Aanbevolen propellors:
+75mm 1mm Propeller, https://www.aliexpress.com/item/1005001492347661.html?spm=a2g0o.order_list.order_list_main.5.5e7b1802S1TcVB
+of
+75mm 1mm Propeller, https://www.aliexpress.com/item/33024513887.html?spm=a2g0o.order_list.order_list_main.10.5e7b1802S1TcVB
+- Aanbevolen batterij:
+3.7V 380mAH Lipo Battery, https://www.aliexpress.com/item/33041901836.html?spm=a2g0o.order_list.order_list_main.175.5e7b1802S1TcVB
+- Inspiratie om een hovercraft te bouwen zonder kit of masynmachien printplaatje vind je hier in de bouwinstructies van een oude versie van de hovercraft:
+https://docs.google.com/document/d/1fcbP3EX9xSy2-DPe2HyG4lQGwgzG96E5
