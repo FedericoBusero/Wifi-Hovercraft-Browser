@@ -91,6 +91,9 @@ ESP32:
 - ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
 - https://github.com/me-no-dev/ESPAsyncWebServer
 
+Daarnaast in geval van gyro GY-521:
+- https://github.com/RobTillaart/GY521 versie minimum 0.5.3
+
 ## Inspiratie
 Bij het ontwikkelen van deze software werden volgende inspiratie-bronnen gebruikt: 
 - [ESP32-CAM_TANK van PepeTheFroggie](https://github.com/PepeTheFroggie/ESP32CAM_RCTANK)
