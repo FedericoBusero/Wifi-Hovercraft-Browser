@@ -19,9 +19,6 @@
 #include "GY521.h" // library; https://github.com/RobTillaart/GY521/
 GY521 sensor(0x68);
 
-#include "SimpleKalmanFilter.h"
-SimpleKalmanFilter simpleKalmanFilter(20, 20, GYRO_KALMAN_Q);
-
 #endif
 
 // Architectuur afhankelijke settings
@@ -123,10 +120,7 @@ void setup_pin_mode_output(int pin)
 float getGyro()
 {
   float measured_value = 0.0;
-  if (sensor.read() ==  GY521_THROTTLED)
-  { 
-    return simpleKalmanFilter.getCurrentEstimate(); 
-  }
+  sensor.read();
   switch (GYRO_DIRECTION)
   {
     case GYRO_DIRECTION_X:
@@ -141,8 +135,7 @@ float getGyro()
       measured_value = sensor.getGyroZ();
       break;
   }
-  float estimated_value = simpleKalmanFilter.updateEstimate(measured_value);  
-  return estimated_value;
+  return measured_value;
 }
 #endif
 
