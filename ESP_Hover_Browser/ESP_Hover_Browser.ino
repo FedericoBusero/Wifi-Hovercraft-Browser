@@ -614,9 +614,6 @@ void loop()
     if (sclient.available()) { // als return non-nul, dan is er een client geconnecteerd
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
-#ifdef USE_GY521
-      getGyro(); // update gyro
-#endif
       updatestatusbar();
 
       static unsigned long lastupdate_motors = 0;
