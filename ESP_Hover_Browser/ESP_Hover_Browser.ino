@@ -16,7 +16,7 @@
 #include "config.h"
 
 #ifdef USE_GY521
-#include "GY521.h" // library; https://github.com/RobTillaart/GY521/
+#include "GY521.h" // library; https://github.com/RobTillaart/GY521/ minimum versie 0.5.3
 GY521 sensor(0x68);
 
 #endif
@@ -347,8 +347,8 @@ void setup()
   {
     sensor.setAccelSensitivity(2);  // 8g
     sensor.setGyroSensitivity(1);   // 500 degrees/s
+    sensor.setDLPFMode(6); // 5 Hz Digital Low pass filter. Dit is extreem belangrijk, zoniet krijg je veel te veel ruis op de gyro meting t.g.v. trillingen van de motor
 
-    sensor.setThrottle(2);
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println("start...");
 #endif
