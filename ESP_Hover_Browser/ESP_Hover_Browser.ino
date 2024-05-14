@@ -135,6 +135,9 @@ float getGyro()
       measured_value = sensor.getGyroZ();
       break;
   }
+#ifdef GYRO_FLIP
+  measured_value=-measured_value;
+#endif
   return measured_value;
 }
 #endif
