@@ -16,11 +16,8 @@
 #include "config.h"
 
 #ifdef USE_GY521
-#include "GY521.h" // library; https://github.com/RobTillaart/GY521/
+#include "GY521.h" // library; https://github.com/RobTillaart/GY521/ minimum versie 0.5.3
 GY521 sensor(0x68);
-
-#include "SimpleKalmanFilter.h"
-SimpleKalmanFilter simpleKalmanFilter(20, 20, GYRO_KALMAN_Q);
 
 #endif
 
@@ -123,10 +120,7 @@ void setup_pin_mode_output(int pin)
 float getGyro()
 {
   float measured_value = 0.0;
-  if (sensor.read() ==  GY521_THROTTLED)
-  { 
-    return simpleKalmanFilter.getCurrentEstimate(); 
-  }
+  sensor.read();
   switch (GYRO_DIRECTION)
   {
     case GYRO_DIRECTION_X:
@@ -141,8 +135,7 @@ float getGyro()
       measured_value = sensor.getGyroZ();
       break;
   }
-  float estimated_value = simpleKalmanFilter.updateEstimate(measured_value);  
-  return estimated_value;
+  return measured_value;
 }
 #endif
 
@@ -354,8 +347,8 @@ void setup()
   {
     sensor.setAccelSensitivity(2);  // 8g
     sensor.setGyroSensitivity(1);   // 500 degrees/s
+    sensor.setDLPFMode(6); // 5 Hz Digital Low pass filter. Dit is extreem belangrijk, zoniet krijg je veel te veel ruis op de gyro meting t.g.v. trillingen van de motor
 
-    sensor.setThrottle(2);
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println("start...");
 #endif
@@ -621,9 +614,6 @@ void loop()
     if (sclient.available()) { // als return non-nul, dan is er een client geconnecteerd
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
-#ifdef USE_GY521
-      getGyro(); // update gyro
-#endif
       updatestatusbar();
 
       static unsigned long lastupdate_motors = 0;

@@ -22,7 +22,6 @@ Als je een ander board wenst te definiëren, zijn volgende defines nodig:
 - GYRO_REGELING_MAX_DRAAI
 - GYRO_REGELING_BIAS
 - GYRO_DIRECTION : GYRO_DIRECTION_X, GYRO_DIRECTION_Y of GYRO_DIRECTION_Z
-- GYRO_KALMAN_Q
 - (optioneel) SERVO_ANTI_BIBBER : aantal graden, als de doelpositie van de servo kleiner is dan deze waarde t.o.v. de huidige postie, blijft de servo gewoon staan op de huidige positie
 - (optioneel) PIN_SDA en PIN_SCL : indien niet gedefinieerd, worden de standaard Wire library pinnen van het bord gebruikt. 
   Als één van de I2C pinnen ook als PIN_LEDCONNECTIE gebruikt wordt, definieer ook PIN_LED_DUALUSE
@@ -124,7 +123,6 @@ enum
 #define GYRO_REGELING_P         4.0
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
-#define GYRO_KALMAN_Q           0.04
 #define SERVO_ANTI_BIBBER       3.0
 
 #define PIN_SERVO          1
