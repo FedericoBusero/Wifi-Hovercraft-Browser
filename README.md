@@ -107,8 +107,10 @@ Gebruik je liever micropython dan Arduino? Er is ook een micropython versie voor
 ## Hoe maak je een Hovercraft?
 Voor workshops hovercraft bouwen kan je terecht bij [masynmachien](https://www.masynmachien.be/)
 - De bouwinstructies van de hovercraft zijn te vinden op https://drive.google.com/file/d/1SUZypw2QWQQqCWgGDMl3Ls_pUvmDDozy/view?usp=sharing 
-- Aanbevolen motor: 
+- Aanbevolen motoren: 
 [7.4V 8520 motor 1.25 Plug 48000RPM 1mm shaft](https://www.aliexpress.com/item/1005004245885110.html?spm=a2g0o.order_list.order_list_main.79.5e7b1802S1TcVB)
+of
+[7.4V 8520 CW CCW 1.25 Plug 48000RPM 1mm Shaft](https://www.aliexpress.com/item/1005004245298618.html?spm=a2g0o.order_list.order_list_main.42.3be51802TU4qc0)
 - Aanbevolen propellors:
 [75mm 1mm Propeller](https://www.aliexpress.com/item/1005001492347661.html?spm=a2g0o.order_list.order_list_main.5.5e7b1802S1TcVB)
 of
