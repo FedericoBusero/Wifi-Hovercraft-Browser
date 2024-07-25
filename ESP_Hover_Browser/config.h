@@ -143,6 +143,34 @@ enum
 #elif defined ENV_USER_DEFINED
 // defines staan buiten de code
 
+#elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0)
+#define USE_GY521
+#define GYRO_DIRECTION GYRO_DIRECTION_X
+#define GYRO_REGELING_P         4.0
+#define GYRO_REGELING_MAX_DRAAI 0.5
+#define GYRO_REGELING_BIAS      1.0
+#define SERVO_ANTI_BIBBER       3.0
+
+#define PIN_SERVO          5
+#define PIN_MOTOR          6
+
+#define PIN_LEDCONNECTIE   8
+#define PIN_LED_DUALUSE
+#define PIN_SDA            3            
+#define PIN_SCL            4
+
+#define LED_BRIGHTNESS_ON  LOW
+#define LED_BRIGHTNESS_OFF HIGH
+
+#define USE_WS2812FX
+#define PIN_WS2812FX       8
+#define WS2812FX_NUMLEDS    5
+#define WS2812FX_RGB_ORDER  NEO_GRB
+#define WS2812FX_BRIGHTNESS 35 // 0 .. 255
+#define WS2812FX_SPEED 1000 // in ms
+#define WS2812FX_COLOR 0x007BFF
+#define WS2812FX_MODE FX_MODE_FADE // Volledige lijst op https://github.com/kitesurfer1404/WS2812FX/blob/master/src/modes_arduino.h
+
 #else
 // Geen ENV_XX geselecteerd
 #error "Defineer één van bovenstaande defines"
