@@ -40,6 +40,10 @@ Daarnaast zijn volgende defines verplicht (maar kunnen omgewisseld worden)
 #define LED_BRIGHTNESS_ON  HIGH
 #define LED_BRIGHTNESS_OFF LOW
 
+Om een LED-strip aan te sturen moeten volgende defines toegevoegd worden:
+USE_WS2812FX, PIN_WS2812FX, WS2812FX_NUMLEDS, WS2812FX_RGB_ORDER,
+WS2812FX_BRIGHTNESS, WS2812FX_SPEED, WS2812FX_COLOR en WS2812FX_MODE
+
 Op ESP8266-chips wordt het voltage gemeten, voeg volgende define toe. Pas de voltagefactor aan, dat is bij elke chip verschillend. 
 Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
