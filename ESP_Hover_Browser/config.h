@@ -144,6 +144,8 @@ enum
 // defines staan buiten de code
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0)
+// #define DEBUG_SERIAL Serial
+
 #define USE_GY521
 #define GYRO_DIRECTION GYRO_DIRECTION_X
 #define GYRO_REGELING_P         4.0
