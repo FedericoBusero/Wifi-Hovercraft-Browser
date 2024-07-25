@@ -105,6 +105,11 @@ bool motors_halt;
 
 bool gyroBeschikbaar = false;
 
+#ifdef USE_WS2812FX
+#include <WS2812FX.h> // https://github.com/kitesurfer1404/WS2812FX
+WS2812FX ws2812fx = WS2812FX(WS2812FX_NUMLEDS, PIN_WS2812FX, WS2812FX_RGB_ORDER + NEO_KHZ800);
+#endif
+
 void setup_pin_mode_output(int pin)
 {
 #ifdef ESP8266
@@ -443,6 +448,16 @@ void setup()
   DEBUG_SERIAL.print(F("Is server live? "));
   DEBUG_SERIAL.println(server.available());
 #endif
+
+#ifdef USE_WS2812FX
+  ws2812fx.init();
+  ws2812fx.setBrightness(WS2812FX_BRIGHTNESS);
+  ws2812fx.setSpeed(WS2812FX_SPEED);
+  ws2812fx.setColor(WS2812FX_COLOR);
+  ws2812fx.setMode(WS2812FX_MODE);
+  ws2812fx.start();
+#endif
+  
   last_activity_message = millis();
 }
 
@@ -663,6 +678,12 @@ void loop()
   {
     led_set((millis() % 1000) > 500 ? LOW : HIGH, false);
   }
+#ifdef USE_WS2812FX
+  else
+  {
+    ws2812fx.service();
+  }
+#endif
 
   // delay(2);
 }
