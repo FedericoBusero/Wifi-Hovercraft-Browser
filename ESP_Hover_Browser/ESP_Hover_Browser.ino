@@ -1,15 +1,15 @@
 /*
  * Code voor het besturen van een hover mbv Wifi via de browser
- * 
+ *
  * Hoe gebruiken?
  * Voeg wifi netwerk hover-xxxx toe met paswoord 12345678
  * Er is op dat netwerk uiteraard geen internet, dus "wifi behouden" aanvinken indien dat gevraagd wordt
  * Dan ga je naar de browser (chrome, firefox, safari, ..) naar de website http://192.168.4.1 of http://h.be
- * 
+ *
  * De bovenste regel toont de connectie-status. Op ESP8266 wordt het voltage getoond tijdens de connectie, te calibreren met VOLTAGE_FACTOR
- * De bovenste slider dient om de servo te trimmen, de slider eronder om de maximum snelheid in te stellen, 
+ * De bovenste slider dient om de servo te trimmen, de slider eronder om de maximum snelheid in te stellen,
  * met de joystick worden servo (links-rechts) en motor (midden-boven) bestuurd
- * 
+ *
  */
 
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
@@ -22,21 +22,21 @@ GY521 sensor(0x68);
 #endif
 
 // Architectuur afhankelijke settings
-#if defined (CONFIG_IDF_TARGET_ESP32C3)
+#if defined(CONFIG_IDF_TARGET_ESP32C3)
 
 #include <ESPAsyncWebSrv.h> // ESPAsyncWebSrv, version 1.2.6 by dvarrel : https://github.com/dvarrel/ESPAsyncWebSrv/
 #include <WiFi.h>
-#include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
-#include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo 
+#include <AsyncTCP.h>   // https://github.com/me-no-dev/AsyncTCP
+#include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo
 
-#define PWM_RANGE 255 // PWM range voor analogWrite 
+#define PWM_RANGE 255 // PWM range voor analogWrite
 
 #elif defined(ARDUINO_ARCH_ESP32)
 
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
 #include <WiFi.h>
-#include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP
-#include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo 
+#include <AsyncTCP.h>   // https://github.com/me-no-dev/AsyncTCP
+#include <ESP32Servo.h> // https://github.com/madhephaestus/ESP32Servo
 
 #define PWM_RANGE 255 // PWM range voor analogWrite
 
@@ -69,8 +69,8 @@ AsyncWebServer webserver(80);
 WebsocketsClient sclient;
 
 // timeoutes
-#define TIMEOUT_MS_MOTORS 1200L // Timeout om motoren uit veiligheid stil te leggen, na x milliseconden niks te hebben ontvangen, moet groter zijn dan retransmit in html code
-#define TIMEOUT_MS_LED 1L        // Aantal milliseconden dat LED blijft branden na het ontvangen van een boodschap
+#define TIMEOUT_MS_MOTORS 1200L   // Timeout om motoren uit veiligheid stil te leggen, na x milliseconden niks te hebben ontvangen, moet groter zijn dan retransmit in html code
+#define TIMEOUT_MS_LED 1L         // Aantal milliseconden dat LED blijft branden na het ontvangen van een boodschap
 #define TIMEOUT_MS_VOLTAGE 10000L // Aantal milliseconden tussen update voltage
 
 unsigned long last_activity_message;
@@ -89,7 +89,7 @@ Servo servo1;
 
 #define SERVO_HOEK_MIN_NOTRIM 35
 #define SERVO_HOEK_MAX_NOTRIM 145
-#define SERVO_HOEK_MID ((SERVO_HOEK_MIN_NOTRIM+SERVO_HOEK_MAX_NOTRIM)/2)
+#define SERVO_HOEK_MID ((SERVO_HOEK_MIN_NOTRIM + SERVO_HOEK_MAX_NOTRIM) / 2)
 
 int ui_joystick_x;
 int ui_joystick_y;
@@ -97,8 +97,8 @@ int ui_slider1; // -180 .. 180
 int ui_slider2; // 0 .. 360
 Easer servohoek;
 
-#define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
-#define MOTORZ_TIME_UP 200 // ms to go to ease to full power of a motor 
+#define MOTOR_FREQ 400     // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
+#define MOTORZ_TIME_UP 200 // ms to go to ease to full power of a motor
 
 Easer motorZ_snelheid;
 bool motors_halt;
@@ -110,7 +110,7 @@ void setup_pin_mode_output(int pin)
 #ifdef ESP8266
   if ((pin == 1) || (pin == 3)) // RX & TX
   {
-    pinMode (pin, FUNCTION_3);
+    pinMode(pin, FUNCTION_3);
   }
 #endif
   pinMode(pin, OUTPUT);
@@ -123,26 +123,27 @@ float getGyro()
   sensor.read();
   switch (GYRO_DIRECTION)
   {
-    case GYRO_DIRECTION_X:
-      measured_value = sensor.getGyroX();
-      break;
+  case GYRO_DIRECTION_X:
+    measured_value = sensor.getGyroX();
+    break;
 
-    case GYRO_DIRECTION_Y:
-      measured_value = sensor.getGyroY();
-      break;
+  case GYRO_DIRECTION_Y:
+    measured_value = sensor.getGyroY();
+    break;
 
-    case GYRO_DIRECTION_Z:
-      measured_value = sensor.getGyroZ();
-      break;
+  case GYRO_DIRECTION_Z:
+    measured_value = sensor.getGyroZ();
+    break;
   }
 #ifdef GYRO_FLIP
-  measured_value=-measured_value;
+  measured_value = -measured_value;
 #endif
   return measured_value;
 }
 #endif
 
-float mapFloat(float value, float fromLow, float fromHigh, float toLow, float toHigh) {
+float mapFloat(float value, float fromLow, float fromHigh, float toLow, float toHigh)
+{
   return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
 }
 
@@ -154,10 +155,10 @@ void updateMotors()
   }
   else
   {
-    float regelX=0.0;
+    float regelX = 0.0;
     int doel_motorsnelheid;
-    int max_motorsnelheid = map(ui_slider2,0,360,PWM_RANGE/2,PWM_RANGE);
-    
+    int max_motorsnelheid = map(ui_slider2, 0, 360, PWM_RANGE / 2, PWM_RANGE);
+
     if (ui_joystick_y <= 0)
     {
       doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
@@ -167,29 +168,29 @@ void updateMotors()
       doel_motorsnelheid = 0;
     }
 
-    if (gyroBeschikbaar && (doel_motorsnelheid>5)) // gyro
+    if (gyroBeschikbaar && (doel_motorsnelheid > 5)) // gyro
     {
 #ifdef USE_GY521
       // "gyro"-regeling
-      const float Pfactor = GYRO_REGELING_P; 
+      const float Pfactor = GYRO_REGELING_P;
       const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
       const float bias = GYRO_REGELING_BIAS;
 
       float werkelijke_draaisnelheid = getGyro();
       // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
-      float doel_draaisnelheid = (float)ui_joystick_x* (-1.0) * max_draai_factor; 
-      regelX = Pfactor * (werkelijke_draaisnelheid-doel_draaisnelheid)-bias*doel_draaisnelheid; 
-      regelX = constrain(regelX,-180,180);
+      float doel_draaisnelheid = (float)ui_joystick_x * (-1.0) * max_draai_factor;
+      regelX = Pfactor * (werkelijke_draaisnelheid - doel_draaisnelheid) - bias * doel_draaisnelheid;
+      regelX = constrain(regelX, -180, 180);
 #endif
     }
     else
     {
       regelX = (float)ui_joystick_x; // -180 .. 180
     }
-    
-    float TrimServopositie = mapFloat((float)ui_slider1,-180.0,180.0,SERVO_HOEK_MIN-SERVO_HOEK_MIN_NOTRIM,SERVO_HOEK_MAX-SERVO_HOEK_MAX_NOTRIM);
-    float doel_servohoek = mapFloat(regelX,-180.0, 180.0, (float)SERVO_HOEK_MIN_NOTRIM+TrimServopositie, (float)SERVO_HOEK_MAX_NOTRIM+TrimServopositie);
-    servohoek.easeTo(constrain(doel_servohoek,SERVO_HOEK_MIN,SERVO_HOEK_MAX));
+
+    float TrimServopositie = mapFloat((float)ui_slider1, -180.0, 180.0, SERVO_HOEK_MIN - SERVO_HOEK_MIN_NOTRIM, SERVO_HOEK_MAX - SERVO_HOEK_MAX_NOTRIM);
+    float doel_servohoek = mapFloat(regelX, -180.0, 180.0, (float)SERVO_HOEK_MIN_NOTRIM + TrimServopositie, (float)SERVO_HOEK_MAX_NOTRIM + TrimServopositie);
+    servohoek.easeTo(constrain(doel_servohoek, SERVO_HOEK_MIN, SERVO_HOEK_MAX));
     servohoek.update();
 #ifdef DEBUG_SERIAL
     // DEBUG_SERIAL.print(F("doel_servohoek="));
@@ -197,14 +198,14 @@ void updateMotors()
     // DEBUG_SERIAL.print(F("servohoek="));
     // DEBUG_SERIAL.println(servohoek.getCurrentValue());
 #endif
-    servo1.writeMicroseconds(mapFloat(servohoek.getCurrentValue(),SERVO_HOEK_MIN,SERVO_HOEK_MAX,544,2400));  // We verplaatsen de servo naar de nieuwe positie servohoek
-  
-  /*
-#ifdef DEBUG_SERIAL
-    DEBUG_SERIAL.print(F("doel_motorsnelheid="));
-    DEBUG_SERIAL.println(doel_motorsnelheid);
-#endif
-  */
+    servo1.writeMicroseconds(mapFloat(servohoek.getCurrentValue(), SERVO_HOEK_MIN, SERVO_HOEK_MAX, 544, 2400)); // We verplaatsen de servo naar de nieuwe positie servohoek
+
+    /*
+  #ifdef DEBUG_SERIAL
+      DEBUG_SERIAL.print(F("doel_motorsnelheid="));
+      DEBUG_SERIAL.println(doel_motorsnelheid);
+  #endif
+    */
     motorZ_snelheid.easeTo(doel_motorsnelheid);
     motorZ_snelheid.update();
     analogWrite(PIN_MOTOR, motorZ_snelheid.getCurrentValue()); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motorZ_snelheid
@@ -216,7 +217,7 @@ void motors_pause()
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("motors_pause"));
 #endif
-  
+
   motors_halt = true;
   updateMotors();
 }
@@ -239,8 +240,8 @@ void init_motors()
   servohoek.setValue(SERVO_HOEK_MID);
 
   motorZ_snelheid.setValue(0);
-  motors_halt = false;  
-  
+  motors_halt = false;
+
   updateMotors();
 }
 
@@ -254,7 +255,8 @@ void led_init()
 void led_set(int ledmode, boolean except_when_dual_use)
 {
 #ifdef PIN_LED_DUALUSE
-  if (except_when_dual_use) return;
+  if (except_when_dual_use)
+    return;
 #endif
 #ifdef PIN_LEDCONNECTIE
   digitalWrite(PIN_LEDCONNECTIE, ledmode);
@@ -264,25 +266,25 @@ void led_set(int ledmode, boolean except_when_dual_use)
 void setup()
 {
   setup_pin_mode_output(PIN_MOTOR);
-  
+
 #ifdef ESP8266
   // Aangezien de PWM range van analogWrite afhankelijk van de Arduino ESP8266 versie 255 ofwel 1023 is, stellen we de range vast in op 1023
   analogWriteRange(PWM_RANGE);
-  
+
   // Verander de frequentie van analogWrite van 1000 Hz naar 400 Hz voor een aangenamer geluid
   analogWriteFreq(MOTOR_FREQ);
-#if ARDUINO_ESP8266_MAJOR>=3
+#if ARDUINO_ESP8266_MAJOR >= 3
   // workaround extreeme trage servo write vanaf Arduino 3: https://github.com/esp8266/Arduino/issues/8081
   enablePhaseLockedWaveform();
 #endif
-#elif defined (ESP32)
+#elif defined(ESP32)
   // Verander de frequentie van analogWrite van 1000 Hz naar 400 Hz voor een aangenamer geluid
   analogWriteFrequency(MOTOR_FREQ);
 #endif
-  analogWrite(PIN_MOTOR, 0); 
+  analogWrite(PIN_MOTOR, 0);
 
   delay(200); // 200 milliseconden wachten tot de stroom stabiel is
-  
+
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.begin(115200);
   DEBUG_SERIAL.println(F("\nHover Browser setup started"));
@@ -291,13 +293,13 @@ void setup()
   led_init();
 
   // De LEd flasht 2x om te tonen dat er een reboot is
-  led_set(LED_BRIGHTNESS_ON,false);
+  led_set(LED_BRIGHTNESS_ON, false);
   delay(10);
-  led_set(LED_BRIGHTNESS_OFF,false);
+  led_set(LED_BRIGHTNESS_OFF, false);
   delay(100);
-  led_set(LED_BRIGHTNESS_ON,false);
+  led_set(LED_BRIGHTNESS_ON, false);
   delay(10);
-  led_set(LED_BRIGHTNESS_OFF,false);
+  led_set(LED_BRIGHTNESS_OFF, false);
 
   // steering servo PWM
   setup_pin_mode_output(PIN_SERVO);
@@ -305,26 +307,26 @@ void setup()
      een blokgolf signaal van 544ms stemt overeen met de servo-arm op 0° en 2400ms met 180°).
   */
   servo1.attach(PIN_SERVO, 544, 2400);
-  
+
   servohoek.begin(SERVO_HOEK_MID);
   servohoek.set_speed(SERVO_SWEEP_TIME / 180);
 #ifdef SERVO_ANTI_BIBBER
   servohoek.setAntiBibber(SERVO_ANTI_BIBBER); // als bestemming <= x graden verwijderd, blijf gewoon staan
 #endif
-  
+
   motorZ_snelheid.begin(0, false);
   motorZ_snelheid.set_speed((float)MOTORZ_TIME_UP / (float)PWM_RANGE);
-  
+
   init_motors();
 
-  led_set(LED_BRIGHTNESS_ON,false);
+  led_set(LED_BRIGHTNESS_ON, false);
 
   gyroBeschikbaar = false;
 
 #ifdef USE_GY521
   // setup gyro module
 #ifdef PIN_SDA
-  Wire.begin(PIN_SDA,PIN_SCL);
+  Wire.begin(PIN_SDA, PIN_SCL);
 #else
   Wire.begin();
 #endif
@@ -348,9 +350,9 @@ void setup()
 
   if (gyroBeschikbaar)
   {
-    sensor.setAccelSensitivity(2);  // 8g
-    sensor.setGyroSensitivity(1);   // 500 degrees/s
-    sensor.setDLPFMode(6); // 5 Hz Digital Low pass filter. Dit is extreem belangrijk, zoniet krijg je veel te veel ruis op de gyro meting t.g.v. trillingen van de motor
+    sensor.setAccelSensitivity(2); // 8g
+    sensor.setGyroSensitivity(1);  // 500 degrees/s
+    sensor.setDLPFMode(6);         // 5 Hz Digital Low pass filter. Dit is extreem belangrijk, zoniet krijg je veel te veel ruis op de gyro meting t.g.v. trillingen van de motor
 
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println("start...");
@@ -364,12 +366,12 @@ void setup()
   }
 #endif // USE_GY521
 #ifdef PIN_LED_DUALUSE
-   led_init();
+  led_init();
 #endif
 
   // Wifi instellingen
   WiFi.persistent(true);
-  
+
   uint8_t macAddr[6];
   WiFi.macAddress(macAddr);
 
@@ -392,7 +394,7 @@ void setup()
   /* DNS server opzetten die alle domeinen vertaalt naar apIP */
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
   dnsServer.start(53, "h.be", apIP);
-  
+
 #else
   WiFi.softAPdisconnect(true);
   // host_name = "Hover-" + 6 hexadecimale waarden van het MAC-adres
@@ -411,9 +413,10 @@ void setup()
   // Connect to wifi
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  
+
   // Even wachten tot er verbinding is met het wifi netwerk
-  for (int i = 0; i < 15 && WiFi.status() != WL_CONNECTED; i++) {
+  for (int i = 0; i < 15 && WiFi.status() != WL_CONNECTED; i++)
+  {
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.print('.');
 #endif
@@ -422,17 +425,17 @@ void setup()
 
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.print("\nWiFi connected - IP address: ");
-  DEBUG_SERIAL.println(WiFi.localIP());  
+  DEBUG_SERIAL.println(WiFi.localIP());
 #endif
 
 #endif
 
-  webserver.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
+  webserver.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+               {
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println(F("on HTTP_GET: return"));
 #endif
-    request->send(200, "text/html", index_html);
-  });
+    request->send(200, "text/html", index_html); });
 
   webserver.begin();
   server.listen(82);
@@ -443,7 +446,8 @@ void setup()
   last_activity_message = millis();
 }
 
-void handle_message(websockets::WebsocketsMessage msg) {
+void handle_message(websockets::WebsocketsMessage msg)
+{
   const char *msgstr = msg.c_str();
   const char *p;
 
@@ -477,30 +481,29 @@ void handle_message(websockets::WebsocketsMessage msg) {
   DEBUG_SERIAL.println(param2);
 #endif
 
-  led_set(LED_BRIGHTNESS_ON,true);
+  led_set(LED_BRIGHTNESS_ON, true);
   last_activity_message = millis();
 
   switch (id)
   {
-    case 0:       // ping
-      break;
-      
-    case 1: // joystick
-      ui_joystick_x = param1;
-      ui_joystick_y = param2;
-      updateMotors();
-      break;
+  case 0: // ping
+    break;
 
-    case 2: // slider2
-      ui_slider2 = param1;
-      updateMotors();
-      break;
-      
-    case 3: // slider1
-      ui_slider1 = param1;
-      updateMotors();
-      break;
-      
+  case 1: // joystick
+    ui_joystick_x = param1;
+    ui_joystick_y = param2;
+    updateMotors();
+    break;
+
+  case 2: // slider2
+    ui_slider2 = param1;
+    updateMotors();
+    break;
+
+  case 3: // slider1
+    ui_slider1 = param1;
+    updateMotors();
+    break;
   }
   if (motors_halt)
   {
@@ -511,9 +514,9 @@ void handle_message(websockets::WebsocketsMessage msg) {
 void onConnect()
 {
 #ifdef PIN_LED_DUALUSE
-  digitalWrite(PIN_LEDCONNECTIE,LOW);
+  digitalWrite(PIN_LEDCONNECTIE, LOW);
 #else
-  led_set(LED_BRIGHTNESS_OFF,false);
+  led_set(LED_BRIGHTNESS_OFF, false);
 #endif
 #ifdef DEBUG_SERIAL
   DEBUG_SERIAL.println(F("onConnect"));
@@ -548,13 +551,14 @@ void updatestatusbar()
     {
       if (gyroBeschikbaar)
       {
-  #ifdef USE_GY521
+#ifdef USE_GY521
         snprintf(statusstr, sizeof(statusstr), "%4.2f V gyro:%4.2f", voltage, getGyro());
-  #endif
-      } else
+#endif
+      }
+      else
       {
         snprintf(statusstr, sizeof(statusstr), "%4.2f V", voltage);
-      }       
+      }
 
 #ifdef DEBUG_SERIAL
       DEBUG_SERIAL.print("Sending status: ");
@@ -577,11 +581,11 @@ void updatestatusbar()
       delay(1);
       while (1)
       {
-        led_set(LED_BRIGHTNESS_ON,false);
+        led_set(LED_BRIGHTNESS_ON, false);
         delay(10);
-        led_set(LED_BRIGHTNESS_OFF,false);
+        led_set(LED_BRIGHTNESS_OFF, false);
         delay(5000);
-      }      
+      }
     }
   }
 #endif
@@ -594,10 +598,10 @@ void loop()
 #if defined(USE_SOFTAP)
   dnsServer.processNextRequest();
 #endif
-  
+
   if (millis() > last_activity_message + TIMEOUT_MS_LED)
   {
-    led_set(LED_BRIGHTNESS_OFF,true);
+    led_set(LED_BRIGHTNESS_OFF, true);
   }
 
   if (millis() > last_activity_message + TIMEOUT_MS_MOTORS)
@@ -611,10 +615,10 @@ void loop()
     last_activity_message = millis();
   }
 
-
   if (is_connected)
   {
-    if (sclient.available()) { // als return non-nul, dan is er een client geconnecteerd
+    if (sclient.available())
+    {                 // als return non-nul, dan is er een client geconnecteerd
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
       updatestatusbar();
@@ -640,7 +644,8 @@ void loop()
     DEBUG_SERIAL.print(F("server.poll is_connected="));
     DEBUG_SERIAL.println(is_connected);
 #endif
-    if (is_connected) { 
+    if (is_connected)
+    {
       sclient.send("CLOSE");
     }
 
@@ -653,11 +658,11 @@ void loop()
     onConnect();
     is_connected = 1;
   }
-  
+
   if (!is_connected)
   {
-    led_set((millis() % 1000) > 500 ? LOW : HIGH,false);
+    led_set((millis() % 1000) > 500 ? LOW : HIGH, false);
   }
-  
+
   // delay(2);
 }
