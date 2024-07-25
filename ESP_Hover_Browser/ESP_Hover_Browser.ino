@@ -98,9 +98,9 @@ int ui_slider2; // 0 .. 360
 Easer servohoek;
 
 #define MOTOR_FREQ 400 // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
-#define MOTOR_TIME_UP 200 // ms to go to ease to full power of a motor 
+#define MOTORZ_TIME_UP 200 // ms to go to ease to full power of a motor 
 
-Easer motor_snelheid;
+Easer motorZ_snelheid;
 bool motors_halt;
 
 bool gyroBeschikbaar = false;
@@ -205,9 +205,9 @@ void updateMotors()
     DEBUG_SERIAL.println(doel_motorsnelheid);
 #endif
   */
-    motor_snelheid.easeTo(doel_motorsnelheid);
-    motor_snelheid.update();
-    analogWrite(PIN_MOTOR, motor_snelheid.getCurrentValue()); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motor_snelheid
+    motorZ_snelheid.easeTo(doel_motorsnelheid);
+    motorZ_snelheid.update();
+    analogWrite(PIN_MOTOR, motorZ_snelheid.getCurrentValue()); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motorZ_snelheid
   }
 }
 
@@ -233,12 +233,12 @@ void motors_resume()
 void init_motors()
 {
   ui_slider1 = 0;
-  ui_slider2 = 240;
+  ui_slider2 = 240; // TODO, mag dit op 0 ??
   ui_joystick_x = 0;
   ui_joystick_y = 0;
   servohoek.setValue(SERVO_HOEK_MID);
 
-  motor_snelheid.setValue(0);
+  motorZ_snelheid.setValue(0);
   motors_halt = false;  
   
   updateMotors();
@@ -312,8 +312,8 @@ void setup()
   servohoek.setAntiBibber(SERVO_ANTI_BIBBER); // als bestemming <= x graden verwijderd, blijf gewoon staan
 #endif
   
-  motor_snelheid.begin(0, false);
-  motor_snelheid.set_speed((float)MOTOR_TIME_UP / (float)PWM_RANGE);
+  motorZ_snelheid.begin(0, false);
+  motorZ_snelheid.set_speed((float)MOTORZ_TIME_UP / (float)PWM_RANGE);
   
   init_motors();
 
