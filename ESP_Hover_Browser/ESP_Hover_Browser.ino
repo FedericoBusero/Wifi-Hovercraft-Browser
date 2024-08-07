@@ -17,7 +17,7 @@
 
 #ifdef USE_GY521
 #include "GY521.h" // library; https://github.com/RobTillaart/GY521/ minimum versie 0.5.3
-GY521 sensor(0x68);
+GY521 sensor(0x69);//of 0x69 naargelang bord
 
 #endif
 
@@ -270,6 +270,10 @@ void led_set(int ledmode, boolean except_when_dual_use)
 
 void setup()
 {
+  #if defined(CONFIG_IDF_TARGET_ESP32C3)
+  analogSetAttenuation(ADC_0db); // op de C3 supermini gebruiken we een externe weerstandbrug om het batterijvoltage te meten en zetten we de interne weerstandsbrug op "geen spanningsdeling"
+#endif
+  
   setup_pin_mode_output(PIN_MOTOR);
 
 #ifdef ESP8266
@@ -552,7 +556,7 @@ void onDisconnect()
 
 void updatestatusbar()
 {
-#ifdef ESP8266
+//#ifdef ESP8266
   static unsigned long lastupdate_voltage = 0;
   unsigned long currentmillis = millis();
   char statusstr[50];
@@ -560,8 +564,11 @@ void updatestatusbar()
   if (currentmillis > lastupdate_voltage + TIMEOUT_MS_VOLTAGE)
   {
     lastupdate_voltage = currentmillis;
-    float voltage = ESP.getVcc() / VOLTAGE_FACTOR;
-
+    #ifdef ESP8266
+     float voltage = ESP.getVcc() / VOLTAGE_FACTOR; //op ESP8266 modules is VCC met de ene ADC pin verbonden
+    #else 
+      float voltage = analogRead(PIN_BATMONITOR) / VOLTAGE_FACTOR; // op ESP32 modules is VBAT zelf via spanningsdeler met een ADC1 pin te verbinden (ADC2 niet gebruiken)
+    #endif
     if (voltage >= VOLTAGE_THRESHOLD)
     {
       if (gyroBeschikbaar)
@@ -592,7 +599,7 @@ void updatestatusbar()
       motors_pause();
       delay(20000); // boodschap wordt 20 seconden getoond in browser alvorens hij disconnecteert
       WiFi.mode(WIFI_OFF);
-      WiFi.forceSleepBegin();
+      //WiFi.forceSleepBegin(); bestaat niet in deze vorm voor ESP32 C3????
       delay(1);
       while (1)
       {
@@ -603,7 +610,8 @@ void updatestatusbar()
       }
     }
   }
-#endif
+//#endif
+
 }
 
 void loop()
