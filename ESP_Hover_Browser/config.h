@@ -184,7 +184,7 @@ enum
 #define WS2812FX_MODE FX_MODE_FADE // Volledige lijst op https://github.com/kitesurfer1404/WS2812FX/blob/master/src/modes_arduino.h
 //#define WS2812FX_MODE FX_MODE_BLINK
 
-#define VOLTAGE_FACTOR 800.0f
+#define VOLTAGE_FACTOR 850.0f
 
 #else
 // Geen ENV_XX geselecteerd
