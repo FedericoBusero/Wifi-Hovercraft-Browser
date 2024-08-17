@@ -98,7 +98,7 @@ int ui_slider2; // 0 .. 360
 Easer servohoek;
 
 #define MOTOR_FREQ 400     // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
-#define MOTORZ_TIME_UP 200 // ms to go to ease to full power of a motor
+#define MOTORZ_TIME_UP 2000 // ms to go to ease to full power of a motor
 
 Easer motorZ_snelheid;
 bool motors_halt;
