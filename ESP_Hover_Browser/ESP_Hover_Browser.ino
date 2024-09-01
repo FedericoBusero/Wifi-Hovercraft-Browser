@@ -612,7 +612,7 @@ void updatestatusbar()
       delay(20000); // boodschap wordt 20 seconden getoond in browser alvorens hij disconnecteert
       WiFi.mode(WIFI_OFF);
 #ifdef ESP8266
-      WiFi.forceSleepBegin(); bestaat niet in deze vorm voor ESP32 C3????
+      WiFi.forceSleepBegin();
 #endif
       delay(1);
       while (1)
