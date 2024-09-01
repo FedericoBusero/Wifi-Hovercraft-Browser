@@ -34,6 +34,7 @@ Als je een ander board wenst te definiëren, zijn volgende defines nodig:
 Volgende pinnen worden gedefinieerd:
 - PIN_SERVO          
 - PIN_MOTOR          
+- MOTORZ_TIME_UP
 - (optioneel) PIN_LEDCONNECTIE   
 
 Daarnaast zijn volgende defines verplicht (maar kunnen omgewisseld worden)
@@ -78,6 +79,8 @@ enum
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   1
 
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
+
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
 
@@ -89,6 +92,8 @@ enum
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   2
+
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
@@ -105,6 +110,8 @@ enum
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
 #define PIN_LEDCONNECTIE    2 
 
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
+
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 910.0f 
 
@@ -119,6 +126,8 @@ enum
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
 #define PIN_LEDCONNECTIE    D0 // D0=GPIO16
+
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 910.0f 
@@ -143,14 +152,14 @@ enum
 #define PIN_SDA            2            
 #define PIN_SCL            0
 
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
+
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
 
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
 
-#elif defined ENV_USER_DEFINED
-// defines staan buiten de code
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0)
 // #define DEBUG_SERIAL Serial
@@ -173,6 +182,8 @@ enum
 
 #define PIN_BATMONITOR     1
 
+#define MOTORZ_TIME_UP 2000 // ms om motor naar vol vermogen te brengen
+
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
 
@@ -186,6 +197,9 @@ enum
 #define WS2812FX_MODE FX_MODE_FADE // FX_MODE_BLINK, ... Volledige lijst op https://github.com/kitesurfer1404/WS2812FX/blob/master/src/modes_arduino.h
 
 #define VOLTAGE_FACTOR 850.0f
+
+#elif defined ENV_USER_DEFINED
+// defines staan buiten de code
 
 #else
 // Geen ENV_XX geselecteerd
