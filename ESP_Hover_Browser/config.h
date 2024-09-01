@@ -183,8 +183,7 @@ enum
 #define WS2812FX_BRIGHTNESS 200 // 0 .. 255
 #define WS2812FX_SPEED 1000 // in ms
 #define WS2812FX_COLOR 0x007BFF // blauw, 0x007BFF geeft violet en blauw met 0xFF0000 op fairy type met NEO_GRB?
-#define WS2812FX_MODE FX_MODE_FADE // Volledige lijst op https://github.com/kitesurfer1404/WS2812FX/blob/master/src/modes_arduino.h
-//#define WS2812FX_MODE FX_MODE_BLINK
+#define WS2812FX_MODE FX_MODE_FADE // FX_MODE_BLINK, ... Volledige lijst op https://github.com/kitesurfer1404/WS2812FX/blob/master/src/modes_arduino.h
 
 #define VOLTAGE_FACTOR 850.0f
 
