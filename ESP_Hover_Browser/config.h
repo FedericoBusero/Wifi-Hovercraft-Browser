@@ -64,11 +64,13 @@ enum
 #define WIFI_SOFTAP_PASSWORD "12345678"
 #define WIFI_SOFTAP_CHANNEL 1 // 1-13
 
-//#define VOLTAGE_THRESHOLD 2.7 // onder dit voltage uit, om de batterij te beschermen, gemeten na de spanningsregelaar bij ESP8266.
-#define VOLTAGE_THRESHOLD 3.1 // onder dit voltage uit, om op hol slaan te vermijden op ESP32. Gemeten op batterij zelf.
-
+#if defined(CONFIG_IDF_TARGET_ESP32C3)
+#define VOLTAGE_THRESHOLD 3.1 // onder dit voltage uit, om op hol slaan te vermijden op ESP32C3. Gemeten op batterij zelf.
+#else
+#define VOLTAGE_THRESHOLD 2.7 // onder dit voltage uit, om de batterij te beschermen, gemeten na de spanningsregelaar bij ESP8266.
 #endif
 
+#endif
 
 #if defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0)
 
