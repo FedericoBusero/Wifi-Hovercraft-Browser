@@ -268,12 +268,26 @@ void led_set(int ledmode, boolean except_when_dual_use)
 #endif
 }
 
+void init_voltage_monitor()
+{
+#if defined(ESP32) && defined(PIN_BATMONITOR)
+  analogSetAttenuation(ADC_0db); // op de ESP32 varianten gebruiken we een externe weerstandbrug om het batterijvoltage te meten en zetten we de interne weerstandsbrug op "geen spanningsdeling"
+#endif
+}
+
+float getVoltage()
+{
+#ifdef ESP8266
+  return (float)ESP.getVcc() / (float)VOLTAGE_FACTOR; // op ESP8266 modules is VCC met de ene ADC pin verbonden
+#elif defined(ESP32) && defined(PIN_BATMONITOR) && defined(VOLTAGE_FACTOR)
+  return (float)analogRead(PIN_BATMONITOR) / (float)VOLTAGE_FACTOR; // op ESP32 modules is VBAT zelf via spanningsdeler met een ADC1 pin te verbinden (ADC2 niet gebruiken)
+#else
+  return (float)0;
+#endif
+}
+
 void setup()
 {
-  #if defined(CONFIG_IDF_TARGET_ESP32C3)
-  analogSetAttenuation(ADC_0db); // op de C3 supermini gebruiken we een externe weerstandbrug om het batterijvoltage te meten en zetten we de interne weerstandsbrug op "geen spanningsdeling"
-#endif
-  
   setup_pin_mode_output(PIN_MOTOR);
 
 #ifdef ESP8266
@@ -461,7 +475,9 @@ void setup()
   ws2812fx.setMode(WS2812FX_MODE);
   ws2812fx.start();
 #endif
-  
+
+  init_voltage_monitor();
+
   last_activity_message = millis();
 }
 
@@ -556,7 +572,7 @@ void onDisconnect()
 
 void updatestatusbar()
 {
-//#ifdef ESP8266
+#if defined(ESP8266) or ((defined(ESP32)) && defined(PIN_BATMONITOR))
   static unsigned long lastupdate_voltage = 0;
   unsigned long currentmillis = millis();
   char statusstr[50];
@@ -564,11 +580,7 @@ void updatestatusbar()
   if (currentmillis > lastupdate_voltage + TIMEOUT_MS_VOLTAGE)
   {
     lastupdate_voltage = currentmillis;
-    #ifdef ESP8266
-     float voltage = ESP.getVcc() / VOLTAGE_FACTOR; //op ESP8266 modules is VCC met de ene ADC pin verbonden
-    #else 
-      float voltage = analogRead(PIN_BATMONITOR) / VOLTAGE_FACTOR; // op ESP32 modules is VBAT zelf via spanningsdeler met een ADC1 pin te verbinden (ADC2 niet gebruiken)
-    #endif
+    float voltage = getVoltage();
     if (voltage >= VOLTAGE_THRESHOLD)
     {
       if (gyroBeschikbaar)
@@ -610,8 +622,7 @@ void updatestatusbar()
       }
     }
   }
-//#endif
-
+#endif
 }
 
 void loop()
