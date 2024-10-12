@@ -32,13 +32,13 @@ GY521 sensor(GY521_I2C_ADDRESS);
     calData calib = { 0 };  //Calibration data //calibratie nog te implementeren, dit alvast overgenomen uit vb.
     AccelData accelData;    //Sensor data
     GyroData gyroData;
-    MagData magData;
-    // niet gebruikt
-    //#include "SimpleKalmanFilter.h"
-    //SimpleKalmanFilter simpleKalmanFilter(20, 20, 0.04);
+    MagData magData; // niet gebruikt
+    
+    //experimentje om bibber er uit te halen met eenvoudige low pass filter
+    float prevValue = 0.0; // Previous filtered value
+    float filteredValue;
 
   #endif //USE_FastIMU
-
 #endif //USE_GY521
 
 // Architectuur afhankelijke settings
@@ -123,10 +123,6 @@ Easer motorZ_snelheid;
 bool motors_halt;
 
 bool gyroBeschikbaar = false;
-
-//experimentje om bibber er uit te halen met eenvoudige low pass filter
-float prevValue = 0.0; // Previous filtered value
-float filteredValue;
 
 #ifdef USE_WS2812FX
 #include <WS2812FX.h> // https://github.com/kitesurfer1404/WS2812FX
