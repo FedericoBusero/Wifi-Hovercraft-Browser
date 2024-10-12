@@ -10,7 +10,7 @@
 // #define ENV_HOVERSERVO_ESP8266_NODEMCU
 
 // #define ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0
-// #define ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0
+ #define ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0
 
 // Als de defines in platformio.ini gedefinieerd zijn:
 // #define ENV_USER_DEFINED
@@ -18,7 +18,8 @@
 /*
 Als je een ander board wenst te definiëren, zijn volgende defines nodig:
 * Als een gyro gebruikt wordt, zijn volgende defines nodig:
-- USE_GY521
+- USE_GY521 of
+- USE_FastIMU
 - GYRO_REGELING_P
 - GYRO_REGELING_MAX_DRAAI
 - GYRO_REGELING_BIAS
@@ -66,7 +67,8 @@ enum
 #define WIFI_SOFTAP_CHANNEL 1 // 1-13
 
 #define GY521_I2C_ADDRESS 0x68 // alternatief 0x69
-
+#define IMU_I2C_ADDRESS 0x6B// also 0x6A document for LSM6DS3, Change to the address of the IMU.    // to move to config
+    
 #if defined(CONFIG_IDF_TARGET_ESP32C3)
 #define VOLTAGE_THRESHOLD 3.1 // onder dit voltage uit, om op hol slaan te vermijden op ESP32C3. Gemeten op batterij zelf.
 #else
@@ -139,7 +141,8 @@ enum
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0)
-#define USE_GY521
+//#define USE_GY521
+#define USE_FastIMU
 #define GYRO_DIRECTION GYRO_DIRECTION_X
 #define GYRO_REGELING_P         4.0
 #define GYRO_REGELING_MAX_DRAAI 0.5
@@ -164,15 +167,17 @@ enum
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0)
-// #define DEBUG_SERIAL Serial
+#define DEBUG_SERIAL Serial
 
-#define USE_GY521
+//#define USE_GY521
+#define USE_FastIMU
 #define GYRO_DIRECTION GYRO_DIRECTION_Y
 #define GYRO_FLIP
 #define GYRO_REGELING_P         4.0
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
 #define SERVO_ANTI_BIBBER       3.0
+#define RunningAVGSize       20 //voor experimentje
 
 #define PIN_SERVO          5
 #define PIN_MOTOR          6
