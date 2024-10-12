@@ -12,8 +12,6 @@
  *
  */
 
- float RunningAVG = 0; //experimentje om boibber er uit te halen met eenvoudig running average
-
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include "config.h"
 
@@ -126,6 +124,10 @@ bool motors_halt;
 
 bool gyroBeschikbaar = false;
 
+//experimentje om bibber er uit te halen met eenvoudige low pass filter
+float prevValue = 0.0; // Previous filtered value
+float filteredValue;
+
 #ifdef USE_WS2812FX
 #include <WS2812FX.h> // https://github.com/kitesurfer1404/WS2812FX
 WS2812FX ws2812fx = WS2812FX(WS2812FX_NUMLEDS, PIN_WS2812FX, WS2812FX_RGB_ORDER + NEO_KHZ800);
@@ -192,8 +194,9 @@ float getGyro()
   measured_value = -measured_value;
   #endif
   //return measured_value;
-  RunningAVG = RunningAVG + measured_value/RunningAVGSize
-  return RunningAVG;
+  filteredValue = measured_value * (1 - alpha) + prevValue * alpha; //low pass filter experiment
+  prevValue = filteredValue;
+  return filteredValue;
   }
   #endif // USE_FastIMU
 #endif // USE_GY521
