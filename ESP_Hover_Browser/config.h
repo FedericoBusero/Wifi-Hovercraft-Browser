@@ -171,6 +171,7 @@ enum
 
 //#define USE_GY521
 #define USE_FastIMU
+#define alpha 0.95 // voor simple low pass experimentje: alpha is th filter constant defined in the config, higher value means more filtering
 #define GYRO_DIRECTION GYRO_DIRECTION_Y
 #define GYRO_FLIP
 #define GYRO_REGELING_P         4.0
