@@ -15,10 +15,9 @@
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include "config.h"
 
-#ifdef USE_GY521
-#include "GY521.h" // library; https://github.com/RobTillaart/GY521/ minimum versie 0.5.3
-GY521 sensor(GY521_I2C_ADDRESS);
-
+#ifdef USE_FASTIMU
+#include "FastIMU.h" // library; https://github.com/LiquidCGS/FastIMU minimum versie 1.2.8 voor LSM6DS3TR-C
+FASTIMU_TYPE imu;
 #endif
 
 // Architectuur afhankelijke settings
@@ -120,23 +119,26 @@ void setup_pin_mode_output(int pin)
   pinMode(pin, OUTPUT);
 }
 
-#ifdef USE_GY521
+#ifdef USE_FASTIMU
 float getGyro()
 {
+  GyroData gyroData;
   float measured_value = 0.0;
-  sensor.read();
+
+  imu.update();
+  imu.getGyro(&gyroData);
   switch (GYRO_DIRECTION)
   {
   case GYRO_DIRECTION_X:
-    measured_value = sensor.getGyroX();
+    measured_value = gyroData.gyroX;
     break;
 
   case GYRO_DIRECTION_Y:
-    measured_value = sensor.getGyroY();
+    measured_value = gyroData.gyroY;
     break;
 
   case GYRO_DIRECTION_Z:
-    measured_value = sensor.getGyroZ();
+    measured_value = gyroData.gyroZ;
     break;
   }
 #ifdef GYRO_FLIP
@@ -174,7 +176,7 @@ void updateMotors()
 
     if (gyroBeschikbaar && (doel_motorsnelheid > 5)) // gyro
     {
-#ifdef USE_GY521
+#ifdef USE_FASTIMU
       // "gyro"-regeling
       const float Pfactor = GYRO_REGELING_P;
       const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
@@ -345,21 +347,24 @@ void setup()
 
   gyroBeschikbaar = false;
 
-#ifdef USE_GY521
+#ifdef USE_FASTIMU
   // setup gyro module
 #ifdef PIN_SDA
   Wire.begin(PIN_SDA, PIN_SCL);
 #else
   Wire.begin();
 #endif
+  Wire.setClock(400000); //400khz clock
   delay(100);
   for (int t = 0; t < 3; t++) // 3 keer proberen of gyro beschikbaar is
   {
-    if (sensor.wakeup() == false)
+    calData calib = { 0 };  //Calibration data
+    int err = imu.init(calib, IMU_I2C_ADDRESS);
+    if (err != 0)
     {
 #ifdef DEBUG_SERIAL
       DEBUG_SERIAL.print(millis());
-      DEBUG_SERIAL.println("\tCould not connect to GY521");
+      DEBUG_SERIAL.println("\tCould not connect to gyro");
 #endif
       delay(1000);
     }
@@ -372,21 +377,14 @@ void setup()
 
   if (gyroBeschikbaar)
   {
-    sensor.setAccelSensitivity(2); // 8g
-    sensor.setGyroSensitivity(1);  // 500 degrees/s
-    sensor.setDLPFMode(6);         // 5 Hz Digital Low pass filter. Dit is extreem belangrijk, zoniet krijg je veel te veel ruis op de gyro meting t.g.v. trillingen van de motor
+    imu.setGyroRange(500);
+    imu.setAccelRange(8);
 
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println("start...");
 #endif
-
-    // set all calibration errors to zero
-    sensor.gxe = 0;
-    sensor.gye = 0;
-    sensor.gze = 0;
-    sensor.read();
   }
-#endif // USE_GY521
+#endif // USE_FASTIMU
 #ifdef PIN_LED_DUALUSE
   led_init();
 #endif
@@ -584,7 +582,7 @@ void updatestatusbar()
     {
       if (gyroBeschikbaar)
       {
-#ifdef USE_GY521
+#ifdef USE_FASTIMU
         snprintf(statusstr, sizeof(statusstr), "%4.2f V gyro:%4.2f", voltage, getGyro());
 #endif
       }
