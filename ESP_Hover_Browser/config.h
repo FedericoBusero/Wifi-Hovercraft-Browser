@@ -68,8 +68,6 @@ enum
 #define WIFI_SOFTAP_PASSWORD "12345678"
 #define WIFI_SOFTAP_CHANNEL 1 // 1-13
 
-#define IMU_I2C_ADDRESS 0x68 // alternatief 0x69
-
 #if defined(CONFIG_IDF_TARGET_ESP32C3)
 #define VOLTAGE_THRESHOLD 3.1 // onder dit voltage uit, om op hol slaan te vermijden op ESP32C3. Gemeten op batterij zelf.
 #else
@@ -144,6 +142,7 @@ enum
 #elif defined(ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0)
 #define USE_FASTIMU
 #define FASTIMU_TYPE MPU6050
+#define IMU_I2C_ADDRESS 0x68 // alternatief 0x69
 #define GYRO_DIRECTION GYRO_DIRECTION_X
 #define GYRO_REGELING_P         4.0
 #define GYRO_REGELING_MAX_DRAAI 0.5
@@ -173,6 +172,7 @@ enum
 
 #define USE_FASTIMU
 #define FASTIMU_TYPE MPU6050
+#define IMU_I2C_ADDRESS 0x68 // alternatief 0x69
 #define GYRO_DIRECTION GYRO_DIRECTION_Y
 #define GYRO_FLIP
 #define GYRO_REGELING_P         4.0
@@ -212,6 +212,7 @@ enum
 
 #define USE_FASTIMU
 #define FASTIMU_TYPE LSM6DS3
+#define IMU_I2C_ADDRESS 0x6B
 #define GYRO_DIRECTION GYRO_DIRECTION_Y
 #define GYRO_FLIP
 #define GYRO_REGELING_P         4.0
