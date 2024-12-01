@@ -25,6 +25,7 @@ Als je een ander board wenst te definiëren, zijn volgende defines nodig:
 - GYRO_REGELING_MAX_DRAAI
 - GYRO_REGELING_BIAS
 - GYRO_DIRECTION : GYRO_DIRECTION_X, GYRO_DIRECTION_Y of GYRO_DIRECTION_Z
+- GYRO_LPF_TF
 - (optioneel) SERVO_ANTI_BIBBER : aantal graden, als de doelpositie van de servo kleiner is dan deze waarde t.o.v. de huidige postie, blijft de servo gewoon staan op de huidige positie
 - (optioneel) GYRO_FLIP : gebruik de negatieve waarde van de gyro: als de gyro omgekeerd hangt
 - (optioneel) PIN_SDA en PIN_SCL : indien niet gedefinieerd, worden de standaard Wire library pinnen van het bord gebruikt. 
@@ -147,6 +148,7 @@ enum
 #define GYRO_REGELING_P         4.0
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
+#define GYRO_LPF_TF             0.050 // Tf in seconds
 #define SERVO_ANTI_BIBBER       3.0
 
 #define PIN_SERVO          1
@@ -166,7 +168,7 @@ enum
 #define LED_BRIGHTNESS_OFF HIGH
 
 
-#elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0) // 2024 Fri3d version
+#elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0) // GY-521 (2024 Fri3d)
 // #define DEBUG_SERIAL Serial
 
 #define USE_FASTIMU
@@ -177,6 +179,7 @@ enum
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
 #define SERVO_ANTI_BIBBER       3.0
+#define GYRO_LPF_TF             0.050 // Tf in seconds
 
 #define PIN_SERVO          5
 #define PIN_MOTOR          6
