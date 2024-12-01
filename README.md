@@ -92,7 +92,7 @@ ESP32:
 - https://github.com/me-no-dev/ESPAsyncWebServer
 
 Daarnaast in geval van gyro GY-521:
-- https://github.com/RobTillaart/GY521 versie minimum 0.5.3
+- https://github.com/LiquidCGS/FastIMU
 
 ## Inspiratie
 Bij het ontwikkelen van deze software werden volgende inspiratie-bronnen gebruikt: 
