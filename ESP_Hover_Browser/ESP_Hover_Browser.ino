@@ -668,7 +668,10 @@ void loop()
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
       updatestatusbar();
+      
+#ifdef USE_FASTIMU
       getGyro(); // update low pass filter gyro
+#endif
 
       static unsigned long lastupdate_motors = 0;
       unsigned long currentmillis = millis();
