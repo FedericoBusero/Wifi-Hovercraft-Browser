@@ -17,6 +17,7 @@
 
 #ifdef USE_FASTIMU
 #include "FastIMU.h" // library; https://github.com/LiquidCGS/FastIMU minimum versie 1.2.8 voor LSM6DS3TR-C
+#include "lowpass_filter.h"
 FASTIMU_TYPE imu;
 #endif
 
@@ -122,29 +123,41 @@ void setup_pin_mode_output(int pin)
 #ifdef USE_FASTIMU
 float getGyro()
 {
-  GyroData gyroData;
-  float measured_value = 0.0;
+  static LowPassFilter lpf(GYRO_LPF_TF);
+  static unsigned long lastupdate_gyro = 0;
 
-  imu.update();
-  imu.getGyro(&gyroData);
-  switch (GYRO_DIRECTION)
+  unsigned long currentmillis = millis();
+  if (currentmillis > lastupdate_gyro + 1) // min 1 ms tussen aanroepen gyro
   {
-  case GYRO_DIRECTION_X:
-    measured_value = gyroData.gyroX;
-    break;
+    lastupdate_gyro = currentmillis;
+    GyroData gyroData;
+    float measured_value = 0.0;
 
-  case GYRO_DIRECTION_Y:
-    measured_value = gyroData.gyroY;
-    break;
+    imu.update();
+    imu.getGyro(&gyroData);
+    switch (GYRO_DIRECTION)
+    {
+    case GYRO_DIRECTION_X:
+      measured_value = gyroData.gyroX;
+      break;
 
-  case GYRO_DIRECTION_Z:
-    measured_value = gyroData.gyroZ;
-    break;
+    case GYRO_DIRECTION_Y:
+      measured_value = gyroData.gyroY;
+      break;
+
+    case GYRO_DIRECTION_Z:
+      measured_value = gyroData.gyroZ;
+      break;
+    }
+  #ifdef GYRO_FLIP
+    measured_value = -measured_value;
+  #endif
+    return lpf(measured_value);
   }
-#ifdef GYRO_FLIP
-  measured_value = -measured_value;
-#endif
-  return measured_value;
+  else
+  {
+    return lpf.getLastValue();
+  }
 }
 #endif
 
@@ -655,6 +668,7 @@ void loop()
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
       updatestatusbar();
+      getGyro(); // update low pass filter gyro
 
       static unsigned long lastupdate_motors = 0;
       unsigned long currentmillis = millis();
