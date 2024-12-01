@@ -634,6 +634,32 @@ void updatestatusbar()
       }
     }
   }
+#else
+  static unsigned long lastupdate_status = 0;
+  unsigned long currentmillis = millis();
+  char statusstr[50];
+
+  if (currentmillis > lastupdate_status + TIMEOUT_MS_STATUS)
+  {
+    lastupdate_status = currentmillis;
+
+    if (gyroBeschikbaar)
+    {
+#ifdef USE_FASTIMU
+      snprintf(statusstr, sizeof(statusstr), "gyro:%4.2f", getGyro());
+#endif
+    }
+    else
+    {
+      snprintf(statusstr, sizeof(statusstr), "");
+    }
+
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.print("Sending status: ");
+    DEBUG_SERIAL.println(statusstr);
+#endif
+  sclient.send(statusstr);
+  }
 #endif
 }
 
