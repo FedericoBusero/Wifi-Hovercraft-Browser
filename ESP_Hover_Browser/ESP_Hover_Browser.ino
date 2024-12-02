@@ -658,7 +658,7 @@ void updatestatusbar()
     DEBUG_SERIAL.print("Sending status: ");
     DEBUG_SERIAL.println(statusstr);
 #endif
-  sclient.send(statusstr);
+    sclient.send(statusstr);
   }
 #endif
 }
