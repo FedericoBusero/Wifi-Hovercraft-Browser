@@ -230,7 +230,7 @@ enum
 #define PIN_SDA            3            
 #define PIN_SCL            4
 
-// #define PIN_BATMONITOR     1
+#define PIN_BATMONITOR     1
 
 #define MOTORZ_TIME_UP 2000 // ms om motor naar vol vermogen te brengen
 
@@ -238,7 +238,7 @@ enum
 #define LED_BRIGHTNESS_OFF HIGH
 
 #define USE_WS2812FX
-#define PIN_WS2812FX       1
+#define PIN_WS2812FX       8
 #define WS2812FX_NUMLEDS    6
 #define WS2812FX_RGB_ORDER  NEO_BGR //voor "fairy" type
 #define WS2812FX_BRIGHTNESS 255 // 0 .. 255
