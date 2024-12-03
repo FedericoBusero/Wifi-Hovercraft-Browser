@@ -220,7 +220,7 @@ enum
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
 // #define SERVO_ANTI_BIBBER       3.0
-#define GYRO_LPF_TF             0.050 // Tf in seconds
+#define GYRO_LPF_TF             0.100 // Tf in seconds
 
 #define PIN_SERVO          5
 #define PIN_MOTOR          6
