@@ -180,7 +180,7 @@ void updateMotors()
       // sturen in verhouding tot afwijking, X van joystick bepaalt hoe snel we willen draaien
       float doel_draaisnelheid = (float)ui_joystick_x * (-1.0) * max_draai_factor;
       regelX = Pfactor * (werkelijke_draaisnelheid - doel_draaisnelheid) - bias * doel_draaisnelheid;
-      regelX = constrain(regelX, -180, 180);
+      regelX = constrain(regelX, -180.0, 180.0);
 #endif
     }
     else
