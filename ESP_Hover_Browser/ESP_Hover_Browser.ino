@@ -156,6 +156,7 @@ void updateMotors()
   else
   {
     float regelX = 0.0;
+    const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2, 0, 360, PWM_RANGE / 2, PWM_RANGE);
 
@@ -173,7 +174,6 @@ void updateMotors()
 #ifdef USE_GY521
       // "gyro"-regeling
       const float Pfactor = GYRO_REGELING_P;
-      const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
       const float bias = GYRO_REGELING_BIAS;
 
       float werkelijke_draaisnelheid = getGyro();
@@ -185,7 +185,7 @@ void updateMotors()
     }
     else
     {
-      regelX = (float)ui_joystick_x; // -180 .. 180
+      regelX = (float)ui_joystick_x; // -180 .. 180, TODO max_draai_factor gebruiken
     }
 
     float TrimServopositie = mapFloat((float)ui_slider1, -180.0, 180.0, SERVO_HOEK_MIN - SERVO_HOEK_MIN_NOTRIM, SERVO_HOEK_MAX - SERVO_HOEK_MAX_NOTRIM);
