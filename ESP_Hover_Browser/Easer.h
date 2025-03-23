@@ -28,6 +28,12 @@ class Easer
     }
 
   public:
+
+    Easer()
+    {
+      begin(0.0, true);
+    }
+
     // set up an easer with just a starting value
     // when _ease_down is false, only ease when increasing the value
     void begin(float _startvalue,boolean _ease_down=true) {
