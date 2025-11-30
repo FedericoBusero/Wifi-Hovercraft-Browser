@@ -64,7 +64,7 @@ class Easer
     }
 
     void easeTo(float destinationvalue, unsigned long dur ) {
-      if (!ease_down && (destinationvalue<currentValue))
+      if (!ease_down && (fabs(destinationvalue)<fabs(currentValue)))
       {
         setValue(destinationvalue);
         return;
@@ -122,3 +122,4 @@ class Easer
 };
 
 #endif
+
