@@ -12,6 +12,7 @@
 // #define ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0
 // #define ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0
 // #define ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V1
+#define ENV_HOVERSERVOGYRO_ESP32C3_WROOM_V1
 
 // Als de defines in platformio.ini gedefinieerd zijn:
 // #define ENV_USER_DEFINED
@@ -65,11 +66,12 @@ enum
 #ifndef ENV_USER_DEFINED
 
 // Volgende defines zijn op alle borden van toepassing
+#define WIFI_SOFTAP_SSID_PREFIX "hover-"
 #define WIFI_SOFTAP_PASSWORD "12345678"
 #define WIFI_SOFTAP_CHANNEL 1 // 1-13
 
 #if defined(CONFIG_IDF_TARGET_ESP32C3)
-#define VOLTAGE_THRESHOLD 3.0 // onder dit voltage uit, om op hol slaan te vermijden op ESP32C3. Gemeten op batterij zelf.
+#define VOLTAGE_THRESHOLD 3.1 // onder dit voltage uit, om op hol slaan te vermijden op ESP32C3. Gemeten op batterij zelf.
 #else
 #define VOLTAGE_THRESHOLD 2.7 // onder dit voltage uit, om de batterij te beschermen, gemeten na de spanningsregelaar bij ESP8266.
 #endif
@@ -77,8 +79,6 @@ enum
 #endif
 
 #if defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0)
-
-#define USE_CONFIG_HOVERSERVO
 
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
@@ -94,8 +94,6 @@ enum
 
 #elif defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN2_V0)
 
-#define USE_CONFIG_HOVERSERVO
-
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   2
@@ -109,8 +107,6 @@ enum
 #define LED_BRIGHTNESS_OFF HIGH
 
 #elif defined (ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE)
-
-#define USE_CONFIG_HOVERSERVO
 
 #define DEBUG_SERIAL Serial
 
@@ -129,8 +125,6 @@ enum
 
 #elif defined (ENV_HOVERSERVO_ESP8266_NODEMCU)
 
-#define USE_CONFIG_HOVERSERVO
-
 #define DEBUG_SERIAL Serial
 
 #define PIN_SERVO          D5 // D5 = GPIO14  op NodeMCU & Wemos D1 mini
@@ -148,9 +142,6 @@ enum
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0)
-
-#define USE_CONFIG_HOVERSERVO
-
 #define USE_FASTIMU
 #define FASTIMU_TYPE MPU6050
 #define IMU_I2C_ADDRESS 0x68 // alternatief 0x69
@@ -179,9 +170,6 @@ enum
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0) // GY-521 (2024 Fri3d)
-
-#define USE_CONFIG_HOVERSERVO
-
 // #define DEBUG_SERIAL Serial
 
 #define USE_FASTIMU
@@ -222,9 +210,6 @@ enum
 #define VOLTAGE_FACTOR 850.0f
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V1) // LSM6DS3 
-
-#define USE_CONFIG_HOVERSERVO
-
 // #define DEBUG_SERIAL Serial
 
 #define USE_FASTIMU
@@ -233,17 +218,18 @@ enum
 #define GYRO_DIRECTION GYRO_DIRECTION_Y
 #define GYRO_FLIP
 #define GYRO_REGELING_P         4.0
-#define GYRO_REGELING_MAX_DRAAI 0.5
+#define GYRO_REGELING_MAX_DRAAI 1.0
 #define GYRO_REGELING_BIAS      1.0
 // #define SERVO_ANTI_BIBBER       3.0
 #define GYRO_LPF_TF             0.100 // Tf in seconds
 
 #define PIN_SERVO          5
-#define PIN_MOTOR          6
+#define PIN_MOTOR          7
+#define PIN_MOTOR2         6
 
 #define PIN_LEDCONNECTIE   8
 #define PIN_LED_DUALUSE
-#define PIN_SDA            3            
+#define PIN_SDA            3           
 #define PIN_SCL            4
 
 #define PIN_BATMONITOR     1
@@ -253,7 +239,7 @@ enum
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
 
-#define USE_WS2812FX
+//#define USE_WS2812FX
 #define PIN_WS2812FX       8
 #define WS2812FX_NUMLEDS    6
 #define WS2812FX_RGB_ORDER  NEO_BGR //voor "fairy" type
@@ -264,6 +250,49 @@ enum
 
 #define VOLTAGE_FACTOR 850.0f
 
+
+#elif defined(ENV_HOVERSERVOGYRO_ESP32C3_WROOM_V1) // LSM6DS3 
+// #define DEBUG_SERIAL Serial
+
+#define USE_FASTIMU
+#define FASTIMU_TYPE LSM6DS3
+#define IMU_I2C_ADDRESS 0x6B
+#define GYRO_DIRECTION GYRO_DIRECTION_X
+//#define GYRO_FLIP
+#define GYRO_REGELING_P         4.0
+#define GYRO_REGELING_MAX_DRAAI 1.0
+#define GYRO_REGELING_BIAS      1.0
+// #define SERVO_ANTI_BIBBER       3.0
+#define GYRO_LPF_TF             0.100 // Tf in seconds
+
+#define PIN_SERVO          10
+#define PIN_MOTOR          7
+#define PIN_MOTOR2         4
+
+#define PIN_LEDCONNECTIE   8
+#define PIN_LED_DUALUSE
+#define PIN_SDA            2          
+#define PIN_SCL            6
+
+#define PIN_BATMONITOR     1
+
+#define MOTORZ_TIME_UP 2000 // ms om motor naar vol vermogen te brengen
+
+#define LED_BRIGHTNESS_ON  LOW
+#define LED_BRIGHTNESS_OFF HIGH
+
+//#define USE_WS2812FX
+#define PIN_WS2812FX       8
+#define WS2812FX_NUMLEDS    6
+#define WS2812FX_RGB_ORDER  NEO_BGR //voor "fairy" type
+#define WS2812FX_BRIGHTNESS 255 // 0 .. 255
+#define WS2812FX_SPEED 1000 // in ms
+#define WS2812FX_COLOR 0x007BFF // blauw, 0x007BFF geeft violet en blauw met 0xFF0000 op fairy type met NEO_GRB?
+#define WS2812FX_MODE FX_MODE_FADE // FX_MODE_BLINK, ... Volledige lijst op https://github.com/kitesurfer1404/WS2812FX/blob/master/src/modes_arduino.h
+
+#define VOLTAGE_FACTOR 850.0f
+
+
 #elif defined ENV_USER_DEFINED
 // defines staan buiten de code
 
@@ -271,12 +300,4 @@ enum
 // Geen ENV_XX geselecteerd
 #error "Defineer één van bovenstaande defines"
 
-#endif
-
-#ifndef ENV_USER_DEFINED
-#if defined(USE_CONFIG_HOVERSERVO)
-
-#define WIFI_SOFTAP_SSID_PREFIX "hover-"
-
-#endif
 #endif
