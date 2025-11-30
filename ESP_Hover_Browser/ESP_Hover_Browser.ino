@@ -15,10 +15,10 @@
 #include <ArduinoWebsockets.h> // uit arduino library manager : "ArduinoWebsockets" by Gil Maimon, https://github.com/gilmaimon/ArduinoWebsockets
 #include "config.h"
 
-#ifdef USE_GY521
-#include "GY521.h" // library; https://github.com/RobTillaart/GY521/ minimum versie 0.5.3
-GY521 sensor(GY521_I2C_ADDRESS);
-
+#ifdef USE_FASTIMU
+#include "FastIMU.h" // library; https://github.com/LiquidCGS/FastIMU minimum versie 1.2.8 voor LSM6DS3TR-C
+#include "lowpass_filter.h"
+FASTIMU_TYPE imu;
 #endif
 
 // Architectuur afhankelijke settings
@@ -71,7 +71,7 @@ WebsocketsClient sclient;
 // timeoutes
 #define TIMEOUT_MS_MOTORS 1200L   // Timeout om motoren uit veiligheid stil te leggen, na x milliseconden niks te hebben ontvangen, moet groter zijn dan retransmit in html code
 #define TIMEOUT_MS_LED 1L         // Aantal milliseconden dat LED blijft branden na het ontvangen van een boodschap
-#define TIMEOUT_MS_VOLTAGE 10000L // Aantal milliseconden tussen update voltage
+#define TIMEOUT_MS_STATUS 10000L // Aantal milliseconden tussen update statusbar
 
 unsigned long last_activity_message;
 
@@ -120,29 +120,44 @@ void setup_pin_mode_output(int pin)
   pinMode(pin, OUTPUT);
 }
 
-#ifdef USE_GY521
+#ifdef USE_FASTIMU
 float getGyro()
 {
-  float measured_value = 0.0;
-  sensor.read();
-  switch (GYRO_DIRECTION)
+  static LowPassFilter lpf(GYRO_LPF_TF);
+  static unsigned long lastupdate_gyro = 0;
+
+  unsigned long currentmillis = millis();
+  if (currentmillis > lastupdate_gyro + 1) // min 1 ms tussen aanroepen gyro
   {
-  case GYRO_DIRECTION_X:
-    measured_value = sensor.getGyroX();
-    break;
+    lastupdate_gyro = currentmillis;
+    GyroData gyroData;
+    float measured_value = 0.0;
 
-  case GYRO_DIRECTION_Y:
-    measured_value = sensor.getGyroY();
-    break;
+    imu.update();
+    imu.getGyro(&gyroData);
+    switch (GYRO_DIRECTION)
+    {
+    case GYRO_DIRECTION_X:
+      measured_value = gyroData.gyroX;
+      break;
 
-  case GYRO_DIRECTION_Z:
-    measured_value = sensor.getGyroZ();
-    break;
+    case GYRO_DIRECTION_Y:
+      measured_value = gyroData.gyroY;
+      break;
+
+    case GYRO_DIRECTION_Z:
+      measured_value = gyroData.gyroZ;
+      break;
+    }
+  #ifdef GYRO_FLIP
+    measured_value = -measured_value;
+  #endif
+    return lpf(measured_value);
   }
-#ifdef GYRO_FLIP
-  measured_value = -measured_value;
-#endif
-  return measured_value;
+  else
+  {
+    return lpf.getLastValue();
+  }
 }
 #endif
 
@@ -175,7 +190,7 @@ void updateMotors()
 
     if (gyroBeschikbaar && (doel_motorsnelheid > 5)) // gyro
     {
-#ifdef USE_GY521
+#ifdef USE_FASTIMU
       // "gyro"-regeling
       const float Pfactor = GYRO_REGELING_P;
       const float bias = GYRO_REGELING_BIAS;
@@ -345,21 +360,24 @@ void setup()
 
   gyroBeschikbaar = false;
 
-#ifdef USE_GY521
+#ifdef USE_FASTIMU
   // setup gyro module
 #ifdef PIN_SDA
   Wire.begin(PIN_SDA, PIN_SCL);
 #else
   Wire.begin();
 #endif
+  Wire.setClock(400000); //400khz clock
   delay(100);
   for (int t = 0; t < 3; t++) // 3 keer proberen of gyro beschikbaar is
   {
-    if (sensor.wakeup() == false)
+    calData calib = { 0 };  //Calibration data
+    int err = imu.init(calib, IMU_I2C_ADDRESS);
+    if (err != 0)
     {
 #ifdef DEBUG_SERIAL
       DEBUG_SERIAL.print(millis());
-      DEBUG_SERIAL.println("\tCould not connect to GY521");
+      DEBUG_SERIAL.println("\tCould not connect to gyro");
 #endif
       delay(1000);
     }
@@ -372,21 +390,14 @@ void setup()
 
   if (gyroBeschikbaar)
   {
-    sensor.setAccelSensitivity(2); // 8g
-    sensor.setGyroSensitivity(1);  // 500 degrees/s
-    sensor.setDLPFMode(6);         // 5 Hz Digital Low pass filter. Dit is extreem belangrijk, zoniet krijg je veel te veel ruis op de gyro meting t.g.v. trillingen van de motor
+    imu.setGyroRange(500);
+    imu.setAccelRange(8);
 
 #ifdef DEBUG_SERIAL
     DEBUG_SERIAL.println("start...");
 #endif
-
-    // set all calibration errors to zero
-    sensor.gxe = 0;
-    sensor.gye = 0;
-    sensor.gze = 0;
-    sensor.read();
   }
-#endif // USE_GY521
+#endif // USE_FASTIMU
 #ifdef PIN_LED_DUALUSE
   led_init();
 #endif
@@ -576,7 +587,7 @@ void updatestatusbar()
   unsigned long currentmillis = millis();
   char statusstr[50];
 
-  if (currentmillis > lastupdate_voltage + TIMEOUT_MS_VOLTAGE)
+  if (currentmillis > lastupdate_voltage + TIMEOUT_MS_STATUS)
   {
     lastupdate_voltage = currentmillis;
     float voltage = getVoltage();
@@ -584,7 +595,7 @@ void updatestatusbar()
     {
       if (gyroBeschikbaar)
       {
-#ifdef USE_GY521
+#ifdef USE_FASTIMU
         snprintf(statusstr, sizeof(statusstr), "%4.2f V gyro:%4.2f", voltage, getGyro());
 #endif
       }
@@ -623,6 +634,32 @@ void updatestatusbar()
       }
     }
   }
+#else
+  static unsigned long lastupdate_status = 0;
+  unsigned long currentmillis = millis();
+  char statusstr[50];
+
+  if (currentmillis > lastupdate_status + TIMEOUT_MS_STATUS)
+  {
+    lastupdate_status = currentmillis;
+
+    if (gyroBeschikbaar)
+    {
+#ifdef USE_FASTIMU
+      snprintf(statusstr, sizeof(statusstr), "gyro:%4.2f", getGyro());
+#endif
+    }
+    else
+    {
+      snprintf(statusstr, sizeof(statusstr), "");
+    }
+
+#ifdef DEBUG_SERIAL
+    DEBUG_SERIAL.print("Sending status: ");
+    DEBUG_SERIAL.println(statusstr);
+#endif
+    sclient.send(statusstr);
+  }
 #endif
 }
 
@@ -657,6 +694,10 @@ void loop()
       sclient.poll(); // als return non-nul, dan is er iets ontvangen
 
       updatestatusbar();
+      
+#ifdef USE_FASTIMU
+      getGyro(); // update low pass filter gyro
+#endif
 
       static unsigned long lastupdate_motors = 0;
       unsigned long currentmillis = millis();

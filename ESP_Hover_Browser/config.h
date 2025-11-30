@@ -18,11 +18,14 @@
 /*
 Als je een ander board wenst te definiëren, zijn volgende defines nodig:
 * Als een gyro gebruikt wordt, zijn volgende defines nodig:
-- USE_GY521
+- USE_FASTIMU
+- FASTIMU_TYPE
+- IMU_I2C_ADDRESS
 - GYRO_REGELING_P
 - GYRO_REGELING_MAX_DRAAI
 - GYRO_REGELING_BIAS
 - GYRO_DIRECTION : GYRO_DIRECTION_X, GYRO_DIRECTION_Y of GYRO_DIRECTION_Z
+- GYRO_LPF_TF
 - (optioneel) SERVO_ANTI_BIBBER : aantal graden, als de doelpositie van de servo kleiner is dan deze waarde t.o.v. de huidige postie, blijft de servo gewoon staan op de huidige positie
 - (optioneel) GYRO_FLIP : gebruik de negatieve waarde van de gyro: als de gyro omgekeerd hangt
 - (optioneel) PIN_SDA en PIN_SCL : indien niet gedefinieerd, worden de standaard Wire library pinnen van het bord gebruikt. 
@@ -61,14 +64,11 @@ enum
 #ifndef ENV_USER_DEFINED
 
 // Volgende defines zijn op alle borden van toepassing
-#define WIFI_SOFTAP_SSID_PREFIX "hover-"
 #define WIFI_SOFTAP_PASSWORD "12345678"
 #define WIFI_SOFTAP_CHANNEL 1 // 1-13
 
-#define GY521_I2C_ADDRESS 0x68 // alternatief 0x69
-
 #if defined(CONFIG_IDF_TARGET_ESP32C3)
-#define VOLTAGE_THRESHOLD 3.1 // onder dit voltage uit, om op hol slaan te vermijden op ESP32C3. Gemeten op batterij zelf.
+#define VOLTAGE_THRESHOLD 3.0 // onder dit voltage uit, om op hol slaan te vermijden op ESP32C3. Gemeten op batterij zelf.
 #else
 #define VOLTAGE_THRESHOLD 2.7 // onder dit voltage uit, om de batterij te beschermen, gemeten na de spanningsregelaar bij ESP8266.
 #endif
@@ -76,6 +76,8 @@ enum
 #endif
 
 #if defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0)
+
+#define USE_CONFIG_HOVERSERVO
 
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
@@ -91,6 +93,8 @@ enum
 
 #elif defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN2_V0)
 
+#define USE_CONFIG_HOVERSERVO
+
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   2
@@ -104,6 +108,8 @@ enum
 #define LED_BRIGHTNESS_OFF HIGH
 
 #elif defined (ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE)
+
+#define USE_CONFIG_HOVERSERVO
 
 #define DEBUG_SERIAL Serial
 
@@ -122,6 +128,8 @@ enum
 
 #elif defined (ENV_HOVERSERVO_ESP8266_NODEMCU)
 
+#define USE_CONFIG_HOVERSERVO
+
 #define DEBUG_SERIAL Serial
 
 #define PIN_SERVO          D5 // D5 = GPIO14  op NodeMCU & Wemos D1 mini
@@ -139,11 +147,17 @@ enum
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0)
-#define USE_GY521
+
+#define USE_CONFIG_HOVERSERVO
+
+#define USE_FASTIMU
+#define FASTIMU_TYPE MPU6050
+#define IMU_I2C_ADDRESS 0x68 // alternatief 0x69
 #define GYRO_DIRECTION GYRO_DIRECTION_X
 #define GYRO_REGELING_P         4.0
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
+#define GYRO_LPF_TF             0.050 // Tf in seconds
 #define SERVO_ANTI_BIBBER       3.0
 
 #define PIN_SERVO          1
@@ -163,16 +177,22 @@ enum
 #define LED_BRIGHTNESS_OFF HIGH
 
 
-#elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0)
+#elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0) // GY-521 (2024 Fri3d)
+
+#define USE_CONFIG_HOVERSERVO
+
 // #define DEBUG_SERIAL Serial
 
-#define USE_GY521
+#define USE_FASTIMU
+#define FASTIMU_TYPE MPU6050
+#define IMU_I2C_ADDRESS 0x68 // alternatief 0x69
 #define GYRO_DIRECTION GYRO_DIRECTION_Y
 #define GYRO_FLIP
 #define GYRO_REGELING_P         4.0
 #define GYRO_REGELING_MAX_DRAAI 0.5
 #define GYRO_REGELING_BIAS      1.0
 #define SERVO_ANTI_BIBBER       3.0
+#define GYRO_LPF_TF             0.050 // Tf in seconds
 
 #define PIN_SERVO          5
 #define PIN_MOTOR          6
@@ -208,3 +228,12 @@ enum
 #error "Defineer één van bovenstaande defines"
 
 #endif
+
+#ifndef ENV_USER_DEFINED
+#if defined(USE_CONFIG_HOVERSERVO)
+
+#define WIFI_SOFTAP_SSID_PREFIX "hover-"
+
+#endif
+#endif
+
