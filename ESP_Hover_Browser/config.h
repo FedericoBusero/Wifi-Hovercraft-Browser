@@ -66,7 +66,6 @@ enum
 #ifndef ENV_USER_DEFINED
 
 // Volgende defines zijn op alle borden van toepassing
-#define WIFI_SOFTAP_SSID_PREFIX "hover-"
 #define WIFI_SOFTAP_PASSWORD "12345678"
 #define WIFI_SOFTAP_CHANNEL 1 // 1-13
 
@@ -79,6 +78,8 @@ enum
 #endif
 
 #if defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN1_V0)
+
+#define USE_CONFIG_HOVERSERVO
 
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
@@ -94,6 +95,8 @@ enum
 
 #elif defined(ENV_HOVERSERVO_ESP8266_ESP01_LEDPIN2_V0)
 
+#define USE_CONFIG_HOVERSERVO
+
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   2
@@ -107,6 +110,8 @@ enum
 #define LED_BRIGHTNESS_OFF HIGH
 
 #elif defined (ENV_HOVERSERVO_ESP8266_LOLIND1MINILITE)
+
+#define USE_CONFIG_HOVERSERVO
 
 #define DEBUG_SERIAL Serial
 
@@ -125,6 +130,8 @@ enum
 
 #elif defined (ENV_HOVERSERVO_ESP8266_NODEMCU)
 
+#define USE_CONFIG_HOVERSERVO
+
 #define DEBUG_SERIAL Serial
 
 #define PIN_SERVO          D5 // D5 = GPIO14  op NodeMCU & Wemos D1 mini
@@ -142,6 +149,9 @@ enum
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0)
+
+#define USE_CONFIG_HOVERSERVO
+
 #define USE_FASTIMU
 #define FASTIMU_TYPE MPU6050
 #define IMU_I2C_ADDRESS 0x68 // alternatief 0x69
@@ -170,6 +180,9 @@ enum
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0) // GY-521 (2024 Fri3d)
+
+#define USE_CONFIG_HOVERSERVO
+
 // #define DEBUG_SERIAL Serial
 
 #define USE_FASTIMU
@@ -210,6 +223,9 @@ enum
 #define VOLTAGE_FACTOR 850.0f
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V1) // LSM6DS3 
+
+#define USE_CONFIG_HOVERSERVO
+
 // #define DEBUG_SERIAL Serial
 
 #define USE_FASTIMU
@@ -252,6 +268,9 @@ enum
 
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_WROOM_V1) // LSM6DS3 
+
+#define USE_CONFIG_HOVERSERVO
+
 // #define DEBUG_SERIAL Serial
 
 #define USE_FASTIMU
@@ -300,4 +319,12 @@ enum
 // Geen ENV_XX geselecteerd
 #error "Defineer één van bovenstaande defines"
 
+#endif
+
+#ifndef ENV_USER_DEFINED
+#if defined(USE_CONFIG_HOVERSERVO)
+
+#define WIFI_SOFTAP_SSID_PREFIX "hover-"
+
+#endif
 #endif
