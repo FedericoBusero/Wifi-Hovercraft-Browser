@@ -109,6 +109,25 @@ bool gyroBeschikbaar = false;
 WS2812FX ws2812fx = WS2812FX(WS2812FX_NUMLEDS, PIN_WS2812FX, WS2812FX_RGB_ORDER + NEO_KHZ800);
 #endif
 
+//voor ook achteruit toegevoegd
+void zbridge_setspeed(int pin1, int pin2, long motorspeed, long min_speed = 5)
+{
+  if (abs(motorspeed) < min_speed)
+  {
+    motorspeed = 0;
+  }
+  if (motorspeed > 0)
+  {
+    analogWrite(pin1, motorspeed);
+    analogWrite(pin2, 0);
+  }
+  else
+  {
+    analogWrite(pin1, 0);
+    analogWrite(pin2, -motorspeed);
+  }
+}
+
 void setup_pin_mode_output(int pin)
 {
 #ifdef ESP8266
@@ -171,6 +190,7 @@ void updateMotors()
   if (motors_halt)
   {
     analogWrite(PIN_MOTOR, 0);
+    analogWrite(PIN_MOTOR2, 0);
   }
   else
   {
@@ -178,16 +198,18 @@ void updateMotors()
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2, 0, 360, PWM_RANGE / 2, PWM_RANGE);
 
-    if (ui_joystick_y <= 0)
-    {
-      doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
-    }
-    else
-    {
-      doel_motorsnelheid = 0;
-    }
-
-    if (gyroBeschikbaar && (doel_motorsnelheid > 5)) // gyro
+    //voor ook achteruit aangepast
+    doel_motorsnelheid = map(-ui_joystick_y, 180, -180, -max_motorsnelheid, max_motorsnelheid);
+    // if (ui_joystick_y <= 0)
+    // {
+    //   doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
+    // }
+    // else
+    // {
+    //   doel_motorsnelheid = 0;
+    // }
+//absolute waarde toegevoegd voor ook achteruit
+    if (gyroBeschikbaar && (abs(doel_motorsnelheid) > 5)) // gyro
     {
 #ifdef USE_FASTIMU
       // "gyro"-regeling
@@ -227,7 +249,9 @@ void updateMotors()
     */
     motorZ_snelheid.easeTo(doel_motorsnelheid);
     motorZ_snelheid.update();
-    analogWrite(PIN_MOTOR, motorZ_snelheid.getCurrentValue()); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motorZ_snelheid
+    // voor ook achteruit 
+    zbridge_setspeed(PIN_MOTOR, PIN_MOTOR2, motorZ_snelheid.getCurrentValue(), 5);
+    //analogWrite(PIN_MOTOR, motorZ_snelheid.getCurrentValue()); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motorZ_snelheid
   }
 }
 
