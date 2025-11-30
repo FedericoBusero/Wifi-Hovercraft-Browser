@@ -10,6 +10,7 @@
 // #define ENV_HOVERSERVO_ESP8266_NODEMCU
 
 // #define ENV_HOVERSERVOGYRO_ESP8266_ESP01_LEDPIN2_V0
+// #define ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0
 
 // Als de defines in platformio.ini gedefinieerd zijn:
 // #define ENV_USER_DEFINED
@@ -33,11 +34,16 @@ Als je een ander board wenst te definiëren, zijn volgende defines nodig:
 Volgende pinnen worden gedefinieerd:
 - PIN_SERVO          
 - PIN_MOTOR          
+- MOTORZ_TIME_UP
 - (optioneel) PIN_LEDCONNECTIE   
 
 Daarnaast zijn volgende defines verplicht (maar kunnen omgewisseld worden)
 #define LED_BRIGHTNESS_ON  HIGH
 #define LED_BRIGHTNESS_OFF LOW
+
+Om een LED-strip aan te sturen moeten volgende defines toegevoegd worden:
+USE_WS2812FX, PIN_WS2812FX, WS2812FX_NUMLEDS, WS2812FX_RGB_ORDER,
+WS2812FX_BRIGHTNESS, WS2812FX_SPEED, WS2812FX_COLOR en WS2812FX_MODE
 
 Op ESP8266-chips wordt het voltage gemeten, voeg volgende define toe. Pas de voltagefactor aan, dat is bij elke chip verschillend. 
 Calibreer bv. met USB stroom die 3.3V op de chip moet geven
@@ -59,7 +65,13 @@ enum
 #define WIFI_SOFTAP_PASSWORD "12345678"
 #define WIFI_SOFTAP_CHANNEL 1 // 1-13
 
-#define VOLTAGE_THRESHOLD 2.7 // onder dit voltage valt de ESP8266-chip uit om de batterij te beschermen
+#define GY521_I2C_ADDRESS 0x68 // alternatief 0x69
+
+#if defined(CONFIG_IDF_TARGET_ESP32C3)
+#define VOLTAGE_THRESHOLD 3.1 // onder dit voltage uit, om op hol slaan te vermijden op ESP32C3. Gemeten op batterij zelf.
+#else
+#define VOLTAGE_THRESHOLD 2.7 // onder dit voltage uit, om de batterij te beschermen, gemeten na de spanningsregelaar bij ESP8266.
+#endif
 
 #endif
 
@@ -68,6 +80,8 @@ enum
 #define PIN_SERVO          0
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   1
+
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
@@ -80,6 +94,8 @@ enum
 #define PIN_SERVO          1
 #define PIN_MOTOR          3
 #define PIN_LEDCONNECTIE   2
+
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
@@ -96,6 +112,8 @@ enum
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
 #define PIN_LEDCONNECTIE    2 
 
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
+
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 910.0f 
 
@@ -110,6 +128,8 @@ enum
 #define PIN_MOTOR          D8 // D8 = GPIO15 op NodeMCU & Wemos D1 mini
 // De ingebouwde LED zit meestal op GPIO2 of GPIO16
 #define PIN_LEDCONNECTIE    D0 // D0=GPIO16
+
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
 
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 910.0f 
@@ -134,11 +154,51 @@ enum
 #define PIN_SDA            2            
 #define PIN_SCL            0
 
+#define MOTORZ_TIME_UP 200 // ms om motor naar vol vermogen te brengen
+
 // Pas de voltagefactor aan, dat is bij elke chip verschillend. Calibreer bv. met USB stroom die 3.3V op de chip moet geven
 #define VOLTAGE_FACTOR 1060.0f 
 
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
+
+
+#elif defined(ENV_HOVERSERVOGYRO_ESP32C3_SUPERMINI_WS2812FX_V0)
+// #define DEBUG_SERIAL Serial
+
+#define USE_GY521
+#define GYRO_DIRECTION GYRO_DIRECTION_Y
+#define GYRO_FLIP
+#define GYRO_REGELING_P         4.0
+#define GYRO_REGELING_MAX_DRAAI 0.5
+#define GYRO_REGELING_BIAS      1.0
+#define SERVO_ANTI_BIBBER       3.0
+
+#define PIN_SERVO          5
+#define PIN_MOTOR          6
+
+#define PIN_LEDCONNECTIE   8
+#define PIN_LED_DUALUSE
+#define PIN_SDA            3            
+#define PIN_SCL            4
+
+#define PIN_BATMONITOR     1
+
+#define MOTORZ_TIME_UP 2000 // ms om motor naar vol vermogen te brengen
+
+#define LED_BRIGHTNESS_ON  LOW
+#define LED_BRIGHTNESS_OFF HIGH
+
+#define USE_WS2812FX
+#define PIN_WS2812FX       8
+#define WS2812FX_NUMLEDS    6
+#define WS2812FX_RGB_ORDER  NEO_BGR //voor "fairy" type
+#define WS2812FX_BRIGHTNESS 200 // 0 .. 255
+#define WS2812FX_SPEED 1000 // in ms
+#define WS2812FX_COLOR 0x007BFF // blauw, 0x007BFF geeft violet en blauw met 0xFF0000 op fairy type met NEO_GRB?
+#define WS2812FX_MODE FX_MODE_FADE // FX_MODE_BLINK, ... Volledige lijst op https://github.com/kitesurfer1404/WS2812FX/blob/master/src/modes_arduino.h
+
+#define VOLTAGE_FACTOR 850.0f
 
 #elif defined ENV_USER_DEFINED
 // defines staan buiten de code

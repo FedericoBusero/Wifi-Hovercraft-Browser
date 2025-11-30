@@ -17,7 +17,7 @@
 
 #ifdef USE_GY521
 #include "GY521.h" // library; https://github.com/RobTillaart/GY521/ minimum versie 0.5.3
-GY521 sensor(0x68);
+GY521 sensor(GY521_I2C_ADDRESS);
 
 #endif
 
@@ -98,12 +98,16 @@ int ui_slider2; // 0 .. 360
 Easer servohoek;
 
 #define MOTOR_FREQ 400     // Frequentie van analogWrite in Hz, bepaalt het geluid van de motor
-#define MOTORZ_TIME_UP 200 // ms to go to ease to full power of a motor
 
 Easer motorZ_snelheid;
 bool motors_halt;
 
 bool gyroBeschikbaar = false;
+
+#ifdef USE_WS2812FX
+#include <WS2812FX.h> // https://github.com/kitesurfer1404/WS2812FX
+WS2812FX ws2812fx = WS2812FX(WS2812FX_NUMLEDS, PIN_WS2812FX, WS2812FX_RGB_ORDER + NEO_KHZ800);
+#endif
 
 void setup_pin_mode_output(int pin)
 {
@@ -260,6 +264,24 @@ void led_set(int ledmode, boolean except_when_dual_use)
 #endif
 #ifdef PIN_LEDCONNECTIE
   digitalWrite(PIN_LEDCONNECTIE, ledmode);
+#endif
+}
+
+void init_voltage_monitor()
+{
+#if defined(ESP32) && defined(PIN_BATMONITOR)
+  analogSetAttenuation(ADC_0db); // op de ESP32 varianten gebruiken we een externe weerstandbrug om het batterijvoltage te meten en zetten we de interne weerstandsbrug op "geen spanningsdeling"
+#endif
+}
+
+float getVoltage()
+{
+#ifdef ESP8266
+  return (float)ESP.getVcc() / (float)VOLTAGE_FACTOR; // op ESP8266 modules is VCC met de ene ADC pin verbonden
+#elif defined(ESP32) && defined(PIN_BATMONITOR) && defined(VOLTAGE_FACTOR)
+  return (float)analogRead(PIN_BATMONITOR) / (float)VOLTAGE_FACTOR; // op ESP32 modules is VBAT zelf via spanningsdeler met een ADC1 pin te verbinden (ADC2 niet gebruiken)
+#else
+  return (float)0;
 #endif
 }
 
@@ -443,6 +465,18 @@ void setup()
   DEBUG_SERIAL.print(F("Is server live? "));
   DEBUG_SERIAL.println(server.available());
 #endif
+
+#ifdef USE_WS2812FX
+  ws2812fx.init();
+  ws2812fx.setBrightness(WS2812FX_BRIGHTNESS);
+  ws2812fx.setSpeed(WS2812FX_SPEED);
+  ws2812fx.setColor(WS2812FX_COLOR);
+  ws2812fx.setMode(WS2812FX_MODE);
+  ws2812fx.start();
+#endif
+
+  init_voltage_monitor();
+
   last_activity_message = millis();
 }
 
@@ -537,7 +571,7 @@ void onDisconnect()
 
 void updatestatusbar()
 {
-#ifdef ESP8266
+#if defined(ESP8266) or ((defined(ESP32)) && defined(PIN_BATMONITOR))
   static unsigned long lastupdate_voltage = 0;
   unsigned long currentmillis = millis();
   char statusstr[50];
@@ -545,8 +579,7 @@ void updatestatusbar()
   if (currentmillis > lastupdate_voltage + TIMEOUT_MS_VOLTAGE)
   {
     lastupdate_voltage = currentmillis;
-    float voltage = ESP.getVcc() / VOLTAGE_FACTOR;
-
+    float voltage = getVoltage();
     if (voltage >= VOLTAGE_THRESHOLD)
     {
       if (gyroBeschikbaar)
@@ -577,7 +610,9 @@ void updatestatusbar()
       motors_pause();
       delay(20000); // boodschap wordt 20 seconden getoond in browser alvorens hij disconnecteert
       WiFi.mode(WIFI_OFF);
+#ifdef ESP8266
       WiFi.forceSleepBegin();
+#endif
       delay(1);
       while (1)
       {
@@ -663,6 +698,12 @@ void loop()
   {
     led_set((millis() % 1000) > 500 ? LOW : HIGH, false);
   }
+#ifdef USE_WS2812FX
+  else
+  {
+    ws2812fx.service();
+  }
+#endif
 
   // delay(2);
 }
