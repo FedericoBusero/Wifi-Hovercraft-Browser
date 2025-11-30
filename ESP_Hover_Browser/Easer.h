@@ -28,6 +28,12 @@ class Easer
     }
 
   public:
+
+    Easer()
+    {
+      begin(0.0, true);
+    }
+
     // set up an easer with just a starting value
     // when _ease_down is false, only ease when increasing the value
     void begin(float _startvalue,boolean _ease_down=true) {
@@ -58,7 +64,7 @@ class Easer
     }
 
     void easeTo(float destinationvalue, unsigned long dur ) {
-      if (!ease_down && (fabs(destinationvalue)<fabs(currentValue))) //. abs() want we doen we geen ease als we naar het 0-punt toe bewegen
+      if (!ease_down && (destinationvalue<currentValue))
       {
         setValue(destinationvalue);
         return;
