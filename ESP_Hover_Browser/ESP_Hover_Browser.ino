@@ -109,6 +109,27 @@ bool gyroBeschikbaar = false;
 WS2812FX ws2812fx = WS2812FX(WS2812FX_NUMLEDS, PIN_WS2812FX, WS2812FX_RGB_ORDER + NEO_KHZ800);
 #endif
 
+#ifdef USE_CONFIG_HOVERSERVO_BIDI
+//voor ook achteruit toegevoegd
+void zbridge_setspeed(int pin1, int pin2, long motorspeed, long min_speed = 5)
+{
+  if (abs(motorspeed) < min_speed)
+  {
+    motorspeed = 0;
+  }
+  if (motorspeed > 0)
+  {
+    analogWrite(pin1, motorspeed);
+    analogWrite(pin2, 0);
+  }
+  else
+  {
+    analogWrite(pin1, 0);
+    analogWrite(pin2, -motorspeed);
+  }
+}
+#endif
+
 void setup_pin_mode_output(int pin)
 {
 #ifdef ESP8266
@@ -171,6 +192,9 @@ void updateMotors()
   if (motors_halt)
   {
     analogWrite(PIN_MOTOR, 0);
+#ifdef USE_CONFIG_HOVERSERVO_BIDI
+    analogWrite(PIN_MOTOR2, 0);
+#endif
   }
   else
   {
@@ -182,7 +206,7 @@ void updateMotors()
 #endif
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2, 0, 360, PWM_RANGE / 2, PWM_RANGE);
-
+#if defined(USE_CONFIG_HOVERSERVO)
     if (ui_joystick_y <= 0)
     {
       doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
@@ -191,7 +215,9 @@ void updateMotors()
     {
       doel_motorsnelheid = 0;
     }
-
+#elif defined (USE_CONFIG_HOVERSERVO_BIDI)
+    doel_motorsnelheid = map(-ui_joystick_y, 180, -180, -max_motorsnelheid, max_motorsnelheid);
+#endif
     if (gyroBeschikbaar && (doel_motorsnelheid > 5)) // gyro
     {
 #ifdef USE_FASTIMU
@@ -232,7 +258,11 @@ void updateMotors()
     */
     motorZ_snelheid.easeTo(doel_motorsnelheid);
     motorZ_snelheid.update();
+#if defined(USE_CONFIG_HOVERSERVO)
     analogWrite(PIN_MOTOR, motorZ_snelheid.getCurrentValue()); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motorZ_snelheid
+#elif defined (USE_CONFIG_HOVERSERVO_BIDI)
+    zbridge_setspeed(PIN_MOTOR, PIN_MOTOR2, motorZ_snelheid.getCurrentValue(), 5);
+#endif
   }
 }
 
@@ -308,6 +338,9 @@ float getVoltage()
 void setup()
 {
   setup_pin_mode_output(PIN_MOTOR);
+#ifdef USE_CONFIG_HOVERSERVO_BIDI
+  setup_pin_mode_output(PIN_MOTOR2);
+#endif
 
 #ifdef ESP8266
   // Aangezien de PWM range van analogWrite afhankelijk van de Arduino ESP8266 versie 255 ofwel 1023 is, stellen we de range vast in op 1023
@@ -753,4 +786,5 @@ void loop()
 
   // delay(2);
 }
+
 
