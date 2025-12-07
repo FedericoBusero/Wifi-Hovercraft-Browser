@@ -280,6 +280,7 @@ enum
 #if defined(USE_CONFIG_HOVERSERVO)
 
 #define WIFI_SOFTAP_SSID_PREFIX "hover-"
+#define ZMOTOR_UP_ONLY
 
 #elif defined(USE_CONFIG_HOVERSERVO_HBRIDGE)
 
@@ -287,6 +288,7 @@ enum
 
 #endif
 #endif
+
 
 
 
