@@ -233,7 +233,7 @@ void updateMotors()
 #endif
     int doel_motorZsnelheid;
     int max_motorsnelheid = map(ui_slider2, 0, 360, PWM_RANGE / 2, PWM_RANGE);
-#if defined(USE_CONFIG_HOVERSERVO)
+#if defined(ZMOTOR_UP_ONLY)
     if (ui_joystick_y <= 0)
     {
       doel_motorZsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
@@ -242,7 +242,7 @@ void updateMotors()
     {
       doel_motorZsnelheid = 0;
     }
-#elif defined (USE_CONFIG_HOVERSERVO_BIDI)
+#else
     doel_motorZsnelheid = map(-ui_joystick_y, 180, -180, -max_motorsnelheid, max_motorsnelheid);
 #endif
     if (gyroBeschikbaar && (abs(doel_motorZsnelheid) > 5)) // gyro
@@ -819,6 +819,7 @@ void loop()
 
   // delay(2);
 }
+
 
 
 
