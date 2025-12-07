@@ -223,7 +223,7 @@ enum
 
 #elif defined(ENV_HOVERSERVOGYRO_ESP32C3_WROOM_V1) // LSM6DS3, met achteruit (Marinedagen 2025)
 
-#define USE_CONFIG_HOVERSERVO
+#define USE_CONFIG_HOVERSERVO_HBRIDGE
 
 // #define DEBUG_SERIAL Serial
 
@@ -239,8 +239,8 @@ enum
 #define GYRO_LPF_TF             0.100 // Tf in seconds
 
 #define PIN_SERVO          10
-#define PIN_MOTOR          7
-#define PIN_MOTOR2         4
+#define PIN_1ZMOTOR         7
+#define PIN_2ZMOTOR         4
 
 #define PIN_LEDCONNECTIE   8
 #define PIN_LED_DUALUSE
@@ -250,6 +250,7 @@ enum
 #define PIN_BATMONITOR     1
 
 #define MOTORZ_TIME_UP 2000 // ms om motor naar vol vermogen te brengen
+#define MOTORZ_MINSPEED 5
 
 #define LED_BRIGHTNESS_ON  LOW
 #define LED_BRIGHTNESS_OFF HIGH
@@ -280,7 +281,12 @@ enum
 
 #define WIFI_SOFTAP_SSID_PREFIX "hover-"
 
+#elif defined(USE_CONFIG_HOVERSERVO_HBRIDGE)
+
+#define WIFI_SOFTAP_SSID_PREFIX "hover-"
+
 #endif
 #endif
+
 
 
