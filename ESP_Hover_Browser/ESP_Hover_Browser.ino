@@ -102,32 +102,58 @@ Easer servohoek;
 Easer motorZ_snelheid;
 bool motors_halt;
 
+
+class hbridge
+{
+public:
+  hbridge(int _pin1, int _pin2)
+      : pin1(_pin1), pin2(_pin2), currentspeed(0)
+  {
+  }
+
+  void setSpeed(long motorspeed, long min_speed = 0)
+  {
+    if (abs(motorspeed) < min_speed)
+    {
+      motorspeed = 0;
+    }
+
+    if (motorspeed == currentspeed) return;
+
+    if (motorspeed >= 0)
+    {
+      analogWrite(pin1, motorspeed);
+      analogWrite(pin2, 0);
+    }
+    else
+    {
+      analogWrite(pin1, 0);
+      analogWrite(pin2, -motorspeed);
+    }
+    currentspeed = motorspeed;
+  }
+
+  void halt()
+  {
+    analogWrite(pin1, 0);
+    analogWrite(pin2, 0);
+    currentspeed = 0;
+  }
+
+private:
+  int pin1, pin2;
+  int currentspeed;
+};
+
+#ifdef USE_CONFIG_HOVERSERVO_HBRIDGE
+hbridge motorZ(PIN_1ZMOTOR, PIN_2ZMOTOR);
+#endif
+
 bool gyroBeschikbaar = false;
 
 #ifdef USE_WS2812FX
 #include <WS2812FX.h> // https://github.com/kitesurfer1404/WS2812FX
 WS2812FX ws2812fx = WS2812FX(WS2812FX_NUMLEDS, PIN_WS2812FX, WS2812FX_RGB_ORDER + NEO_KHZ800);
-#endif
-
-#ifdef USE_CONFIG_HOVERSERVO_BIDI
-//voor ook achteruit toegevoegd
-void zbridge_setspeed(int pin1, int pin2, long motorspeed, long min_speed = 5)
-{
-  if (abs(motorspeed) < min_speed)
-  {
-    motorspeed = 0;
-  }
-  if (motorspeed > 0)
-  {
-    analogWrite(pin1, motorspeed);
-    analogWrite(pin2, 0);
-  }
-  else
-  {
-    analogWrite(pin1, 0);
-    analogWrite(pin2, -motorspeed);
-  }
-}
 #endif
 
 void setup_pin_mode_output(int pin)
@@ -191,9 +217,10 @@ void updateMotors()
 {
   if (motors_halt)
   {
+#ifdef USE_CONFIG_HOVERSERVO_HBRIDGE
+    motorZ.halt();
+#else
     analogWrite(PIN_MOTOR, 0);
-#ifdef USE_CONFIG_HOVERSERVO_BIDI
-    analogWrite(PIN_MOTOR2, 0);
 #endif
   }
   else
@@ -204,21 +231,21 @@ void updateMotors()
 #else
     const float max_draai_factor = 1.0;
 #endif
-    int doel_motorsnelheid;
+    int doel_motorZsnelheid;
     int max_motorsnelheid = map(ui_slider2, 0, 360, PWM_RANGE / 2, PWM_RANGE);
 #if defined(USE_CONFIG_HOVERSERVO)
     if (ui_joystick_y <= 0)
     {
-      doel_motorsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
+      doel_motorZsnelheid = map(-ui_joystick_y, 0, 180, 0, max_motorsnelheid);
     }
     else
     {
-      doel_motorsnelheid = 0;
+      doel_motorZsnelheid = 0;
     }
 #elif defined (USE_CONFIG_HOVERSERVO_BIDI)
-    doel_motorsnelheid = map(-ui_joystick_y, 180, -180, -max_motorsnelheid, max_motorsnelheid);
+    doel_motorZsnelheid = map(-ui_joystick_y, 180, -180, -max_motorsnelheid, max_motorsnelheid);
 #endif
-    if (gyroBeschikbaar && (doel_motorsnelheid > 5)) // gyro
+    if (gyroBeschikbaar && (abs(doel_motorZsnelheid) > 5)) // gyro
     {
 #ifdef USE_FASTIMU
       // "gyro"-regeling
@@ -252,16 +279,17 @@ void updateMotors()
 
     /*
   #ifdef DEBUG_SERIAL
-      DEBUG_SERIAL.print(F("doel_motorsnelheid="));
-      DEBUG_SERIAL.println(doel_motorsnelheid);
+      DEBUG_SERIAL.print(F("doel_motorZsnelheid="));
+      DEBUG_SERIAL.println(doel_motorZsnelheid);
   #endif
     */
-    motorZ_snelheid.easeTo(doel_motorsnelheid);
+    motorZ_snelheid.easeTo(doel_motorZsnelheid);
     motorZ_snelheid.update();
-#if defined(USE_CONFIG_HOVERSERVO)
+
+#ifdef USE_CONFIG_HOVERSERVO_HBRIDGE
+    motorZ.setSpeed(motorZ_snelheid.getCurrentValue(), MOTORZ_MINSPEED);
+#else
     analogWrite(PIN_MOTOR, motorZ_snelheid.getCurrentValue()); // We passen de snelheid van de motor aan naar zijn nieuwe snelheid motorZ_snelheid
-#elif defined (USE_CONFIG_HOVERSERVO_BIDI)
-    zbridge_setspeed(PIN_MOTOR, PIN_MOTOR2, motorZ_snelheid.getCurrentValue(), 5);
 #endif
   }
 }
@@ -337,9 +365,11 @@ float getVoltage()
 
 void setup()
 {
+#ifdef USE_CONFIG_HOVERSERVO_HBRIDGE
+  setup_pin_mode_output(PIN_1ZMOTOR);
+  setup_pin_mode_output(PIN_2ZMOTOR);
+#else
   setup_pin_mode_output(PIN_MOTOR);
-#ifdef USE_CONFIG_HOVERSERVO_BIDI
-  setup_pin_mode_output(PIN_MOTOR2);
 #endif
 
 #ifdef ESP8266
@@ -356,8 +386,11 @@ void setup()
   // Verander de frequentie van analogWrite van 1000 Hz naar 400 Hz voor een aangenamer geluid
   analogWriteFrequency(MOTOR_FREQ);
 #endif
+#ifdef USE_CONFIG_HOVERSERVO_HBRIDGE
+  motorZ.halt();
+#else
   analogWrite(PIN_MOTOR, 0);
-
+#endif
   delay(200); // 200 milliseconden wachten tot de stroom stabiel is
 
 #ifdef DEBUG_SERIAL
@@ -786,5 +819,6 @@ void loop()
 
   // delay(2);
 }
+
 
 
