@@ -175,7 +175,11 @@ void updateMotors()
   else
   {
     float regelX = 0.0;
+#ifdef GYRO_REGELING_MAX_DRAAI
     const float max_draai_factor = GYRO_REGELING_MAX_DRAAI;
+#else
+    const float max_draai_factor = 1.0;
+#endif
     int doel_motorsnelheid;
     int max_motorsnelheid = map(ui_slider2, 0, 360, PWM_RANGE / 2, PWM_RANGE);
 
@@ -204,7 +208,8 @@ void updateMotors()
     }
     else
     {
-      regelX = (float)ui_joystick_x; // -180 .. 180, TODO max_draai_factor gebruiken
+      regelX = (float)ui_joystick_x * max_draai_factor;
+      regelX = constrain(regelX, -180.0, 180.0);
     }
 
     float TrimServopositie = mapFloat((float)ui_slider1, -180.0, 180.0, SERVO_HOEK_MIN - SERVO_HOEK_MIN_NOTRIM, SERVO_HOEK_MAX - SERVO_HOEK_MAX_NOTRIM);
@@ -748,3 +753,4 @@ void loop()
 
   // delay(2);
 }
+
