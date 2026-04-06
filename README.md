@@ -1,5 +1,5 @@
 # Wifi-Hovercraft-Browser
-Wifi bestuurde (vanuit een browser ) hovercraft op een ESP8266 (NodeMCU, Wemos D1 mini) of ESP32 en een optionele gyro GY-521
+Wifi bestuurde (vanuit een browser ) hovercraft op een ESP8266 (NodeMCU, Wemos D1 mini) of ESP32/ESP32C3 en een optionele gyro GY-521 of LSM6DS3TR-C
 
 Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 
