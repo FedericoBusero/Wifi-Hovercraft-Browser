@@ -1,21 +1,21 @@
 # Wifi-Hovercraft-Browser
-Wifi bestuurde (vanuit een browser ) hovercraft op een ESP8266 (NodeMCU, Wemos D1 mini) of ESP32 en een optionele gyro GY-521
+Wifi bestuurde (vanuit een browser ) hovercraft op een ESP8266 (NodeMCU, Wemos D1 mini) of ESP32/ESP32C3 en een optionele gyro GY-521 of LSM6DS3TR-C
 
 Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 
 ## Communicatie
 - WifiPoint / SoftAP
-- SSID = hover- + 4 laatste hexadecimale karakters van het Wifi-MAC adres van de ESP8266 chip
+- SSID = hover- + 4 laatste hexadecimale karakters van het Wifi-MAC adres van de ESP-chip
 - Wifi-paswoord: 12345678
 - App: browser (Chrome, Firefox, safari, ...)
 - URL : http://192.168.4.1 of http://h.be
 
 ## App User interface 
 ![Screenshot_browser_hovercraft.png](Screenshot_browser_hovercraft.png "Hover user interface")
-- Bovenste regel: connectiestatus, en op ESP8266 het voltage tijdens connectie (en optioneel de gyro draaisnelheid)
+- Bovenste regel: connectiestatus, en optioneel het voltage tijdens connectie (en optioneel de gyro draaisnelheid)
 - Bovenste slider: trim de servo
 - Tweede slider: stel maximum snelheid in (links = halve kracht, rechts=volle kracht)
-- Joystick: besturing servo (links-rechts) en motor (midden-boven)
+- Joystick: besturing servo (links-rechts) en motor (enkel midden-boven bij unidirectionele landhovercraft)
 
 ## pinallocatie Wemos D1 Lite (ESP8266)
 Hiertoe moet je volgende regel uncommenten in config.h:
@@ -91,8 +91,14 @@ ESP32:
 - ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
 - https://github.com/me-no-dev/ESPAsyncWebServer
 
-Daarnaast in geval van gyro GY-521:
-- https://github.com/LiquidCGS/FastIMU
+ESP32C3:
+- AsyncTCP: te installeren van https://github.com/me-no-dev/AsyncTCP
+- ESP32Servo vanuit de Arduino library manager te downloaden, dat is deze versie:  https://github.com/madhephaestus/ESP32Servo
+- ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
+- https://github.com/dvarrel/ESPAsyncWebSrv versie 1.2.9
+
+Daarnaast in geval van gyro GY-521 of LSM6DS3TR-C
+- https://github.com/LiquidCGS/FastIMU, versie 1.2.8
 
 ## Inspiratie
 Bij het ontwikkelen van deze software werden volgende inspiratie-bronnen gebruikt: 
