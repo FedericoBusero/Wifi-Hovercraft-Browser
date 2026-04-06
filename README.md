@@ -15,7 +15,7 @@ Video: https://www.youtube.com/watch?v=TWfIe7EutRM
 - Bovenste regel: connectiestatus, en optioneel het voltage tijdens connectie (en optioneel de gyro draaisnelheid)
 - Bovenste slider: trim de servo
 - Tweede slider: stel maximum snelheid in (links = halve kracht, rechts=volle kracht)
-- Joystick: besturing servo (links-rechts) en motor (midden-boven)
+- Joystick: besturing servo (links-rechts) en motor (enkel midden-boven bij unidirectionele landhovercraft)
 
 ## pinallocatie Wemos D1 Lite (ESP8266)
 Hiertoe moet je volgende regel uncommenten in config.h:
