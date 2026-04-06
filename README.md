@@ -91,8 +91,14 @@ ESP32:
 - ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
 - https://github.com/me-no-dev/ESPAsyncWebServer
 
-Daarnaast in geval van gyro GY-521:
-- https://github.com/LiquidCGS/FastIMU
+ESP32C3:
+- AsyncTCP: te installeren van https://github.com/me-no-dev/AsyncTCP
+- ESP32Servo vanuit de Arduino library manager te downloaden, dat is deze versie:  https://github.com/madhephaestus/ESP32Servo
+- ArduinoWebsockets by Gil Maimon, gemakkelijk te installeren vanuit de Arduino Library manager: https://github.com/gilmaimon/ArduinoWebsockets
+- https://github.com/dvarrel/ESPAsyncWebSrv versie 1.2.9
+
+Daarnaast in geval van gyro GY-521 of LSM6DS3TR-C
+- https://github.com/LiquidCGS/FastIMU, versie 1.2.8
 
 ## Inspiratie
 Bij het ontwikkelen van deze software werden volgende inspiratie-bronnen gebruikt: 
