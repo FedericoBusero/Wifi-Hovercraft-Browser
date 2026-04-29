@@ -112,7 +112,7 @@ Gebruik je liever micropython dan Arduino? Er is ook een micropython versie voor
 
 ## Hovercraft zonder servo
 Bouw je een hovercraft (of blimp/zeppelin) zonder servosturing, maar met 2 extra motoren? Er is een variant van deze code : 
-https://github.com/FedericoBusero/Wifi-Hovercraft-Browser
+https://github.com/FedericoBusero/Wifi-Blimp-Browser
 
 ## Hoe maak je een Hovercraft?
 Voor workshops hovercraft bouwen kan je terecht bij [masynmachien](https://www.masynmachien.be/)
